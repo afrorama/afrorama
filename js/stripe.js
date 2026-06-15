@@ -54,10 +54,10 @@ function _hasEndpoint()       { return !CHECKOUT_ENDPOINT.includes('YOUR'); }
 function _isDemo()            { return !_isConfigured() && !_hasLink('membership') && !_hasEndpoint(); }
 
 const PRICE_LABELS = {
-  membership:   'Afrorama Membership — coming soon',
-  cv_boost:     'No Wahala CV Boost — $3',
-  office_hours: 'Office Hours session — $49',
-  job_listing:  'Job listing — $29',
+  membership:   'Afrorama Membership (coming soon)',
+  cv_boost:     'No Wahala CV Boost ($3)',
+  office_hours: 'Office Hours session ($49)',
+  job_listing:  'Job listing ($29)',
 };
 
 /* ── Option A: redirect to Payment Link ── */
@@ -126,7 +126,7 @@ async function pay(type, opts = {}) {
         'To accept real payments:\n' +
         '1. Create the products in your Stripe dashboard\n' +
         '2. Paste Payment Link URLs into js/stripe.js (quick option)\n' +
-        '   — OR —\n' +
+        '   OR\n' +
         '3. Deploy the Supabase Edge Functions and paste the endpoint URL\n\n' +
         'See the setup instructions at the top of js/stripe.js'
       );

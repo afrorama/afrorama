@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Salary Admin — Afrorama</title>
+  <title>Salary Admin | Afrorama</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -298,7 +298,7 @@
 
     <!-- Google Sheets sync -->
     <div class="export-panel" style="margin-top:20px;background:#1a2e1a;">
-      <h4>Google Sheets — live data source</h4>
+      <h4>Google Sheets: live data source</h4>
       <p>Maintain your salary database in a Google Sheet and sync it here automatically. <strong>No coding needed.</strong></p>
       <ol style="font-size:.8rem;color:rgba(255,255,255,.65);line-height:1.8;padding-left:18px;margin-bottom:16px;">
         <li>Create a Google Sheet with columns: <code>id, company, position, sector, country, years_exp, salary, unpaid, year</code></li>
@@ -609,7 +609,7 @@
     document.getElementById('f-year').value     = entry.year || new Date().getFullYear();
     const paidVal = (entry.unpaid || !entry.salary) ? 'unpaid' : 'paid';
     document.querySelector(`[name="f-paid"][value="${paidVal}"]`).checked = true;
-    document.getElementById('form-mode-label').textContent = `Editing: ${entry.company} — ${entry.position}`;
+    document.getElementById('form-mode-label').textContent = `Editing ${entry.company}: ${entry.position}`;
     document.getElementById('btn-cancel-form').style.display = 'inline-flex';
     document.getElementById('add-form-body').classList.add('open');
     document.getElementById('add-form-body').scrollIntoView({ behavior: 'smooth', block: 'start' });

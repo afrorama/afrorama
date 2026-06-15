@@ -21,31 +21,31 @@
     {
       id: 'language', name: 'Action + Outcome Language', max: 20, color: '#4C9F38',
       low:  'Your bullet points need stronger verbs. Replace "responsible for" or "helped with" using the formula: Action verb + Task or Project + Metrics or Result. Example: "Coordinated a 6-week programme for 120 young adults, resulting in 85% securing employment within 3 months." Every bullet should answer: what changed because of me?',
-      mid:  'Good use of action verbs in places. Revisit remaining bullet points using the formula: Action verb + Task or Project + Metrics or Result. Avoid weak verbs like "helped", "assisted" or "worked on" — choose confident ones: Led, Designed, Secured, Launched, Delivered, Coordinated, Built.',
-      high: 'Excellent impact-led language throughout. Your bullet points follow the Action + Task + Result formula and clearly show what changed because of your work — exactly what social impact recruiters look for.',
+      mid:  'Good use of action verbs in places. Revisit remaining bullet points using the formula: Action verb + Task or Project + Metrics or Result. Avoid weak verbs like "helped", "assisted" or "worked on". Choose confident ones: Led, Designed, Secured, Launched, Delivered, Coordinated, Built.',
+      high: 'Excellent impact-led language throughout. Your bullet points follow the Action + Task + Result formula and clearly show what changed because of your work, exactly what social impact recruiters look for.',
     },
     {
       id: 'impact', name: 'Quantified Achievements', max: 25, color: '#26BDE2',
-      low:  'This is the single biggest differentiator on a social impact CV — and yours needs more numbers. Add metrics to your bullet points: people reached, budget managed, % improvement, events organised, projects delivered. Even approximate figures work: "approximately 200 beneficiaries" or "budget of ~£50K". Ask yourself: what difference did I make, and can I put a number to it?',
-      mid:  'Some metrics present — good start. Now go through every role and ask: "Can I add a number here?" Tip: reach out to former colleagues and ask "What impact did you notice from my work?" to help you recall achievements you may have forgotten.',
+      low:  'This is the single biggest differentiator on a social impact CV, and yours needs more numbers. Add metrics to your bullet points: people reached, budget managed, % improvement, events organised, projects delivered. Even approximate figures work: "approximately 200 beneficiaries" or "budget of ~£50K". Ask yourself: what difference did I make, and can I put a number to it?',
+      mid:  'Some metrics present. Good start. Now go through every role and ask: "Can I add a number here?" Tip: reach out to former colleagues and ask "What impact did you notice from my work?" to help you recall achievements you may have forgotten.',
       high: 'Strong use of numbers and quantified impact throughout. People are naturally drawn to evidence of measurable change, and you are providing it. This is what impact sector recruiters prioritise most.',
     },
     {
       id: 'summary', name: 'Profile & Contact', max: 15, color: '#DDA63A',
-      low:  'Two things to check: (1) Make sure your contact section includes your LinkedIn URL — every Afrorama CV template requires it, and many recruiters go straight to LinkedIn. (2) Consider adding a 2–4 line profile at the top: your background, sector specialism, and one standout achievement. Note: if you have 5+ years of experience, a summary is optional — let your achievements speak instead.',
-      mid:  'Contact details look good. If you have a profile/summary, strengthen it by naming your specific sector, one key metric, and what makes you distinct. A recruiter should understand your value in under 10 seconds. If you are a senior professional without a summary, that is fine — ensure your Key Achievements section does the same job.',
-      high: 'Strong profile and complete contact information including LinkedIn. Your summary is purpose-led, sector-specific and communicates your value immediately — exactly the first impression mission-driven employers need.',
+      low:  'Two things to check: (1) Make sure your contact section includes your LinkedIn URL: every Afrorama CV template requires it, and many recruiters go straight to LinkedIn. (2) Consider adding a 2–4 line profile at the top: your background, sector specialism, and one standout achievement. Note: if you have 5+ years of experience, a summary is optional. Let your achievements speak instead.',
+      mid:  'Contact details look good. If you have a profile/summary, strengthen it by naming your specific sector, one key metric, and what makes you distinct. A recruiter should understand your value in under 10 seconds. If you are a senior professional without a summary, that is fine. Ensure your Key Achievements section does the same job.',
+      high: 'Strong profile and complete contact information including LinkedIn. Your summary is purpose-led, sector-specific and communicates your value immediately, exactly the first impression mission-driven employers need.',
     },
     {
       id: 'structure', name: 'Structure & Key Sections', max: 20, color: '#00689D',
-      low:  'Check that your CV includes all the sections that matter in social impact: Experience (with action-led bullets), Skills or Areas of Expertise (sector-relevant, not generic software), Education, and — critically — Voluntary Work or Side Projects. In social impact, unpaid and informal experience is often just as valuable as paid roles. Also check your format is clean and ATS-friendly: avoid heavy graphics, tables or columns that automated systems cannot read.',
-      mid:  'Good structure in place. Make sure your Skills section lists sector-relevant competencies (e.g. stakeholder engagement, MEL, fundraising, DEI facilitation) rather than generic tools like Microsoft Word. If you have voluntary work or community projects, include them — this is often what sets impact sector candidates apart.',
-      high: 'Well-structured and complete CV. All key sections are present including a Skills/Expertise section with sector-relevant competencies and voluntary or project experience. Format is clean and ATS-friendly — a strong foundation that lets your content shine.',
+      low:  'Check that your CV includes all the sections that matter in social impact: Experience (with action-led bullets), Skills or Areas of Expertise (sector-relevant, not generic software), Education, and, critically, Voluntary Work or Side Projects. In social impact, unpaid and informal experience is often just as valuable as paid roles. Also check your format is clean and ATS-friendly: avoid heavy graphics, tables or columns that automated systems cannot read.',
+      mid:  'Good structure in place. Make sure your Skills section lists sector-relevant competencies (e.g. stakeholder engagement, MEL, fundraising, DEI facilitation) rather than generic tools like Microsoft Word. If you have voluntary work or community projects, include them. This is often what sets impact sector candidates apart.',
+      high: 'Well-structured and complete CV. All key sections are present including a Skills/Expertise section with sector-relevant competencies and voluntary or project experience. Format is clean and ATS-friendly, a strong foundation that lets your content shine.',
     },
     {
       id: 'tailoring', name: 'Sector Relevance & ATS Readiness', max: 20, color: '#DD1367',
-      low:  'Your CV needs to speak directly to purpose-driven employers. Three steps: (1) Highlight mission-aligned experience and values-driven work. (2) Mirror the language of the job description in your top 3–4 bullet points — many organisations use ATS (automated tracking systems) that filter CVs by keyword before a human reads them. (3) Find a role on Afrorama, read the job description carefully, and tailor your summary and key bullets to it before applying.',
-      mid:  'Good sector alignment. To go further: identify 5–6 key phrases from the job description and make sure they appear naturally in your CV — this helps you pass ATS filters. Tailor your profile and 3–4 bullet points for each specific role rather than sending the same CV everywhere.',
+      low:  'Your CV needs to speak directly to purpose-driven employers. Three steps: (1) Highlight mission-aligned experience and values-driven work. (2) Mirror the language of the job description in your top 3–4 bullet points. Many organisations use ATS (automated tracking systems) that filter CVs by keyword before a human reads them. (3) Find a role on Afrorama, read the job description carefully, and tailor your summary and key bullets to it before applying.',
+      mid:  'Good sector alignment. To go further: identify 5–6 key phrases from the job description and make sure they appear naturally in your CV. This helps you pass ATS filters. Tailor your profile and 3–4 bullet points for each specific role rather than sending the same CV everywhere.',
       high: 'Excellent sector relevance and tailoring. Your CV clearly speaks the language of mission-driven employers, mirrors sector terminology, and would pass ATS keyword screening. This is how you stand out in a competitive field.',
     },
   ];
@@ -173,7 +173,7 @@
 
     if (ext === 'pdf') {
       if (typeof pdfjsLib === 'undefined') {
-        throw new Error('PDF reader not loaded yet — please wait a moment and try again.');
+        throw new Error('PDF reader not loaded yet. Please wait a moment and try again.');
       }
       pdfjsLib.GlobalWorkerOptions.workerSrc =
         'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
@@ -186,13 +186,13 @@
         text += content.items.map(s => s.str).join(' ') + '\n';
       }
       const result = text.trim();
-      if (!result) throw new Error('No text found in this PDF. It may be a scanned image — please use a text-based PDF or a Word document instead.');
+      if (!result) throw new Error('No text found in this PDF. It may be a scanned image. Please use a text-based PDF or a Word document instead.');
       return result;
     }
 
     if (ext === 'docx' || ext === 'doc') {
       if (typeof mammoth === 'undefined') {
-        throw new Error('Word reader not loaded yet — please wait a moment and try again.');
+        throw new Error('Word reader not loaded yet. Please wait a moment and try again.');
       }
       const buffer = await file.arrayBuffer();
       const result = await mammoth.extractRawText({ arrayBuffer: buffer });
@@ -200,7 +200,7 @@
       return result.value.trim();
     }
 
-    throw new Error('Unsupported file type — please upload a PDF or Word (.docx) file.');
+    throw new Error('Unsupported file type. Please upload a PDF or Word (.docx) file.');
   }
 
   /* ================================================================
@@ -313,7 +313,7 @@
     const keywordsEl = document.getElementById('cv-keywords');
     if (keywordsEl && keywords.length) {
       keywordsEl.innerHTML = `
-        <div class="cv-keywords-label">Missing ATS keywords — add these to your CV</div>
+        <div class="cv-keywords-label">Missing ATS keywords: add these to your CV</div>
         <div class="cv-keywords-chips">${keywords.map(k => `<span class="cv-keyword-chip">${esc(k)}</span>`).join('')}</div>`;
       keywordsEl.style.display = 'block';
     }
@@ -329,7 +329,7 @@
       }),
       { label: 'Course', text: null },
     ].slice(0, 4).map(r => r.label === 'Course'
-      ? `<div class="rec-item rec-item-course"><span>Ready to put this into action? Take our free course <a href="courses.html" style="color:var(--orange);font-weight:700;">"Craft an Impactful CV"</a> — built specifically for Africa's social impact sector.</span></div>`
+      ? `<div class="rec-item rec-item-course"><span>Ready to put this into action? Take our free course <a href="courses.html" style="color:var(--orange);font-weight:700;">"Craft an Impactful CV"</a>, built specifically for Africa's social impact sector.</span></div>`
       : `<div class="rec-item"><span class="rec-label">${esc(r.label)}</span><span>${esc(r.text)}</span></div>`
     ).join('');
 
@@ -402,20 +402,10 @@
      RE-UPLOAD
   ================================================================= */
   document.getElementById('btn-reupload')?.addEventListener('click', () => {
-    document.getElementById('results-panel').classList.remove('visible');
-    document.getElementById('results-panel').style.display = 'none';
-    document.getElementById('upload-panel').style.display  = 'block';
-    state.file = null;
-    fileInput.value = '';
-    fileSelected.classList.remove('visible');
-    btnAnalyse.disabled = true;
-
-    const head = document.querySelector('.cv-upload-head h2');
-    if (head) head.textContent = 'Upload your updated CV';
-
+    document.getElementById('reupload-free').style.display = 'none';
+    document.getElementById('paywall-card').style.display  = 'block';
     state.reuploadUsed = true;
     localStorage.setItem('afrorama_cv_reupload_used', 'true');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
 

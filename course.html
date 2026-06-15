@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Course — Afrorama</title>
+  <title>Course | Afrorama</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
@@ -320,7 +320,7 @@
           });
           const fb = document.getElementById('quiz-feedback');
           if (quizCorrect) { fb.className = 'quiz-feedback correct'; fb.textContent = '✅ Correct! Well done.'; }
-          else             { fb.className = 'quiz-feedback wrong';   fb.textContent = '❌ Not quite — review the lesson and try again.'; }
+          else             { fb.className = 'quiz-feedback wrong';   fb.textContent = '❌ Not quite. Review the lesson and try again.'; }
           document.getElementById('btn-complete').disabled = !quizCorrect;
         });
         opt.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); opt.click(); } });
@@ -495,7 +495,7 @@
 
   async function init() {
     if (!course) return;
-    document.title = course.title + ' — Afrorama';
+    document.title = course.title + ' | Afrorama';
     const ok = await checkAccess();
     if (!ok) return;
 
