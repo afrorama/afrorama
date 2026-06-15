@@ -459,8 +459,6 @@
 /* ── About / mission page ── */
 .about-hero {
   background: var(--dark);
-  background-image: radial-gradient(circle, rgba(255,255,255,.06) 2px, transparent 2px);
-  background-size: 24px 24px;
   padding: 80px 0;
   border-bottom: 3px solid var(--dark);
 }
@@ -560,11 +558,12 @@
   flex-wrap: wrap; gap: 14px;
 }
 .featured-logo-chip {
+  display: inline-block;
   padding: 10px 22px;
   border: 2px solid var(--dark); border-radius: var(--radius-md);
   background: var(--white); font-size: .82rem; font-weight: 700;
   color: var(--dark); box-shadow: 2px 2px 0 var(--dark);
-  transition: all .15s; cursor: default;
+  transition: all .15s; cursor: pointer; text-decoration: none;
 }
 .featured-logo-chip:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--dark); }
 

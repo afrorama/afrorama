@@ -20,6 +20,7 @@
       const { data }    = await sb.from('listings').select('*')
         .or(`deadline.gte.${today},deadline.is.null`)
         .or('paid_listing.eq.false,payment_confirmed.eq.true')
+        .neq('source', 'BambooHR')
         .order('created_at', { ascending: false });
       if (data?.length) {
         const live = data.filter(j => j.deadline || new Date(j.created_at) >= new Date(cutoff));

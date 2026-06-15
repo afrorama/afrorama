@@ -26,8 +26,6 @@
       <li><a href="salary.html">Salary</a></li>
     </ul>
     <div class="nav-cta-group">
-      <a href="auth.html" class="btn btn-secondary btn-sm">Sign in</a>
-      <a href="#pricing" class="btn btn-primary btn-sm">Join now</a>
     </div>
     <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile-menu"><span></span><span></span><span></span></button>
   </div>
@@ -36,8 +34,6 @@
   <a href="opportunities.html">Opportunities</a>
   <a href="cv-analyser.html">No Wahala CV Booster</a>
   <a href="salary.html">Salary</a>
-  <a href="auth.html">Sign in</a>
-  <a href="#pricing" class="btn btn-primary">Join now</a>
 </div>
 
 <!-- HERO -->
@@ -49,7 +45,7 @@
     <div class="membership-price-pill">Coming soon</div>
     <div style="margin-top:10px;font-size:.82rem;color:rgba(255,255,255,.55);">Premium membership ($30/month) launches soon.</div>
     <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-      <a href="auth.html" class="btn btn-yellow btn-lg">Create free account</a>
+      <span class="btn btn-yellow btn-lg" style="opacity:.6;cursor:default;pointer-events:none;">Coming soon</span>
       <a href="#pricing" class="btn btn-secondary btn-lg" style="color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.4);">Learn more</a>
     </div>
   </div>
@@ -159,10 +155,9 @@
         <li style="display:flex;gap:10px;font-size:.88rem;color:var(--dark);"><span style="color:var(--green-dk);font-weight:800;">✓</span> Unlimited CV Boosts</li>
         <li style="display:flex;gap:10px;font-size:.88rem;color:var(--dark);"><span style="color:var(--green-dk);font-weight:800;">✓</span> Member community access</li>
       </ul>
-      <a href="auth.html" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">Create free account</a>
+      <span class="btn btn-primary btn-lg" style="width:100%;justify-content:center;opacity:.6;cursor:default;pointer-events:none;">Coming soon</span>
       <div style="margin-top:10px;text-align:center;font-size:.72rem;color:var(--gray-dark);">We'll let you know as soon as membership launches.</div>
     </div>
-    <p style="font-size:.82rem;color:rgba(28,29,28,.55);text-align:center;">Already have an account? <a href="profile.html" style="color:var(--dark);font-weight:700;">Go to your profile</a></p>
   </div>
 </section>
 
@@ -188,10 +183,6 @@
   document.getElementById('btn-one-time-session')?.addEventListener('click', () => {
     pay?.('office_hours', { userId: user?.id, userEmail: user?.email,
       onDemo: () => alert('Add PAYMENT_LINKS.office_hours to js/stripe.js to enable payments.') });
-  });
-
-  document.getElementById('btn-join-member')?.addEventListener('click', () => {
-    window.location.href = 'membership.html';
   });
 })();
 </script>
