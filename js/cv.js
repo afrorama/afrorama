@@ -11,7 +11,6 @@
   const state = {
     file:         null,
     score:        null,
-    isSignedIn:   localStorage.getItem('afrorama_signed_in') === 'true',
     reuploadUsed: localStorage.getItem('afrorama_cv_reupload_used') === 'true',
   };
 
@@ -50,82 +49,6 @@
       high: 'Excellent sector relevance and tailoring. Your CV clearly speaks the language of mission-driven employers, mirrors sector terminology, and would pass ATS keyword screening. This is how you stand out in a competitive field.',
     },
   ];
-
-  /* ================================================================
-     SIGN-IN STATE
-  ================================================================= */
-  function updateSignInUI() {
-    const notice = document.getElementById('signin-notice');
-    const sidebarCard = document.getElementById('signin-sidebar-card');
-    const navBtn = document.getElementById('nav-signin-btn');
-    if (state.isSignedIn) {
-      if (notice)      notice.style.display = 'none';
-      if (sidebarCard) sidebarCard.style.display = 'none';
-      if (navBtn)      { navBtn.textContent = 'My account'; }
-    } else {
-      if (notice)      notice.style.display = 'flex';
-      if (sidebarCard) sidebarCard.style.display = 'block';
-    }
-  }
-  updateSignInUI();
-
-  /* ================================================================
-     SIGN-IN MODAL
-  ================================================================= */
-  const backdrop = document.getElementById('signin-backdrop');
-
-  function openSignIn() {
-    backdrop?.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    document.getElementById('signin-email')?.focus();
-  }
-  function closeSignIn() {
-    backdrop?.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function doSignIn() {
-    const email = document.getElementById('signin-email')?.value.trim();
-    if (!email || !email.includes('@')) {
-      document.getElementById('signin-email')?.focus();
-      return;
-    }
-    state.isSignedIn = true;
-    localStorage.setItem('afrorama_signed_in', 'true');
-    closeSignIn();
-    updateSignInUI();
-    // Run the analysis now that user is signed in
-    runAnalysis();
-  }
-
-  backdrop?.addEventListener('click', e => { if (e.target === backdrop) closeSignIn(); });
-  document.getElementById('btn-signin-submit')?.addEventListener('click', doSignIn);
-  document.getElementById('btn-google-signin')?.addEventListener('click', () => {
-    localStorage.setItem('auth_next', '/cv-analyser.html');
-    window.AfroramaAuth?.signInWithGoogle();
-  });
-  document.getElementById('btn-linkedin-signin')?.addEventListener('click', () => {
-    localStorage.setItem('auth_next', '/cv-analyser.html');
-    window.AfroramaAuth?.signInWithLinkedIn();
-  });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSignIn(); });
-
-  // Templates button — requires sign-in
-  document.getElementById('templates-btn')?.addEventListener('click', () => {
-    if (!state.isSignedIn) {
-      openSignIn();
-    } else {
-      alert('CV Templates are available in your member area. Coming soon!');
-    }
-  });
-
-  // Trigger sign-in from multiple places
-  ['nav-signin-btn', 'mobile-signin-btn', 'sidebar-signin-btn'].forEach(id => {
-    document.getElementById(id)?.addEventListener('click', e => {
-      e.preventDefault();
-      if (!state.isSignedIn) openSignIn();
-    });
-  });
 
   /* ================================================================
      FILE HANDLING
@@ -472,11 +395,7 @@
 
   btnAnalyse?.addEventListener('click', () => {
     if (!state.file) return;
-    if (!state.isSignedIn) {
-      openSignIn();       // gate: must sign in first
-    } else {
-      runAnalysis();
-    }
+    runAnalysis();
   });
 
   /* ================================================================
@@ -499,17 +418,5 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  document.getElementById('btn-join-member')?.addEventListener('click', () => {
-    window.location.href = 'membership.html';
-  });
-  document.getElementById('btn-one-time')?.addEventListener('click', async () => {
-    const user = await window.AfroramaAuth?.getUser().catch(() => null);
-    if (!user) { window.location.href = 'auth.html?next=cv-analyser.html'; return; }
-    window.AfroramaStripe?.pay('cv_boost', {
-      userId: user.id,
-      userEmail: user.email,
-      onError: err => alert('Payment error: ' + err.message),
-    });
-  });
 
 })();

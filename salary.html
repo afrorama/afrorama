@@ -185,8 +185,6 @@
       <li><a href="salary.html">Salary Intelligence</a></li>
     </ul>
     <div class="nav-cta-group">
-      <a href="auth.html"    class="btn btn-secondary btn-sm" id="nav-auth-btn">Sign in</a>
-      <a href="profile.html" class="btn btn-primary btn-sm"   id="nav-profile-btn" style="display:none;">My profile</a>
     </div>
     <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile-menu"><span></span><span></span><span></span></button>
   </div>
@@ -195,7 +193,6 @@
   <a href="opportunities.html">Opportunities</a>
   <a href="cv-analyser.html">No Wahala CV</a>
   <a href="salary.html">Salary Intelligence</a>
-  <a href="auth.html">Sign in</a>
 </div>
 
 <!-- ═══ HERO ═══ -->
@@ -216,102 +213,30 @@
         </div>
       </div>
 
-      <!-- Right: contribute card (members only) -->
+      <!-- Right: contribute card -->
       <div class="contribute-card" id="contribute-card">
-
-        <!-- State: not signed in -->
-        <div id="card-state-signin">
-          <h3>Share your salary</h3>
-          <p>Anonymous and secure. Members contribute and access the full database for free.</p>
-          <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;margin-bottom:16px;">
-            <a href="auth.html?next=salary.html" class="btn btn-primary" style="justify-content:center;">Sign in to contribute</a>
-            <a href="auth.html?next=salary.html" class="btn btn-outline btn-sm" style="justify-content:center;">Create a free account →</a>
-          </div>
-          <!-- Greyed-out form preview -->
-          <div style="opacity:.35;pointer-events:none;user-select:none;">
-            <div class="form-group"><label class="form-label">Organisation</label><input class="form-input" placeholder="e.g. UNDP, Amref, Dalberg" disabled></div>
-            <div class="form-group" style="margin-top:10px;"><label class="form-label">Job title</label><input class="form-input" placeholder="e.g. Programme Officer" disabled></div>
-            <div class="contribute-row" style="margin-top:10px;">
-              <div class="form-group"><label class="form-label">Annual salary (USD)</label><input class="form-input" placeholder="e.g. 55000" disabled></div>
-              <div class="form-group"><label class="form-label">Years experience</label><select class="form-select" disabled><option>Select…</option></select></div>
-            </div>
+        <h3>Share your salary</h3>
+        <p>Anonymous and secure. Sign-ups to contribute your own salary data are opening soon — for now, explore the full database below for free.</p>
+        <span class="btn btn-primary" style="width:100%;justify-content:center;opacity:.6;cursor:default;pointer-events:none;margin-bottom:16px;">Coming soon</span>
+        <!-- Greyed-out form preview -->
+        <div style="opacity:.35;pointer-events:none;user-select:none;">
+          <div class="form-group"><label class="form-label">Organisation</label><input class="form-input" placeholder="e.g. UNDP, Amref, Dalberg" disabled></div>
+          <div class="form-group" style="margin-top:10px;"><label class="form-label">Job title</label><input class="form-input" placeholder="e.g. Programme Officer" disabled></div>
+          <div class="contribute-row" style="margin-top:10px;">
+            <div class="form-group"><label class="form-label">Annual salary (USD)</label><input class="form-input" placeholder="e.g. 55000" disabled></div>
+            <div class="form-group"><label class="form-label">Years experience</label><select class="form-select" disabled><option>Select…</option></select></div>
           </div>
         </div>
-
-        <!-- State: member, can contribute -->
-        <div id="card-state-form" style="display:none;">
-          <h3>Share your salary</h3>
-          <p>Anonymous and secure. Your submission unlocks full database access.</p>
-          <div class="contribute-success" id="contribute-success">
-            <span>✅</span> Thank you! Your data helps the whole community.
-          </div>
-          <form class="contribute-form" id="contribute-form" novalidate>
-            <div class="form-group">
-              <label class="form-label" for="c-company">Organisation <span style="color:var(--orange)">*</span></label>
-              <input class="form-input" id="c-company" type="text" placeholder="e.g. UNDP, Amref, Dalberg" required autocomplete="organization">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="c-position">Job title <span style="color:var(--orange)">*</span></label>
-              <input class="form-input" id="c-position" type="text" placeholder="e.g. Programme Officer" required>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-mid);margin-bottom:2px;">
-              <div>
-                <div style="font-size:.88rem;font-weight:700;color:var(--dark);">Was this role paid?</div>
-                <div style="font-size:.72rem;color:var(--gray-dark);margin-top:1px;">Toggle off to log an unpaid / volunteer role</div>
-              </div>
-              <label class="toggle-switch" style="flex-shrink:0;">
-                <input type="checkbox" id="c-is-paid" checked>
-                <div class="toggle-track"></div>
-                <div class="toggle-thumb"></div>
-              </label>
-            </div>
-            <div class="contribute-row" id="salary-field-wrap">
-              <div class="form-group">
-                <label class="form-label" for="c-salary">Annual salary (USD) <span style="color:var(--orange)">*</span></label>
-                <input class="form-input" id="c-salary" type="number" placeholder="e.g. 55000" min="1000" max="500000">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="c-years">Years of experience <span style="color:var(--orange)">*</span></label>
-                <select class="form-select" id="c-years" required>
-                  <option value="">Select…</option>
-                  <option value="0-1">0–1 years</option>
-                  <option value="2-4">2–4 years</option>
-                  <option value="5-8">5–8 years</option>
-                  <option value="9-14">9–14 years</option>
-                  <option value="15+">15+ years</option>
-                </select>
-              </div>
-            </div>
-            <div class="contribute-row">
-              <div class="form-group">
-                <label class="form-label" for="c-sector">Sector <span style="color:var(--orange)">*</span></label>
-                <select class="form-select" id="c-sector" required><option value="">Select…</option></select>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="c-country">Country <span style="color:var(--orange)">*</span></label>
-                <select class="form-select" id="c-country" required><option value="">Select…</option></select>
-              </div>
-            </div>
-            <p style="font-size:.72rem;color:var(--gray-dark);margin:4px 0;">Your submission is anonymous. We never share individual data points.</p>
-            <span class="form-error" id="contribute-error" role="alert"></span>
-            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;" id="btn-contribute">
-              Submit and unlock access
-            </button>
-          </form>
-        </div>
-
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ BLURRED PREVIEW (signed-out / not-yet-contributed) ═══ -->
 <!-- ═══ FREE FOR EVERYONE BANNER ═══ -->
 <div style="background:var(--yellow);border-top:2.5px solid var(--dark);border-bottom:2.5px solid var(--dark);padding:14px 0;">
   <div class="container" style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;text-align:center;">
-    <span style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dark);">Free for Afrorama members</span>
-    <span style="font-size:.85rem;color:var(--dark);font-weight:600;">— Sign up, share your salary and access the full database at no cost.</span>
-    <a href="auth.html?next=salary.html" class="btn btn-secondary btn-sm" style="flex-shrink:0;">Sign up free →</a>
+    <span style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dark);">Free for everyone</span>
+    <span style="font-size:.85rem;color:var(--dark);font-weight:600;">— Browse real salary data from across Africa's impact sector. No sign-up required.</span>
   </div>
 </div>
 
@@ -319,21 +244,8 @@
 <main>
   <div class="container">
 
-    <!-- FULL ACCESS → search + results -->
-    <div id="salary-database" style="display:none;">
-
-      <!-- Building indicator — shown briefly then hidden -->
-      <div class="building-indicator" id="building-indicator" style="display:none;margin-top:24px;">
-        <span>🔨</span>
-        <span>Building your database</span>
-        <div class="building-dots">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
-
-      <div class="contribute-success visible" id="top-success-msg" style="display:none;margin-top:24px;">
-        <span>✅</span> Your salary data has been added. Thank you for making the sector more transparent.
-      </div>
+    <!-- SALARY DATABASE → search + results -->
+    <div id="salary-database">
 
       <div class="salary-layout">
 
@@ -427,13 +339,8 @@
 <script>
 (function () {
   const { SALARY_SEED, searchSalaries, summarise } = window.AfroramaSalary;
-  const Auth   = window.AfroramaAuth;
   const { SECTORS, AFRICAN_COUNTRIES } = window.AfroramaData;
 
-  const CONTRIBUTED_KEY = 'afrorama_salary_contributed';
-  let currentUser  = null;
-  let isMember     = false;
-  let hasContrib   = localStorage.getItem(CONTRIBUTED_KEY) === 'true';
   let userSalaries = [];
   let allData      = [...SALARY_SEED];
 
@@ -528,24 +435,13 @@
     const africaCountries = (AFRICAN_COUNTRIES || [])
       .slice().sort((a, b) => a.name.localeCompare(b.name));
 
-    // Sector dropdowns — contribute form + filter sidebar
-    ['c-sector', 'filter-sector'].forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
+    // Sector dropdown — filter sidebar
+    const sectorEl = document.getElementById('filter-sector');
+    if (sectorEl) {
       sectors.forEach(s => {
         const o = document.createElement('option');
         o.value = s; o.textContent = s;
-        el.appendChild(o);
-      });
-    });
-
-    // Contribute form → ALL world countries
-    const contributeCountryEl = document.getElementById('c-country');
-    if (contributeCountryEl) {
-      WORLD_COUNTRIES.forEach(c => {
-        const o = document.createElement('option');
-        o.value = c.id; o.textContent = c.name;
-        contributeCountryEl.appendChild(o);
+        sectorEl.appendChild(o);
       });
     }
 
@@ -576,161 +472,13 @@
     if (orgsEl)    orgsEl.textContent    = orgs + '+';
   }
 
-  // ── Auth and access checks ────────────────────────────────────
+  // ── Init ───────────────────────────────────────────────────────
   async function init() {
     populateSelects();
     await loadSubmissions();
     computeHeroStats();
-
-    currentUser = await Auth?.getUser().catch(() => null);
-    if (currentUser) {
-      document.getElementById('nav-auth-btn').style.display    = 'none';
-      document.getElementById('nav-profile-btn').style.display = 'inline-flex';
-    }
-
-    if (!currentUser) {
-      // Not signed in — show sign-in card state, keep blurred preview
-      showCardState('card-state-signin');
-      return;
-    }
-
-    const { profile } = await Auth?.getProfile(currentUser.id).catch(() => ({ profile: null })) || {};
-    isMember = !!profile?.is_member;
-
-    // Any signed-in (free) account can contribute — paid membership not required for launch
-    showCardState('card-state-form');
-
-    if (hasContrib) {
-      // Already contributed — skip straight to database
-      showDatabase(false);
-      renderResults();
-    }
-    // Otherwise: member sees contribute form + blurred preview
+    renderResults();
   }
-
-  function showCardState(id) {
-    ['card-state-signin','card-state-not-member','card-state-form'].forEach(s => {
-      const el = document.getElementById(s);
-      if (el) el.style.display = s === id ? 'block' : 'none';
-    });
-  }
-
-  function showLayer(id) {
-    document.getElementById('salary-database').style.display = 'none';
-    if (id) document.getElementById(id).style.display = 'block';
-  }
-
-  function showDatabase(animate = false) {
-    showLayer(null);
-    const db = document.getElementById('salary-database');
-    db.style.display = 'block';
-    if (animate) {
-      // Show building indicator for 800ms, then fade in results
-      const indicator = document.getElementById('building-indicator');
-      if (indicator) indicator.style.display = 'flex';
-      setTimeout(() => {
-        if (indicator) indicator.style.display = 'none';
-        db.classList.add('revealed');
-        renderResults();
-        const topMsg = document.getElementById('top-success-msg');
-        if (topMsg) topMsg.style.display = 'flex';
-        db.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 900);
-    }
-  }
-
-  // ── Paid toggle — show/hide salary field ─────────────────────
-  document.getElementById('c-is-paid')?.addEventListener('change', function () {
-    const wrap  = document.getElementById('salary-field-wrap');
-    const input = document.getElementById('c-salary');
-    if (this.checked) {
-      wrap.style.display  = 'grid';
-      input.required      = false; // validated manually below
-    } else {
-      wrap.style.display  = 'none';
-      input.value         = '';
-      input.required      = false;
-    }
-  });
-
-  // ── Contribute form ───────────────────────────────────────────
-  document.getElementById('contribute-form').addEventListener('submit', async e => {
-    e.preventDefault();
-    const company  = document.getElementById('c-company').value.trim();
-    const position = document.getElementById('c-position').value.trim();
-    const isPaid   = document.getElementById('c-is-paid').checked;
-    const salaryRaw= document.getElementById('c-salary').value;
-    const salary   = isPaid ? parseInt(salaryRaw, 10) : 0;
-    const years    = document.getElementById('c-years').value;
-    const sector   = document.getElementById('c-sector').value;
-    const country  = document.getElementById('c-country').value;
-    const errEl    = document.getElementById('contribute-error');
-    errEl.textContent = ''; errEl.style.display = 'none';
-
-    // Validate required fields
-    if (!company || !position || !years || !sector || !country) {
-      errEl.textContent = 'Please fill in all required fields, including sector and country.';
-      errEl.style.display = 'block';
-      return;
-    }
-    if (isPaid && (isNaN(salary) || salary < 1000 || salary > 500000)) {
-      errEl.textContent = 'Please enter a realistic annual salary in USD (e.g. 45000).';
-      errEl.style.display = 'block';
-      return;
-    }
-
-    const dbEntry = {
-      company, position,
-      salary: isPaid ? Number(salary) : 0,
-      unpaid: !isPaid,
-      years_exp: years,
-      sector,
-      country,
-      currency: 'USD',
-      year: new Date().getFullYear(),
-    };
-
-    const Supa = window.AfroramaSupabase;
-    if (Supa && !Supa.isDemoMode()) {
-      const sb = Supa.getSupabase();
-      const { data, error } = await sb.from('salary_submissions').insert(dbEntry).select().single();
-      if (error) {
-        errEl.textContent = 'Could not save your submission. Please try again.';
-        errEl.style.display = 'block';
-        return;
-      }
-      userSalaries.push(data);
-    } else {
-      userSalaries.push({ id: 'u-' + Date.now(), ...dbEntry });
-      localStorage.setItem('afrorama_salary_submissions', JSON.stringify(userSalaries));
-    }
-    allData = [...SALARY_SEED, ...userSalaries];
-    localStorage.setItem(CONTRIBUTED_KEY, 'true');
-    hasContrib = true;
-
-    // Mark button as loading
-    const btn = document.getElementById('btn-contribute');
-    btn.disabled  = true;
-    btn.textContent = '⏳ Building your database…';
-
-    // Short delay so the user sees the animation, then reveal
-    setTimeout(() => {
-      // Recompute all hero stats from live data
-      computeHeroStats();
-
-      // Show success message in the card
-      document.getElementById('contribute-success').classList.add('visible');
-      document.getElementById('contribute-form').reset();
-      btn.textContent = '✅ Submitted — thank you!';
-
-      // Demo mode: any signed-in user gets access; once Supabase is live,
-      // keep only `isMember` here and enforce real subscription checks.
-      const effectivelyMember = isMember || !!currentUser || true; // `|| true` = open while in demo mode
-
-      if (unlockEl) unlockEl.style.display = 'none';
-      showDatabase(true);
-    }, 1200);
-  });
 
   // ── Search and filter ─────────────────────────────────────────
   function getFilters() {
