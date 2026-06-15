@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course — Afrorama</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/courses.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- Slim nav for lesson view -->
+<nav class="nav" id="main-nav" role="navigation" style="height:54px;">
+  <div class="nav-inner">
+    <a class="nav-logo" href="courses.html" aria-label="Back to courses" style="gap:6px;">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" style="width:32px;height:16px;" alt="" aria-hidden="true">
+      <span class="nav-logo-text">Courses</span>
+    </a>
+    <div style="flex:1;text-align:center;">
+      <span id="nav-course-title" style="font-size:.85rem;font-weight:700;color:var(--dark);"></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div id="nav-progress-pill" class="lesson-progress-pill" style="display:none;"></div>
+    </div>
+  </div>
+</nav>
+
+<div class="lesson-layout" id="lesson-layout">
+
+  <!-- Sidebar: lesson list -->
+  <aside class="lesson-sidebar" role="navigation" aria-label="Lesson navigation">
+    <div class="lesson-sidebar-header">
+      <div class="lesson-sidebar-course-title" id="sidebar-title">Loading…</div>
+      <div class="lesson-progress-pill" id="sidebar-progress">0 / 0</div>
+    </div>
+    <div id="lesson-nav-list" role="list"></div>
+  </aside>
+
+  <!-- Main lesson area -->
+  <main class="lesson-main" id="lesson-main" role="main">
+    <!-- Injected by JS -->
+  </main>
+</div>
+
+<!-- Badge celebration modal -->
+<div class="badge-modal-backdrop" id="badge-modal" role="dialog" aria-modal="true" aria-label="Badge earned!">
+  <div class="badge-modal">
+    <div class="badge-modal-icon" id="badge-modal-icon"></div>
+    <h3>Badge earned!</h3>
+    <div class="badge-modal-name" id="badge-modal-name"></div>
+    <p id="badge-modal-desc"></p>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" id="badge-modal-close">
+      Keep learning →
+    </button>
+  </div>
+</div>
+
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script src="js/courses-data.js"></script>
+<script>
+(function () {
+  const { COURSES, BADGES, getCourseProgress, markLessonComplete, enrolCourse, getEarnedBadges, hasBadge } = window.AfroramaCourses;
+  const params   = new URLSearchParams(location.search);
+  const courseId = params.get('id');
+  const startLesson = parseInt(params.get('lesson') || '1', 10);
+
+  const course = COURSES.find(c => c.id === courseId);
+  if (!course) { document.getElementById('lesson-main').innerHTML = '<div style="padding:40px;color:var(--gray-dark);">Course not found. <a href="courses.html">Back to courses</a></div>'; }
+
+  // Gate paid courses for non-members
+  async function checkAccess() {
+    if (!course.free) {
+      const user = await window.AfroramaAuth?.getUser().catch(() => null);
+      if (!user) {
+        renderPaywall('Sign in to access this course.');
+        return false;
+      }
+      const { profile } = await window.AfroramaAuth?.getProfile(user.id) || {};
+      if (!profile?.is_member) {
+        renderPaywall('This course is for Afrorama members.');
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function renderPaywall(msg) {
+    document.getElementById('lesson-main').innerHTML = `
+      <div style="max-width:480px;margin:80px auto;text-align:center;padding:0 24px;">
+        <div style="font-size:56px;margin-bottom:20px;">🔒</div>
+        <h2 style="font-family:'Bebas Neue',Impact,sans-serif;font-size:2rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:10px;">${course.title}</h2>
+        <p style="color:var(--gray-dark);margin-bottom:24px;">${msg}</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          
+          <a href="auth.html" class="btn btn-outline btn-lg" style="justify-content:center;">Sign in</a>
+          <a href="courses.html" class="btn btn-secondary btn-sm" style="justify-content:center;">Back to free courses</a>
+        </div>
+      </div>`;
+  }
+
+  let currentLessonId   = startLesson;
+  let quizAnswered      = false;
+  let quizCorrect       = false;
+  let pollAnswered      = false;
+  let scaleAnswered     = false;
+  let exerciseAnswered  = false;
+  let prevBadges        = new Set(getEarnedBadges());
+
+  function renderSidebar() {
+    const progress = getCourseProgress(courseId);
+    document.getElementById('sidebar-title').textContent = course.title;
+    document.getElementById('sidebar-progress').textContent = `${progress.completed_lessons.length} / ${course.lessons_data.length}`;
+    document.getElementById('nav-course-title').textContent = course.title;
+    document.getElementById('nav-progress-pill').style.display = 'inline-flex';
+    document.getElementById('nav-progress-pill').textContent = `${progress.completed_lessons.length}/${course.lessons_data.length}`;
+
+    document.getElementById('lesson-nav-list').innerHTML = course.lessons_data.map(l => {
+      const done   = progress.completed_lessons.includes(l.id);
+      const active = l.id === currentLessonId;
+      return `
+        <div class="lesson-nav-item ${done?'done':''} ${active?'active':''}"
+             role="listitem" tabindex="0" data-lesson-id="${l.id}"
+             aria-label="${l.title}${done?' (completed)':''}${active?' (current)':''}">
+          <span class="lesson-nav-num">${l.id}</span>
+          <span class="lesson-nav-check">${done ? '✓' : ''}</span>
+          <span style="flex:1;line-height:1.3;font-size:.83rem;">${l.title}</span>
+          <span style="font-size:.7rem;color:var(--gray-dark);flex-shrink:0;">${l.mins}m</span>
+        </div>`;
+    }).join('');
+
+    document.querySelectorAll('.lesson-nav-item').forEach(item => {
+      item.addEventListener('click', () => navigateTo(parseInt(item.dataset.lessonId, 10)));
+      item.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigateTo(parseInt(item.dataset.lessonId, 10)); } });
+    });
+  }
+
+  function formatContent(text) {
+    if (!text) return '';
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:var(--green-dk);font-weight:600;">$1</a>')
+      .replace(/^(#+)\s(.+)$/gm, (m, h, t) => `<strong style="display:block;margin:16px 0 6px;">${t}</strong>`)
+      .replace(/^[-•]\s(.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+  }
+
+  function renderLesson(lessonId) {
+    const lesson   = course.lessons_data.find(l => l.id === lessonId);
+    if (!lesson) return;
+    const progress = getCourseProgress(courseId);
+    const done     = progress.completed_lessons.includes(lessonId);
+    const isLast   = lessonId === course.lessons_data[course.lessons_data.length - 1].id;
+    quizAnswered   = done;
+    quizCorrect    = done;
+    pollAnswered   = done;
+    scaleAnswered  = done;
+    exerciseAnswered = done;
+
+    const type = lesson.type || 'read';
+    const trackLabel = { careers: 'Careers', finance: 'Finance', productivity: 'Productivity' }[course.track] || course.track;
+    const eyebrow = `<div class="lesson-eyebrow">${lesson.icon || '📖'} ${trackLabel} · ${course.title}</div>`;
+    const heading = `<h1 class="lesson-title">${lesson.title}</h1>`;
+    const meta    = `<div class="lesson-meta">
+      <span class="lesson-meta-item">⏱ ${lesson.mins} min</span>
+      <span class="lesson-meta-item">Lesson ${lessonId} of ${course.lessons_data.length}</span>
+      ${done ? '<span class="lesson-meta-item" style="color:var(--green-dk);font-weight:700;">✅ Completed</span>' : ''}
+    </div>`;
+
+    let body = '';
+
+    /* ── POLL ── */
+    if (type === 'poll') {
+      const p = lesson.poll;
+      body = `
+        <div class="lesson-content" style="padding-bottom:0;">
+          <p style="font-weight:700;font-size:1.1rem;margin-bottom:6px;">${p.question}</p>
+          <p style="font-size:.84rem;color:var(--gray-dark);margin-bottom:18px;">${p.hint}</p>
+          <div id="poll-options" style="display:flex;flex-direction:column;gap:10px;">
+            ${p.options.map((opt, i) => `
+              <button class="poll-option ${done ? 'poll-locked' : ''}" data-idx="${i}" style="text-align:left;padding:13px 18px;border:2px solid var(--gray-mid);border-radius:100px;background:var(--white);cursor:pointer;font-family:inherit;font-size:.9rem;font-weight:500;color:var(--dark);transition:all .12s;display:flex;align-items:center;gap:12px;">
+                <span class="poll-letter" style="width:26px;height:26px;border-radius:50%;background:var(--gray-light);border:1.5px solid var(--gray-mid);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;">${String.fromCharCode(65+i)}</span>
+                <span>${opt}</span>
+              </button>`).join('')}
+          </div>
+        </div>`;
+
+    /* ── SCALE ── */
+    } else if (type === 'scale') {
+      const s = lesson.scale;
+      body = `
+        <div class="lesson-content">
+          <p style="font-weight:700;font-size:1.05rem;margin-bottom:24px;">${s.question}</p>
+          <div style="padding:0 8px;">
+            <input type="range" id="scale-input" min="${s.min}" max="${s.max}" value="${Math.round((s.min+s.max)/2)}" step="1"
+              style="width:100%;accent-color:#4C9F38;height:6px;cursor:pointer;" ${done ? 'disabled' : ''}>
+            <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:.78rem;color:var(--gray-dark);">
+              <span>${s.minLabel}</span>
+              <span id="scale-value" style="font-weight:800;font-size:1.2rem;color:#4C9F38;">${Math.round((s.min+s.max)/2)}</span>
+              <span>${s.maxLabel}</span>
+            </div>
+          </div>
+          ${!done ? '<p style="font-size:.82rem;color:var(--gray-dark);text-align:center;margin-top:16px;">Move the slider then click Continue</p>' : ''}
+        </div>`;
+
+    /* ── LINK ── */
+    } else if (type === 'link' || (type === 'cv-analyser' && lesson.link)) {
+      const target = lesson.link?.openNewTab ? 'target="_blank" rel="noopener"' : '';
+      body = `
+        <div class="lesson-content"><p>${formatContent(lesson.content)}</p></div>
+        <div style="margin:24px 0;">
+          <a href="${lesson.link.url}" ${target} class="btn btn-primary btn-lg" style="justify-content:center;width:100%;max-width:340px;display:flex;">
+            ${lesson.link.label}
+          </a>
+        </div>`;
+
+    /* ── EXERCISE ── */
+    } else if (type === 'exercise') {
+      body = `
+        <div class="lesson-content">
+          <p style="font-weight:700;margin-bottom:6px;">${lesson.prompt}</p>
+          ${lesson.hint ? `<p style="font-size:.84rem;color:var(--gray-dark);margin-bottom:16px;">${lesson.hint}</p>` : ''}
+          <textarea id="exercise-input" rows="4" placeholder="${lesson.placeholder || ''}"
+            style="width:100%;padding:14px;border:2px solid var(--gray-mid);border-radius:12px;font-family:inherit;font-size:.9rem;resize:vertical;line-height:1.6;box-sizing:border-box;"
+            ${done ? 'disabled' : ''}></textarea>
+          ${!done ? '<p style="font-size:.78rem;color:var(--gray-dark);margin-top:6px;">Type your rewritten bullet point above, then click Continue.</p>' : ''}
+        </div>`;
+
+    /* ── COMPLETION ── */
+    } else if (type === 'completion') {
+      body = `
+        <div style="text-align:center;padding:32px 0;">
+          <div style="font-size:72px;margin-bottom:20px;">🎓</div>
+          <h2 style="font-family:'Bebas Neue',Impact,sans-serif;font-size:2.2rem;letter-spacing:.04em;text-transform:uppercase;color:#4C9F38;margin-bottom:12px;">You completed the course!</h2>
+          <div class="lesson-content" style="text-align:left;margin-top:24px;"><p>${formatContent(lesson.content)}</p></div>
+        </div>`;
+
+    /* ── READ (default) ── */
+    } else {
+      const chartBlock = lesson.chartHtml ? lesson.chartHtml : '';
+      const linkBlock  = lesson.link ? `<div style="margin:24px 0;">
+        <a href="${lesson.link.url}" ${lesson.link.openNewTab ? 'target="_blank" rel="noopener"' : ''} class="btn btn-primary btn-lg" style="justify-content:center;width:100%;max-width:340px;display:flex;">
+          ${lesson.link.label}
+        </a></div>` : '';
+      body = `
+        <div class="lesson-content"><p>${formatContent(lesson.content)}</p></div>
+        ${chartBlock}
+        ${linkBlock}
+        <div class="lesson-takeaway">
+          <div class="lesson-takeaway-label">Key takeaway</div>
+          <p>${lesson.takeaway}</p>
+        </div>
+        ${lesson.quiz ? `
+        <div class="lesson-quiz" id="lesson-quiz">
+          <div class="lesson-quiz-label">Quick check</div>
+          <h4>${lesson.quiz.q}</h4>
+          <div class="quiz-options" id="quiz-options">
+            ${lesson.quiz.options.map((opt, i) => `
+              <div class="quiz-option ${done && i === lesson.quiz.answer ? 'correct' : done && i !== lesson.quiz.answer ? 'locked' : ''}"
+                   data-idx="${i}" role="button" tabindex="${done?'-1':'0'}">
+                <span class="quiz-letter">${String.fromCharCode(65+i)}</span>
+                <span>${opt}</span>
+              </div>`).join('')}
+          </div>
+          <div class="quiz-feedback ${done ? 'correct' : ''}" id="quiz-feedback">
+            ${done ? '✅ Correct! Well done.' : ''}
+          </div>
+        </div>` : ''}`;
+    }
+
+    /* ── TAKEAWAY for non-read types — hidden until user interacts ── */
+    const needsReveal = ['poll','scale','exercise'].includes(type);
+    const takeawayHtml = (type !== 'read' && type !== 'completion' && lesson.takeaway) ? `
+      <div class="lesson-takeaway" id="lesson-takeaway" style="${needsReveal && !done ? 'display:none;' : ''}">
+        <div class="lesson-takeaway-label">Key takeaway</div>
+        <p>${lesson.takeaway}</p>
+      </div>` : '';
+
+    /* ── ACTIONS ── */
+    const needsInteraction = ['poll','scale','exercise'].includes(type);
+    const actionsHtml = `
+      <div class="lesson-actions">
+        ${lessonId > 1 ? `<button class="btn btn-secondary" id="btn-prev">← Previous</button>` : ''}
+        ${type === 'completion'
+          ? `<a href="courses.html" class="btn btn-yellow btn-lg" style="justify-content:center;">🎉 Back to courses</a>`
+          : !done
+            ? `<button class="btn btn-primary" id="btn-complete" ${needsInteraction ? 'disabled' : ''}>
+                ${isLast ? 'Complete course 🎓' : 'Continue →'}
+              </button>`
+            : !isLast
+              ? `<button class="btn btn-primary" id="btn-next">Next lesson →</button>`
+              : ``
+        }
+      </div>`;
+
+    document.getElementById('lesson-main').innerHTML =
+      eyebrow + heading + meta + body + takeawayHtml + actionsHtml;
+
+    /* ── QUIZ INTERACTION ── */
+    if (type === 'read' && lesson.quiz && !done) {
+      document.querySelectorAll('.quiz-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          if (quizAnswered) return;
+          const idx = parseInt(opt.dataset.idx, 10);
+          quizAnswered = true;
+          quizCorrect  = idx === lesson.quiz.answer;
+          document.querySelectorAll('.quiz-option').forEach((o, i) => {
+            o.classList.add('locked');
+            if (i === lesson.quiz.answer)        o.classList.add('correct');
+            else if (i === idx && !quizCorrect)  o.classList.add('wrong');
+          });
+          const fb = document.getElementById('quiz-feedback');
+          if (quizCorrect) { fb.className = 'quiz-feedback correct'; fb.textContent = '✅ Correct! Well done.'; }
+          else             { fb.className = 'quiz-feedback wrong';   fb.textContent = '❌ Not quite — review the lesson and try again.'; }
+          document.getElementById('btn-complete').disabled = !quizCorrect;
+        });
+        opt.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); opt.click(); } });
+      });
+    }
+
+    /* ── POLL INTERACTION ── */
+    if (type === 'poll' && !done) {
+      const multi    = lesson.poll.multi;
+      const selected = new Set();
+
+      async function savePollResponse(selectedTexts) {
+        const sb   = window.AfroramaSupabase?.getSupabase();
+        const user = await window.AfroramaAuth?.getUser().catch(() => null);
+        if (!sb) return;
+        await sb.from('poll_responses').insert({
+          user_id:   user?.id || null,
+          course_id: courseId,
+          lesson_id: lessonId,
+          question:  lesson.poll.question,
+          answers:   selectedTexts,
+        }).then(({ error }) => { if (error) console.warn('[poll] save error:', error.message); });
+      }
+
+      document.querySelectorAll('.poll-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = btn.dataset.idx;
+          if (!multi) {
+            document.querySelectorAll('.poll-option').forEach(b => {
+              b.style.borderColor = 'var(--gray-mid)';
+              b.style.background  = 'var(--white)';
+              const letter = b.querySelector('.poll-letter');
+              letter.style.background   = 'var(--gray-light)';
+              letter.style.color        = '';
+              letter.style.borderColor  = 'var(--gray-mid)';
+            });
+            selected.clear();
+          }
+          if (selected.has(idx)) {
+            selected.delete(idx);
+            btn.style.borderColor = 'var(--gray-mid)';
+            btn.style.background  = 'var(--white)';
+            const letter = btn.querySelector('.poll-letter');
+            letter.style.background  = 'var(--gray-light)';
+            letter.style.color       = '';
+            letter.style.borderColor = 'var(--gray-mid)';
+          } else {
+            selected.add(idx);
+            btn.style.borderColor = '#4C9F38';
+            btn.style.background  = 'rgba(76,159,56,.08)';
+            const letter = btn.querySelector('.poll-letter');
+            letter.style.background  = '#4C9F38';
+            letter.style.color       = 'white';
+            letter.style.borderColor = '#4C9F38';
+          }
+
+          const wasAnswered = pollAnswered;
+          pollAnswered = selected.size > 0;
+          document.getElementById('btn-complete').disabled = !pollAnswered;
+
+          // Reveal takeaway on first selection and save response
+          if (pollAnswered && !wasAnswered) {
+            const takeawayEl = document.getElementById('lesson-takeaway');
+            if (takeawayEl) {
+              takeawayEl.style.display = 'block';
+              takeawayEl.style.animation = 'fadeIn .4s ease';
+            }
+            // Save to Supabase
+            const selectedTexts = [...selected].map(i => lesson.poll.options[parseInt(i)]);
+            savePollResponse(selectedTexts);
+          }
+        });
+      });
+    }
+
+    /* ── SCALE INTERACTION ── */
+    if (type === 'scale' && !done) {
+      const input = document.getElementById('scale-input');
+      const valEl = document.getElementById('scale-value');
+      if (input) {
+        input.addEventListener('input', () => {
+          valEl.textContent = input.value;
+          if (!scaleAnswered) {
+            scaleAnswered = true;
+            document.getElementById('btn-complete').disabled = false;
+            const takeawayEl = document.getElementById('lesson-takeaway');
+            if (takeawayEl) {
+              takeawayEl.style.display   = 'block';
+              takeawayEl.style.animation = 'fadeIn .4s ease';
+            }
+          }
+        });
+      }
+    }
+
+    /* ── EXERCISE INTERACTION ── */
+    if (type === 'exercise' && !done) {
+      const ta = document.getElementById('exercise-input');
+      if (ta) {
+        ta.addEventListener('input', () => {
+          exerciseAnswered = ta.value.trim().length > 10;
+          document.getElementById('btn-complete').disabled = !exerciseAnswered;
+        });
+      }
+    }
+
+    document.getElementById('btn-prev')?.addEventListener('click', () => navigateTo(lessonId - 1));
+    document.getElementById('btn-next')?.addEventListener('click', () => navigateTo(lessonId + 1));
+    document.getElementById('btn-complete')?.addEventListener('click', () => completeLesson(lessonId));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function completeLesson(lessonId) {
+    const badgesBefore = new Set(getEarnedBadges());
+    const cp = markLessonComplete(courseId, lessonId);
+    const badgesAfter  = getEarnedBadges();
+
+    // On final lesson: log completion to Supabase + trigger thank-you email
+    const isLast = lessonId === course.lessons_data[course.lessons_data.length - 1].id;
+    if (isLast) {
+      const user = await window.AfroramaAuth?.getUser().catch(() => null);
+      const sb   = window.AfroramaSupabase?.getSupabase();
+      if (sb && user) {
+        await sb.from('course_completions').insert({
+          user_id:    user.id,
+          course_id:  courseId,
+          completed_at: new Date().toISOString(),
+        }).then(({ error }) => { if (error) console.warn('[course] completion log error:', error.message); });
+      }
+    }
+
+    // Check for newly earned badge
+    const newBadge = badgesAfter.find(b => !badgesBefore.has(b));
+    if (newBadge) {
+      const badge = BADGES.find(b => b.id === newBadge);
+      if (badge) showBadgeCelebration(badge);
+    }
+
+    renderSidebar();
+    renderLesson(lessonId); // refresh lesson view to show completed state
+
+    // Auto-advance to next lesson after 1 second
+    if (!newBadge) {
+      const isLast = lessonId === course.lessons_data[course.lessons_data.length - 1].id;
+      if (!isLast) {
+        setTimeout(() => navigateTo(lessonId + 1), 900);
+      }
+    }
+  }
+
+  function navigateTo(lessonId) {
+    if (lessonId < 1 || lessonId > course.lessons_data.length) return;
+    currentLessonId = lessonId;
+    renderSidebar();
+    renderLesson(lessonId);
+    // Update URL without reload
+    history.replaceState(null, '', `course.html?id=${courseId}&lesson=${lessonId}`);
+  }
+
+  function showBadgeCelebration(badge) {
+    document.getElementById('badge-modal-icon').textContent  = badge.icon;
+    document.getElementById('badge-modal-icon').style.background = badge.colour + '22';
+    document.getElementById('badge-modal-name').textContent  = badge.name;
+    document.getElementById('badge-modal-desc').textContent  = badge.desc;
+    document.getElementById('badge-modal').classList.add('open');
+    document.getElementById('badge-modal-close').onclick = () => {
+      document.getElementById('badge-modal').classList.remove('open');
+      const isLast = currentLessonId === course.lessons_data[course.lessons_data.length - 1].id;
+      if (!isLast) navigateTo(currentLessonId + 1);
+    };
+  }
+
+  async function init() {
+    if (!course) return;
+    document.title = course.title + ' — Afrorama';
+    const ok = await checkAccess();
+    if (!ok) return;
+
+    // Enrol on first visit
+    const progress = getCourseProgress(courseId);
+    if (!progress.enrolled) enrolCourse(courseId);
+
+    renderSidebar();
+    renderLesson(currentLessonId);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

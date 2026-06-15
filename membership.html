@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Afrorama Membership — Unlock your full potential</title>
+  <meta name="description" content="Afrorama Membership — CV Bank, Interview Preparator, discounted coaching and a community of African changemakers. Coming soon. Create a free account today.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+
+<nav class="nav" id="main-nav" role="navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+      <span class="nav-logo-text">afrorama</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="opportunities.html">Opportunities</a></li>
+      <li><a href="cv-analyser.html">No Wahala CV</a></li>
+      <li><a href="salary.html">Salary</a></li>
+    </ul>
+    <div class="nav-cta-group">
+      <a href="auth.html" class="btn btn-secondary btn-sm">Sign in</a>
+      <a href="#pricing" class="btn btn-primary btn-sm">Join now</a>
+    </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile-menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu">
+  <a href="opportunities.html">Opportunities</a>
+  <a href="cv-analyser.html">No Wahala CV Booster</a>
+  <a href="salary.html">Salary</a>
+  <a href="auth.html">Sign in</a>
+  <a href="#pricing" class="btn btn-primary">Join now</a>
+</div>
+
+<!-- HERO -->
+<section class="membership-hero">
+  <div class="container">
+    <div class="cv-eyebrow" style="background:rgba(255,228,0,.2);color:#f0eeea;border-color:rgba(255,228,0,.4);">For serious changemakers</div>
+    <h1>Unlock your<br>full potential</h1>
+    <p class="membership-tagline">Everything you need to land a role in Africa's social impact sector and thrive once you get there.</p>
+    <div class="membership-price-pill">Coming soon</div>
+    <div style="margin-top:10px;font-size:.82rem;color:rgba(255,255,255,.55);">Premium membership ($30/month) launches soon.</div>
+    <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="auth.html" class="btn btn-yellow btn-lg">Create free account</a>
+      <a href="#pricing" class="btn btn-secondary btn-lg" style="color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.4);">Learn more</a>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section style="background:var(--white);padding:72px 0;border-bottom:3px solid var(--dark);">
+  <div class="container">
+    <h2 style="font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(2rem,4vw,3rem);letter-spacing:.04em;text-transform:uppercase;text-align:center;margin-bottom:8px;">What you get</h2>
+    <p style="text-align:center;color:var(--gray-dark);margin-bottom:44px;">Five powerful tools for one monthly price.</p>
+    <div class="benefits-grid">
+
+      <div class="benefit-card" style="--jc:#FFE400;">
+        <div class="benefit-icon">📊</div>
+        <h3>CV Bank</h3>
+        <p>Score 90+ on the No Wahala CV Booster and your profile is added to our curated CV Bank. Leading African NGOs, development organisations and UN agencies browse it directly to find candidates like you.</p>
+        <span class="benefit-badge">No Wahala CV required</span>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon">🧠</div>
+        <h3>Interview Preparator</h3>
+        <p>Upload the job description and our AI will tell you what questions to expect, based on previous interview questions scraped from Glassdoor and Reddit. Walk into every interview prepared.</p>
+        <span class="benefit-badge" style="background:rgba(38,189,226,.15);border-color:#26BDE2;color:#005270;">AI powered</span>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon">🎓</div>
+        <h3>Discounted coaching</h3>
+        <p>Get 50% off all career coaching sessions with Afrorama's vetted coaches. One free 30-minute office hours call per month, plus access to on-demand workshops and resources.</p>
+        <span class="benefit-badge" style="background:rgba(63,126,68,.1);border-color:#3F7E44;color:#275a2a;">50% off coaching</span>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon">♾️</div>
+        <h3>Unlimited CV Boosts</h3>
+        <p>Re-upload your CV as many times as you want. Track your score evolution, get the latest AI feedback and keep boosting until you hit 90+ and enter the CV Bank.</p>
+        <span class="benefit-badge" style="background:rgba(253,105,37,.1);border-color:#FD6925;color:#8a3400;">Unlimited re-uploads</span>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon">🌍</div>
+        <h3>Member community</h3>
+        <p>Connect directly with other Afrorama members. Ask questions, share wins, find accountability partners and get peer support from people who understand the African development landscape.</p>
+        <span class="benefit-badge" style="background:rgba(0,104,157,.1);border-color:#00689D;color:#00457a;">Community access</span>
+      </div>
+
+      <div class="benefit-card" style="background:var(--yellow);border-color:var(--dark);">
+        <div class="benefit-icon">💡</div>
+        <h3>Early access</h3>
+        <p>Members get first access to new features, curated opportunities before they're publicly posted, and invitations to exclusive Afrorama events and networking sessions across Africa.</p>
+        <span class="benefit-badge">Founding member perks</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- COACHING OFFICE HOURS -->
+<section style="background:var(--green-dk);padding:64px 0;border-bottom:3px solid var(--dark);">
+  <div class="container" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;">
+    <div>
+      <div class="cv-eyebrow" style="background:rgba(255,228,0,.2);color:var(--yellow);border-color:rgba(255,228,0,.3);">Human connection</div>
+      <h2 style="font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(2rem,4vw,3.5rem);letter-spacing:.04em;text-transform:uppercase;color:var(--yellow);text-shadow:2px 2px 0 rgba(0,0,0,.2);margin-bottom:14px;">Office hours</h2>
+      <p style="color:rgba(255,255,255,.75);line-height:1.75;font-size:.95rem;margin-bottom:20px;">Want feedback from a real human? Book a 30-minute Office Hours session with the Afrorama team. We will review your CV, strategy and job search live.</p>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+        <li style="display:flex;gap:10px;font-size:.88rem;color:rgba(255,255,255,.8);">
+          <span style="color:var(--yellow);font-size:16px;">✓</span> 1 free session per month for members
+        </li>
+        <li style="display:flex;gap:10px;font-size:.88rem;color:rgba(255,255,255,.8);">
+          <span style="color:var(--yellow);font-size:16px;">✓</span> One-time session for $49
+        </li>
+        <li style="display:flex;gap:10px;font-size:.88rem;color:rgba(255,255,255,.8);">
+          <span style="color:var(--yellow);font-size:16px;">✓</span> 30 minutes, real feedback, no fluff
+        </li>
+      </ul>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="https://calendly.com/hello-afrorama" target="_blank" rel="noopener" class="btn btn-yellow btn-lg">Book office hours</a>
+        <a href="#pricing" class="btn btn-secondary btn-lg" style="border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.8);">Become a member</a>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,.08);border:2.5px solid rgba(255,255,255,.2);border-radius:var(--radius-xl);padding:32px;box-shadow:6px 6px 0 rgba(0,0,0,.2);">
+      <h4 style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.06em;text-transform:uppercase;color:var(--yellow);margin-bottom:6px;">One-time session</h4>
+      <div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:3.5rem;color:white;line-height:1;margin-bottom:6px;"><sup style="font-size:1.2rem;font-family:'Inter',sans-serif;font-weight:700;">$</sup>49</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.55);margin-bottom:18px;">30-minute session, book any time</div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" id="btn-one-time-session">Pay $49 and book</button>
+      <div style="margin-top:10px;font-size:.72rem;color:rgba(255,255,255,.45);text-align:center;">Secured by Stripe</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="membership-cta-section">
+  <div class="container" style="max-width:560px;">
+    <h2>Ready to level up?</h2>
+    <p>Join thousands of Africa-focused professionals building careers with impact.</p>
+    <div style="background:var(--white);border:2.5px solid var(--dark);border-radius:var(--radius-xl);padding:36px;box-shadow:6px 6px 0 var(--dark);margin-bottom:24px;">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div class="membership-price-pill" style="display:inline-block;">Coming soon</div>
+        <div style="font-size:.85rem;color:var(--gray-dark);margin-top:8px;">$30/month, cancel anytime</div>
+      </div>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px;">
+        <li style="display:flex;gap:10px;font-size:.88rem;color:var(--dark);"><span style="color:var(--green-dk);font-weight:800;">✓</span> CV Bank eligibility (score 90+)</li>
+        <li style="display:flex;gap:10px;font-size:.88rem;color:var(--dark);"><span style="color:var(--green-dk);font-weight:800;">✓</span> Interview Preparator (AI)</li>
+        <li style="display:flex;gap:10px;font-size:.88rem;color:var(--dark);"><span style="color:var(--green-dk);font-weight:800;">✓</span> 1 free Office Hours session/month</li>
+        <li style="display:flex;gap:10px;font-size:.88rem;color:var(--dark);"><span style="color:var(--green-dk);font-weight:800;">✓</span> 50% off all coaching sessions</li>
+        <li style="display:flex;gap:10px;font-size:.88rem;color:var(--dark);"><span style="color:var(--green-dk);font-weight:800;">✓</span> Unlimited CV Boosts</li>
+        <li style="display:flex;gap:10px;font-size:.88rem;color:var(--dark);"><span style="color:var(--green-dk);font-weight:800;">✓</span> Member community access</li>
+      </ul>
+      <a href="auth.html" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">Create free account</a>
+      <div style="margin-top:10px;text-align:center;font-size:.72rem;color:var(--gray-dark);">We'll let you know as soon as membership launches.</div>
+    </div>
+    <p style="font-size:.82rem;color:rgba(28,29,28,.55);text-align:center;">Already have an account? <a href="profile.html" style="color:var(--dark);font-weight:700;">Go to your profile</a></p>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 Afrorama. All rights reserved.</span>
+      <span>Africa's #1 social impact job board</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/supabase.js"></script>
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/stripe.js"></script>
+<script src="js/main.js"></script>
+<script>
+(async function () {
+  const user = await window.AfroramaAuth?.getUser().catch(() => null);
+  const pay  = window.AfroramaStripe?.pay;
+
+  document.getElementById('btn-one-time-session')?.addEventListener('click', () => {
+    pay?.('office_hours', { userId: user?.id, userEmail: user?.email,
+      onDemo: () => alert('Add PAYMENT_LINKS.office_hours to js/stripe.js to enable payments.') });
+  });
+
+  document.getElementById('btn-join-member')?.addEventListener('click', () => {
+    window.location.href = 'membership.html';
+  });
+})();
+</script>
+</body>
+</html>

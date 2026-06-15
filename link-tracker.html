@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Afrorama Link Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #F8F7F3; color: #1C1D1C; min-height: 100vh; padding: 40px 24px; }
+    .container { max-width: 640px; margin: 0 auto; }
+    .header { margin-bottom: 32px; }
+    .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.04em; color: #1C1D1C; }
+    .logo span { background: #FFE400; padding: 2px 8px; border-radius: 6px; }
+    h1 { font-size: 1.6rem; font-weight: 800; margin-top: 16px; }
+    p.sub { color: #888; font-size: .9rem; margin-top: 6px; }
+
+    .card { background: white; border: 2px solid #1C1D1C; border-radius: 16px; padding: 28px; box-shadow: 4px 4px 0 #1C1D1C; margin-bottom: 24px; }
+    label { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #888; display: block; margin-bottom: 6px; }
+    input { width: 100%; padding: 11px 14px; font-family: inherit; font-size: .9rem; border: 1.5px solid #DDDCDA; border-radius: 8px; outline: none; color: #1C1D1C; margin-bottom: 16px; }
+    input:focus { border-color: #1C1D1C; box-shadow: 0 0 0 3px rgba(28,29,28,.06); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    button {
+      width: 100%; padding: 13px; font-family: inherit; font-size: .95rem; font-weight: 700;
+      background: #FFE400; color: #1C1D1C; border: 2px solid #1C1D1C; border-radius: 100px;
+      cursor: pointer; box-shadow: 3px 3px 0 #1C1D1C; transition: all .12s;
+    }
+    button:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #1C1D1C; }
+    button:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: 3px 3px 0 #1C1D1C; }
+
+    .result { display: none; background: #F0EFEB; border: 2px solid #1C1D1C; border-radius: 12px; padding: 20px; margin-top: 20px; }
+    .result.show { display: block; }
+    .result-label { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: #888; margin-bottom: 6px; }
+    .result-url { font-size: 1.1rem; font-weight: 700; color: #1C1D1C; word-break: break-all; }
+    .copy-btn { margin-top: 12px; width: auto; padding: 8px 20px; font-size: .82rem; background: #1C1D1C; color: #FFE400; border-color: #1C1D1C; box-shadow: 2px 2px 0 rgba(0,0,0,.25); }
+    .copy-btn:hover { box-shadow: 3px 3px 0 rgba(0,0,0,.25); }
+    .utm-preview { font-size: .75rem; color: #888; margin-top: 8px; word-break: break-all; }
+
+    .bookmarklet-card { background: #1C1D1C; border-color: #1C1D1C; color: white; }
+    .bookmarklet-card h2 { color: #FFE400; font-size: 1rem; margin-bottom: 8px; }
+    .bookmarklet-card p { color: rgba(255,255,255,.65); font-size: .85rem; line-height: 1.6; margin-bottom: 16px; }
+    .bookmarklet-link {
+      display: inline-block; padding: 10px 20px;
+      background: #FFE400; color: #1C1D1C;
+      font-weight: 800; font-size: .85rem; border-radius: 100px;
+      border: 2px solid #FFE400; text-decoration: none;
+      box-shadow: 3px 3px 0 rgba(255,255,255,.2);
+    }
+    .bookmarklet-link:hover { background: #E6CE00; }
+    .step { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+    .step-num { background: #FFE400; color: #1C1D1C; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .75rem; flex-shrink: 0; margin-top: 1px; }
+    .step p { color: rgba(255,255,255,.75); font-size: .83rem; line-height: 1.5; }
+
+    .history { margin-top: 24px; }
+    .history h2 { font-size: 1rem; font-weight: 800; margin-bottom: 12px; }
+    .link-row { background: white; border: 1.5px solid #DDDCDA; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .link-title { font-weight: 600; font-size: .88rem; }
+    .link-bitly { font-size: .82rem; color: #00689D; font-weight: 700; text-decoration: none; }
+    .link-date { font-size: .72rem; color: #888; }
+    .error { color: #c0392b; font-size: .85rem; margin-top: 8px; display: none; }
+    .error.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">afro<span>rama</span></div>
+      <h1>Link Tracker</h1>
+      <p class="sub">Paste any URL → get a Bitly short link with UTM tracking, saved automatically.</p>
+    </div>
+
+    <div class="card">
+      <label>URL to shorten *</label>
+      <input type="url" id="url-input" placeholder="https://example.com/jobs/..." autocomplete="off">
+
+      <div class="row">
+        <div>
+          <label>Title (optional)</label>
+          <input type="text" id="title-input" placeholder="e.g. GiveDirectly — PM Role">
+        </div>
+        <div>
+          <label>Campaign (optional)</label>
+          <input type="text" id="campaign-input" placeholder="e.g. newsletter-june">
+        </div>
+      </div>
+
+      <label>Medium</label>
+      <input type="text" id="medium-input" value="share" placeholder="share / email / social / newsletter">
+
+      <button id="shorten-btn" onclick="shortenLink()">Shorten & Track →</button>
+      <p class="error" id="error-msg"></p>
+
+      <div class="result" id="result">
+        <p class="result-label">Your Bitly link</p>
+        <p class="result-url" id="result-url"></p>
+        <button class="copy-btn" onclick="copyLink()">Copy link</button>
+        <p class="utm-preview" id="utm-preview"></p>
+      </div>
+    </div>
+
+    <!-- Bookmarklet -->
+    <div class="card bookmarklet-card">
+      <h2>One-click bookmarklet</h2>
+      <p>Drag the button below to your bookmarks bar. Then click it on any webpage to instantly generate a tracked Bitly link for that page.</p>
+      <div class="step"><div class="step-num">1</div><p>Drag the yellow button to your browser's bookmarks bar</p></div>
+      <div class="step"><div class="step-num">2</div><p>Browse to any page you want to share</p></div>
+      <div class="step"><div class="step-num">3</div><p>Click the bookmark — the Bitly link is copied to your clipboard instantly</p></div>
+      <a class="bookmarklet-link" id="bookmarklet-link" href="#">⚡ Afrorama Link</a>
+    </div>
+
+    <!-- Recent links -->
+    <div class="history" id="history" style="display:none">
+      <h2>Recent links (this session)</h2>
+      <div id="history-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const FUNCTION_URL = 'https://vqchwioyhyiuunpyildz.supabase.co/functions/v1/link-tracker';
+    const ANON_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxY2h3aW95aHlpdXVucHlpbGR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3MTUzODgsImV4cCI6MjA2MjI5MTM4OH0.bkdBaSJhpECCPpuJ4KVeGbEKb5bnYE_VXHiL_y_RFUI';
+    const history = [];
+
+    // Build bookmarklet
+    const bookmarkletCode = `javascript:(function(){
+      var url=location.href;
+      var title=document.title;
+      fetch('${FUNCTION_URL}',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer ${ANON_KEY}'},
+        body:JSON.stringify({url:url,title:title,medium:'bookmarklet'})
+      }).then(r=>r.json()).then(d=>{
+        if(d.bitly_url){
+          navigator.clipboard.writeText(d.bitly_url).catch(()=>{});
+          var div=document.createElement('div');
+          div.style.cssText='position:fixed;top:20px;right:20px;z-index:99999;background:#FFE400;color:#1C1D1C;padding:14px 20px;border-radius:12px;border:2px solid #1C1D1C;box-shadow:4px 4px 0 #1C1D1C;font-family:sans-serif;font-weight:700;font-size:14px;max-width:320px';
+          div.innerHTML='<div style="margin-bottom:6px">✅ Copied to clipboard!</div><div style="font-size:12px;word-break:break-all">' + d.bitly_url + '</div>';
+          document.body.appendChild(div);
+          setTimeout(()=>div.remove(),4000);
+        }else{alert('Error: '+(d.error||'Unknown error'));}
+      }).catch(e=>alert('Failed: '+e.message));
+    })();`;
+
+    document.getElementById('bookmarklet-link').href = bookmarkletCode;
+
+    async function shortenLink() {
+      const url      = document.getElementById('url-input').value.trim();
+      const title    = document.getElementById('title-input').value.trim();
+      const campaign = document.getElementById('campaign-input').value.trim();
+      const medium   = document.getElementById('medium-input').value.trim() || 'share';
+      const errEl    = document.getElementById('error-msg');
+      const btn      = document.getElementById('shorten-btn');
+
+      errEl.classList.remove('show');
+      if (!url) { errEl.textContent = 'Please enter a URL.'; errEl.classList.add('show'); return; }
+      if (!url.startsWith('http')) { errEl.textContent = 'URL must start with http or https.'; errEl.classList.add('show'); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Shortening…';
+
+      try {
+        const res  = await fetch(FUNCTION_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ANON_KEY}` },
+          body: JSON.stringify({ url, title, campaign, medium }),
+        });
+        const data = await res.json();
+
+        if (data.error) throw new Error(data.error);
+
+        document.getElementById('result-url').textContent  = data.bitly_url;
+        document.getElementById('utm-preview').textContent = '→ ' + data.utm_url;
+        document.getElementById('result').classList.add('show');
+
+        // Add to session history
+        history.unshift({ bitly: data.bitly_url, title: title || url.slice(0, 50), date: new Date().toLocaleTimeString() });
+        renderHistory();
+
+        // Auto-copy
+        navigator.clipboard.writeText(data.bitly_url).catch(() => {});
+
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.classList.add('show');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Shorten & Track →';
+      }
+    }
+
+    function copyLink() {
+      const link = document.getElementById('result-url').textContent;
+      navigator.clipboard.writeText(link).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => btn.textContent = 'Copy link', 2000);
+      });
+    }
+
+    function renderHistory() {
+      if (!history.length) return;
+      document.getElementById('history').style.display = 'block';
+      document.getElementById('history-list').innerHTML = history.map(h => `
+        <div class="link-row">
+          <div>
+            <div class="link-title">${h.title}</div>
+            <div class="link-date">${h.date}</div>
+          </div>
+          <a class="link-bitly" href="${h.bitly}" target="_blank">${h.bitly}</a>
+        </div>`).join('');
+    }
+
+    // Allow Enter key to submit
+    document.getElementById('url-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') shortenLink();
+    });
+  </script>
+</body>
+</html>

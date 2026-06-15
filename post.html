@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post a Social Impact Role — Afrorama</title>
+  <meta name="description" content="Post a social impact job, NGO internship, consultancy or funding opportunity to reach thousands of Africa-focused professionals.">
+  <link rel="canonical" href="https://afrorama.org/post.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/post.css">
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html" aria-label="Afrorama home">
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+      <span class="nav-logo-text">afrorama</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="opportunities.html">Opportunities</a></li>
+      <li><a href="cv-analyser.html">No Wahala CV</a></li>
+      <li><a href="salary.html">Salary Intelligence</a></li>
+    </ul>
+    <div class="nav-cta-group">
+      <a href="post.html" class="btn btn-primary btn-sm">Post a role</a>
+    </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu" role="dialog" aria-label="Mobile menu">
+  <a href="opportunities.html">Opportunities</a>
+  <a href="cv-analyser.html">No Wahala CV Booster</a>
+  <a href="salary.html">Salary Intelligence</a>
+  <a href="post.html" class="btn btn-primary">Post a role</a>
+</div>
+
+<!-- ===== SUCCESS SCREEN ===== -->
+<div id="success-screen" class="success-screen" aria-live="polite">
+  <div class="success-banner">
+    <span class="success-eyebrow">Congratulations</span>
+    <h2 class="success-heading">Your listing is live!</h2>
+  </div>
+  <div class="success-body">
+    <p>Your opportunity is now visible to thousands of Africa-focused professionals. It will stay live until your deadline or for 30 days, whichever comes first.</p>
+    <div class="success-actions">
+      <a href="opportunities.html" class="btn btn-primary btn-lg">View all opportunities</a>
+      <a href="post.html" class="btn btn-secondary btn-lg">Post another role</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE HEADER ===== -->
+<header class="post-page-header">
+  <div class="container">
+    <h1>Post an opportunity</h1>
+    <p>Reach thousands of Africa-focused changemakers in minutes.</p>
+  </div>
+</header>
+
+<!-- ===== PROGRESS STEPS ===== -->
+<div class="post-progress" id="step-bar" aria-label="Form progress">
+  <div class="container">
+    <div class="steps" role="list">
+      <div class="step" data-step="1" role="listitem">
+        <div class="step-num" aria-hidden="true">1</div>
+        <span class="step-label">Details</span>
+      </div>
+      <div class="step" data-step="2" role="listitem">
+        <div class="step-num" aria-hidden="true">2</div>
+        <span class="step-label">Organisation</span>
+      </div>
+      <div class="step" data-step="3" role="listitem">
+        <div class="step-num" aria-hidden="true">3</div>
+        <span class="step-label">Payment</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== POST LAYOUT ===== -->
+<main>
+  <div class="container">
+    <div class="post-layout">
+
+      <!-- FORM PANEL -->
+      <div class="form-panel" role="form" aria-label="Post an opportunity">
+
+        <!-- STEP 1: Role details -->
+        <div class="form-step active" data-step="1" id="step-1">
+          <div class="form-panel-head">
+            <h2>Role details</h2>
+            <p>Tell candidates about this opportunity.</p>
+          </div>
+          <div class="form-panel-body">
+
+            <div class="form-section-title">Type of opportunity</div>
+            <div class="type-grid" role="group" aria-label="Select opportunity type">
+              <div class="type-option">
+                <input type="radio" name="field-type" id="type-jobs" value="jobs" checked>
+                <label class="type-option-label" for="type-jobs">
+                  <span class="type-option-icon">💼</span>
+                  <span class="type-option-name">Job</span>
+                  <span class="type-option-desc">Full or part-time employment</span>
+                </label>
+              </div>
+              <div class="type-option">
+                <input type="radio" name="field-type" id="type-internship" value="internship">
+                <label class="type-option-label" for="type-internship">
+                  <span class="type-option-icon">🌱</span>
+                  <span class="type-option-name">Internship / Volunteer</span>
+                  <span class="type-option-desc">Short-term programme or placement</span>
+                </label>
+              </div>
+              <div class="type-option">
+                <input type="radio" name="field-type" id="type-consultancy" value="consultancy">
+                <label class="type-option-label" for="type-consultancy">
+                  <span class="type-option-icon">🔬</span>
+                  <span class="type-option-name">Consultancy / Research</span>
+                  <span class="type-option-desc">Contract or research assignment</span>
+                </label>
+              </div>
+              <div class="type-option">
+                <input type="radio" name="field-type" id="type-capacity" value="capacity">
+                <label class="type-option-label" for="type-capacity">
+                  <span class="type-option-icon">🚀</span>
+                  <span class="type-option-name">Fellowship / Funding</span>
+                  <span class="type-option-desc">Grant, fellowship or training</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-section-title" style="margin-top:24px;">Role information</div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="field-title">Job title <span aria-hidden="true">*</span></label>
+                <input class="form-input" id="field-title" type="text" placeholder="e.g. Programme Officer, Climate" required>
+                <span class="form-error" role="alert"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="field-sector">Sector <span aria-hidden="true">*</span></label>
+                <select class="form-select" id="field-sector" required>
+                  <option value="">Select a sector</option>
+                </select>
+                <span class="form-error" role="alert"></span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="field-location">City / Location <span aria-hidden="true">*</span></label>
+                <input class="form-input" id="field-location" type="text" placeholder="e.g. Nairobi, or Remote" required>
+                <span class="form-error" role="alert"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="field-country">Country <span aria-hidden="true">*</span></label>
+                <select class="form-select" id="field-country" required>
+                  <option value="">Select country</option>
+                </select>
+                <span class="form-error" role="alert"></span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="field-deadline">Application deadline <span aria-hidden="true">*</span></label>
+                <input class="form-input" id="field-deadline" type="date" required>
+                <span class="form-hint">Listing expires on this date or after 30 days.</span>
+                <span class="form-error" role="alert"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="field-salary">Salary / Stipend</label>
+                <input class="form-input" id="field-salary" type="text" placeholder="e.g. $60,000 or Volunteer">
+                <span class="form-hint">Leave blank if confidential.</span>
+              </div>
+            </div>
+
+            <div class="form-row cols-1">
+              <div class="form-group">
+                <label class="form-label" for="field-description">Role description <span aria-hidden="true">*</span></label>
+                <textarea class="form-textarea" id="field-description" rows="3" placeholder="Write 2 clear sentences: what the role involves and its key purpose." required style="min-height:100px;"></textarea>
+                <div class="form-hint-block">Write 2 concise sentences. Sentence 1: what this role does. Sentence 2: why it matters or who it serves.</div>
+                <span class="form-error" role="alert"></span>
+              </div>
+            </div>
+
+            <div class="form-row cols-1">
+              <div class="form-group">
+                <label class="form-label" for="field-requirements">Requirements <span aria-hidden="true">*</span></label>
+                <textarea class="form-textarea" id="field-requirements" rows="3" placeholder="Write 2 clear sentences: essential qualifications and key experience needed." required style="min-height:100px;"></textarea>
+                <div class="form-hint-block">Write 2 concise sentences. Sentence 1: required qualifications or degree. Sentence 2: years of experience and key skills.</div>
+                <span class="form-error" role="alert"></span>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <span style="font-size:.76rem;color:var(--gray-dark);">* Required fields</span>
+              <button type="button" class="btn btn-primary" id="btn-next-1">
+                Continue to Organisation
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: Organisation -->
+        <div class="form-step" data-step="2" id="step-2">
+          <div class="form-panel-head">
+            <h2>Organisation</h2>
+            <p>Tell candidates about your organisation.</p>
+          </div>
+          <div class="form-panel-body">
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="field-org">Organisation name <span aria-hidden="true">*</span></label>
+                <input class="form-input" id="field-org" type="text" placeholder="e.g. Amref Health Africa" required>
+                <span class="form-error" role="alert"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="field-org-type">Organisation type <span aria-hidden="true">*</span></label>
+                <select class="form-select" id="field-org-type" required>
+                  <option value="">Select type</option>
+                  <option>International NGO</option>
+                  <option>Local / National NGO</option>
+                  <option>UN / Multilateral Agency</option>
+                  <option>African Union / Regional Body</option>
+                  <option>Government / Public Sector</option>
+                  <option>Social Enterprise</option>
+                  <option>Academic Institution</option>
+                  <option>Private Sector / Consulting</option>
+                  <option>Foundation / Philanthropic</option>
+                  <option>Other</option>
+                </select>
+                <span class="form-error" role="alert"></span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="field-org-website">Website</label>
+                <input class="form-input" id="field-org-website" type="url" placeholder="https://yourorg.org">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="field-apply-url">Application URL or email <span aria-hidden="true">*</span></label>
+                <input class="form-input" id="field-apply-url" type="text" placeholder="https://... or apply@yourorg.org" required>
+                <span class="form-hint">Where candidates should apply.</span>
+                <span class="form-error" role="alert"></span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="field-contact-name">Contact name <span aria-hidden="true">*</span></label>
+                <input class="form-input" id="field-contact-name" type="text" placeholder="Your full name" required>
+                <span class="form-error" role="alert"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="field-contact-email">Contact email <span aria-hidden="true">*</span></label>
+                <input class="form-input" id="field-contact-email" type="email" placeholder="you@yourorg.org" required autocomplete="email">
+                <span class="form-hint">Must include @. We send your receipt here.</span>
+                <span class="form-error" role="alert"></span>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" id="btn-back-2">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                Back
+              </button>
+              <button type="button" class="btn btn-primary" id="btn-next-2">
+                Continue to Payment
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: Payment -->
+        <div class="form-step" data-step="3" id="step-3">
+          <div class="form-panel-head">
+            <h2>Payment</h2>
+            <p>Your listing goes live immediately after payment is confirmed.</p>
+          </div>
+          <div class="form-panel-body">
+
+            <div class="payment-summary">
+              <h4>Order summary</h4>
+              <div class="payment-line">
+                <span id="summary-title-text" style="color:var(--gray-dark);font-size:.85rem;">Job listing</span>
+                <span></span>
+              </div>
+              <div class="payment-line">
+                <span>Standard listing (30 days)</span>
+                <span>$29.00</span>
+              </div>
+              <div class="payment-line">
+                <span>Processing fee</span>
+                <span>$0.00</span>
+              </div>
+              <div class="payment-line total">
+                <span>Total</span>
+                <span>$29.00</span>
+              </div>
+            </div>
+
+            <div class="stripe-note">
+              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              You'll be redirected to Stripe's secure checkout to complete your payment.
+            </div>
+
+            <div id="post-error" role="alert" aria-live="polite" style="display:none;color:#c0392b;font-size:.85rem;margin-top:10px;"></div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" id="btn-back-3">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                Back
+              </button>
+              <button type="button" class="btn btn-primary btn-lg" id="btn-pay">
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                Pay $29 and publish listing
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SIDEBAR -->
+      <aside class="post-sidebar">
+
+        <div class="pricing-card">
+          <h4>Listing price</h4>
+          <div class="pricing-amount"><sup>$</sup>49</div>
+          <div class="pricing-note">One-time fee, no subscription</div>
+          <ul class="pricing-features">
+            <li>30-day listing or until deadline</li>
+            <li>Auto-removed on expiry</li>
+            <li>Visible on interactive Africa map</li>
+            <li>Searchable by sector and region</li>
+            <li>Mobile-optimised listing</li>
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <div class="info-card-head"><h4>Why Afrorama?</h4></div>
+          <div class="info-card-body">
+            <ul class="info-list">
+              <li>Reach professionals passionate about African development</li>
+              <li>Your listing appears on our interactive Africa map</li>
+              <li>Filtered by sector, region and type</li>
+              <li>Listings auto-expire with no housekeeping needed</li>
+              <li>Trusted by NGOs, UN agencies and foundations</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-card-head"><h4>FAQs</h4></div>
+          <div class="info-card-body" style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <div style="font-size:.82rem;font-weight:700;margin-bottom:3px;">When does my listing go live?</div>
+              <div style="font-size:.8rem;color:var(--gray-dark);">Immediately after payment is confirmed.</div>
+            </div>
+            <div>
+              <div style="font-size:.82rem;font-weight:700;margin-bottom:3px;">Can I edit after posting?</div>
+              <div style="font-size:.8rem;color:var(--gray-dark);">Email hello@afrorama.org and we will update it for you.</div>
+            </div>
+            <div>
+              <div style="font-size:.82rem;font-weight:700;margin-bottom:3px;">What payment methods are accepted?</div>
+              <div style="font-size:.8rem;color:var(--gray-dark);">All major credit and debit cards via Stripe.</div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="assets/logo-icon.svg" class="footer-logo-icon" alt="" aria-hidden="true">
+          <span style="font-size:1.1rem;font-weight:800;letter-spacing:-.03em;">afrorama</span>
+        </div>
+        <p>Africa's dedicated platform for social impact careers. Connecting talent with organisations driving meaningful change across all 54 countries.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Opportunities</h5>
+        <ul>
+          <li><a href="opportunities.html?type=jobs">Jobs</a></li>
+          <li><a href="opportunities.html?type=internship">Internships</a></li>
+          <li><a href="opportunities.html?type=consultancy">Consultancies</a></li>
+          <li><a href="opportunities.html?type=capacity">Funding &amp; Fellowships</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>For Organisations</h5>
+        <ul>
+          <li><a href="post.html">Post a Role</a></li>
+          <li><a href="#">CV Bank</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="mailto:hello@afrorama.org">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="about.html">Our Mission</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Use</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Afrorama. All rights reserved.</span>
+      <span>Africa's #1 social impact job board</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/data.js"></script>
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/stripe.js"></script>
+<script src="js/main.js"></script>
+<script src="js/post.js"></script>
+</body>
+</html>

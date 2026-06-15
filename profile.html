@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — Afrorama</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<nav class="nav" id="main-nav" role="navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+      <span class="nav-logo-text">afrorama</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="opportunities.html">Opportunities</a></li>
+      <li><a href="cv-analyser.html">No Wahala CV</a></li>
+      <li><a href="salary.html">Salary</a></li>
+    </ul>
+    <div class="nav-cta-group">
+      <a href="profile.html" class="btn btn-primary btn-sm">My profile</a>
+    </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile-menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu">
+  <a href="opportunities.html">Opportunities</a>
+  <a href="cv-analyser.html">No Wahala CV Booster</a>
+  
+  <button onclick="window.AfroramaAuth?.signOut()" class="btn btn-secondary">Sign out</button>
+</div>
+
+<!-- Mandatory completion banner (shown when ?setup=1) -->
+<div id="setup-banner" style="display:none;background:var(--orange);border-bottom:3px solid var(--dark);padding:14px 0;">
+  <div class="container" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+    <span style="font-size:20px;">👋</span>
+    <div style="flex:1;color:white;font-size:.9rem;font-weight:600;">
+      Complete your profile to unlock the full Afrorama experience. It takes less than 2 minutes.
+    </div>
+    <span style="font-size:.78rem;color:rgba(255,255,255,.7);">Required fields marked *</span>
+  </div>
+</div>
+
+<header class="member-page-header">
+  <div class="container">
+    <h1 id="page-greeting">My profile</h1>
+    <p>Manage your details, track your CV score and keep your journey on track.</p>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="profile-layout">
+
+      <!-- SIDEBAR -->
+      <aside class="profile-sidebar">
+
+        <!-- Quote card -->
+        <div class="quote-card" id="quote-card">
+          <div class="quote-text" id="daily-quote">Loading your daily boost…</div>
+          <div class="quote-attr">Your daily motivation</div>
+        </div>
+
+        <!-- Avatar + badges -->
+        <div class="profile-card">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar" id="profile-avatar">?</div>
+            <div class="profile-name"     id="profile-name">Loading…</div>
+            <div class="profile-location" id="profile-location"></div>
+            <div class="profile-badges"   id="profile-badges"></div>
+          </div>
+          <div style="padding:0 20px 20px;border-top:1.5px solid var(--gray-mid);">
+            <div style="padding-top:16px;">
+              <div class="toggle-field">
+                <div>
+                  <div class="toggle-label">Actively looking</div>
+                  <div class="toggle-hint">Signal your availability</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggle-looking">
+                  <div class="toggle-track"></div>
+                  <div class="toggle-thumb"></div>
+                </label>
+              </div>
+              <div class="toggle-field">
+                <div>
+                  <div class="toggle-label">Email alerts</div>
+                  <div class="toggle-hint">New matching opportunities</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggle-alerts" checked>
+                  <div class="toggle-track"></div>
+                  <div class="toggle-thumb"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CV Score -->
+        <div class="profile-card">
+          <div class="profile-card-head"><h4>CV Score</h4></div>
+          <div class="profile-card-body">
+            <div id="cv-score-display" style="text-align:center;padding:12px 0;">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:var(--orange);line-height:1;" id="cv-score-num">—</div>
+              <div style="font-size:.78rem;color:var(--gray-dark);margin-top:4px;">out of 100</div>
+              <a href="cv-analyser.html" class="btn btn-primary btn-sm" style="margin-top:14px;justify-content:center;width:100%;">
+                Boost my CV
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Links -->
+        <div class="profile-card">
+          <div class="profile-card-head"><h4>Quick links</h4></div>
+          <div class="profile-card-body">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+              <li><a href="cv-analyser.html" style="font-size:.85rem;font-weight:600;color:var(--orange);">No Wahala CV Booster</a></li>
+              <li><a href="opportunities.html" style="font-size:.85rem;font-weight:600;color:var(--dark);">Browse opportunities</a></li>
+              <li><button onclick="window.AfroramaAuth?.signOut()" style="font-size:.85rem;font-weight:600;color:var(--gray-dark);background:none;border:none;cursor:pointer;padding:0;font-family:inherit;text-align:left;">Sign out</button></li>
+            </ul>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- MAIN -->
+      <div>
+
+        <!-- Journey steps (shown if actively looking) -->
+        <div id="journey-panel" style="display:none;margin-bottom:28px;">
+          <div class="profile-card">
+            <div class="profile-card-head"><h4>Your impact journey</h4></div>
+            <div class="profile-card-body">
+              <p style="font-size:.85rem;color:var(--gray-dark);margin-bottom:16px;">You are actively looking. Here are the steps to land your next role.</p>
+              <div class="journey-steps-panel">
+                <div class="journey-step-item" id="jstep-cv">
+                  <div class="journey-step-num">01</div>
+                  <div>
+                    <div class="journey-step-title">Score your CV</div>
+                    <div class="journey-step-desc">Use the No Wahala CV Booster to get a score and personalised feedback before you apply.</div>
+                    <div class="journey-step-action"><a href="cv-analyser.html" class="btn btn-primary btn-sm">Boost my CV</a></div>
+                  </div>
+                </div>
+                <div class="journey-step-item" id="jstep-search">
+                  <div class="journey-step-num">02</div>
+                  <div>
+                    <div class="journey-step-title">Find your role</div>
+                    <div class="journey-step-desc">Browse live opportunities filtered by sector, region and type across all 54 African countries.</div>
+                    <div class="journey-step-action"><a href="opportunities.html" class="btn btn-primary btn-sm">Browse roles</a></div>
+                  </div>
+                </div>
+                <div class="journey-step-item" id="jstep-prep">
+                  <div class="journey-step-num">03</div>
+                  <div>
+                    <div class="journey-step-title">Prepare for interviews</div>
+                    <div class="journey-step-desc">Use the Interview Preparator to know what questions to expect and how to answer them. Members only.</div>
+                    <div class="journey-step-action"><a href="opportunities.html" class="btn btn-yellow btn-sm">Browse opportunities</a></div>
+                  </div>
+                </div>
+                <div class="journey-step-item" id="jstep-connect">
+                  <div class="journey-step-num">04</div>
+                  <div>
+                    <div class="journey-step-title">Connect with peers</div>
+                    <div class="journey-step-desc">Get support, ask questions and share your experience with the Afrorama community.</div>
+                    <div class="journey-step-action"><a href="opportunities.html" class="btn btn-outline btn-sm">Browse opportunities</a></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit profile form -->
+        <div class="profile-card" style="margin-bottom:24px;">
+          <div class="profile-card-head" style="display:flex;justify-content:space-between;align-items:center;">
+            <h4>Profile details</h4>
+            <button class="btn btn-sm btn-outline" id="btn-save-profile">Save changes</button>
+          </div>
+          <div class="profile-card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div class="form-group">
+                <label class="form-label" for="edit-name">Full name <span style="color:var(--orange)">*</span></label>
+                <input class="form-input" id="edit-name" type="text" required>
+                <span class="form-error" id="err-name" role="alert"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="edit-location">Location <span style="color:var(--orange)">*</span></label>
+                <input class="form-input" id="edit-location" type="text" placeholder="City, Country" required>
+                <span class="form-error" id="err-location" role="alert"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="edit-linkedin">LinkedIn URL</label>
+                <input class="form-input" id="edit-linkedin" type="url" placeholder="https://linkedin.com/in/...">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="edit-experience">Years of experience</label>
+                <select class="form-select" id="edit-experience">
+                  <option value="">Select…</option>
+                  <option value="0-1">0–1 years</option>
+                  <option value="2-4">2–4 years</option>
+                  <option value="5-8">5–8 years</option>
+                  <option value="9-14">9–14 years</option>
+                  <option value="15+">15+ years</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-top:16px;">
+              <label class="form-label">Sectors I work in / am interested in <span style="color:var(--orange)">*</span></label>
+              <div id="sector-checkboxes" style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px;"></div>
+              <span class="form-error" id="err-sectors" role="alert"></span>
+            </div>
+            <div style="margin-top:16px;">
+              <label class="form-label">Opportunity types</label>
+              <div class="check-grid" style="margin-top:6px;">
+                <label class="check-item"><input type="checkbox" value="jobs"        class="pref-check"> Jobs</label>
+                <label class="check-item"><input type="checkbox" value="internship"  class="pref-check"> Internships</label>
+                <label class="check-item"><input type="checkbox" value="consultancy" class="pref-check"> Consultancies</label>
+                <label class="check-item"><input type="checkbox" value="capacity"    class="pref-check"> Fellowships</label>
+              </div>
+            </div>
+            <div id="save-msg" style="font-size:.8rem;color:var(--green-dk);margin-top:8px;display:none;">Changes saved.</div>
+          </div>
+        </div>
+
+        <!-- CV score history chart -->
+        <div class="profile-card" id="score-history-card" style="display:none;margin-bottom:24px;">
+          <div class="profile-card-head"><h4>CV score history</h4></div>
+          <div class="profile-card-body">
+            <svg id="score-chart" width="100%" height="160" viewBox="0 0 600 160" preserveAspectRatio="none" aria-label="CV score history chart"></svg>
+            <div id="score-history-legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;"></div>
+          </div>
+        </div>
+
+        <!-- Saved jobs -->
+        <div class="profile-card" id="saved-jobs-card" style="display:none;">
+          <div class="profile-card-head" style="display:flex;justify-content:space-between;align-items:center;">
+            <h4>Saved opportunities</h4>
+            <a href="opportunities.html" class="btn btn-outline btn-sm" style="font-size:.7rem;">Browse more</a>
+          </div>
+          <div class="profile-card-body" style="padding:0;">
+            <div id="saved-jobs-list"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 Afrorama. All rights reserved.</span>
+      <span>Africa's #1 social impact job board</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script>
+(function () {
+  const { getUser, requireAuth, getProfile, upsertProfile, getSavedJobs, unsaveJob, updateSavedJob, isProfileComplete } = window.AfroramaAuth;
+  const { SECTORS } = window.AfroramaData;
+
+  const QUOTES = [
+    { text: "The time is always right to do what is right.", attr: "Martin Luther King Jr." },
+    { text: "You are braver than you believe, stronger than you seem, and smarter than you think.", attr: "A.A. Milne" },
+    { text: "Africa's greatest resource is her people.", attr: "Afrorama" },
+    { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", attr: "Winston Churchill" },
+    { text: "Go confidently in the direction of your dreams.", attr: "Henry David Thoreau" },
+    { text: "You got this. Africa needs you.", attr: "Afrorama team" },
+    { text: "Dream big, start small, act now.", attr: "Robin Sharma" },
+  ];
+
+  async function init() {
+    const user = await requireAuth('auth.html');
+    if (!user) return;
+
+    // Daily quote (rotates by day of year)
+    const q = QUOTES[new Date().getDay() % QUOTES.length];
+    document.getElementById('daily-quote').textContent = '"' + q.text + '"';
+    document.querySelector('.quote-attr').textContent   = q.attr;
+
+    const { profile } = await getProfile(user.id);
+
+    // Greeting
+    const name = profile?.full_name || user.email?.split('@')[0] || 'Changemaker';
+    document.getElementById('page-greeting').textContent = 'Welcome back, ' + name.split(' ')[0] + '!';
+
+    // Avatar
+    const initials = name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    document.getElementById('profile-avatar').textContent = initials;
+    document.getElementById('profile-name').textContent   = name;
+    if (profile?.location) document.getElementById('profile-location').textContent = '📍 ' + profile.location;
+
+    // Badges
+    const badgesEl = document.getElementById('profile-badges');
+    if (profile?.is_member)            badgesEl.innerHTML += '<span class="profile-badge member">Member</span>';
+    if (profile?.is_actively_looking)  badgesEl.innerHTML += '<span class="profile-badge looking">Looking</span>';
+    if (profile?.cv_score >= 90)       badgesEl.innerHTML += '<span class="profile-badge in-bank">CV Bank</span>';
+
+    // Toggles
+    const lookTog  = document.getElementById('toggle-looking');
+    const alertTog = document.getElementById('toggle-alerts');
+    if (profile?.is_actively_looking) lookTog.checked  = true;
+    if (profile?.email_alerts !== false) alertTog.checked = true;
+
+    // Show journey if looking
+    if (profile?.is_actively_looking) document.getElementById('journey-panel').style.display = 'block';
+
+    lookTog.addEventListener('change', async () => {
+      document.getElementById('journey-panel').style.display = lookTog.checked ? 'block' : 'none';
+      await upsertProfile(user.id, { is_actively_looking: lookTog.checked });
+    });
+    alertTog.addEventListener('change', async () => {
+      await upsertProfile(user.id, { email_alerts: alertTog.checked });
+    });
+
+    // CV score
+    if (profile?.cv_score) {
+      document.getElementById('cv-score-num').textContent = profile.cv_score;
+    }
+
+    // Show mandatory banner if ?setup=1
+    if (new URLSearchParams(location.search).get('setup') === '1') {
+      document.getElementById('setup-banner').style.display = 'block';
+    }
+
+    // Populate sector checkboxes
+    const sectorBox = document.getElementById('sector-checkboxes');
+    if (sectorBox && SECTORS) {
+      SECTORS.forEach(s => {
+        const id  = 'sec-' + s.replace(/\s+/g, '-').toLowerCase();
+        const checked = (profile?.sector_prefs || []).includes(s);
+        sectorBox.innerHTML += `<label class="check-item"><input type="checkbox" value="${s}" class="sector-check" id="${id}" ${checked?'checked':''}> ${s}</label>`;
+      });
+    }
+
+    // Pre-fill form
+    document.getElementById('edit-name').value       = profile?.full_name     || '';
+    document.getElementById('edit-location').value   = profile?.location       || '';
+    document.getElementById('edit-linkedin').value   = profile?.linkedin_url   || '';
+    document.getElementById('edit-experience').value = profile?.years_exp      || '';
+    (profile?.job_type_prefs || []).forEach(v => {
+      const cb = document.querySelector(`.pref-check[value="${v}"]`);
+      if (cb) cb.checked = true;
+    });
+
+    // Save profile — with mandatory validation
+    document.getElementById('btn-save-profile').addEventListener('click', async () => {
+      const name     = document.getElementById('edit-name').value.trim();
+      const location = document.getElementById('edit-location').value.trim();
+      const sectors  = [...document.querySelectorAll('.sector-check:checked')].map(i=>i.value);
+      const prefs    = [...document.querySelectorAll('.pref-check:checked')].map(i=>i.value);
+
+      let valid = true;
+      const nameErr = document.getElementById('err-name');
+      const locErr  = document.getElementById('err-location');
+      const secErr  = document.getElementById('err-sectors');
+      [nameErr, locErr, secErr].forEach(e => { if(e) e.textContent = ''; });
+
+      if (!name)           { nameErr.textContent = 'Full name is required.'; valid = false; }
+      if (!location)       { locErr.textContent  = 'Location is required.';  valid = false; }
+      if (!sectors.length) { secErr.textContent  = 'Select at least one sector.'; valid = false; }
+      if (!valid) return;
+
+      await upsertProfile(user.id, {
+        full_name:      name,
+        location,
+        linkedin_url:   document.getElementById('edit-linkedin').value.trim(),
+        years_exp:      document.getElementById('edit-experience').value,
+        sector_prefs:   sectors,
+        job_type_prefs: prefs,
+      });
+
+      const msg = document.getElementById('save-msg');
+      msg.textContent = 'Profile saved!';
+      msg.style.display = 'block';
+      document.getElementById('setup-banner').style.display = 'none';
+      setTimeout(() => msg.style.display = 'none', 2500);
+    });
+
+    // Score history chart
+    const history = profile?.cv_score_history || [];
+    if (history.length >= 2) {
+      document.getElementById('score-history-card').style.display = 'block';
+      renderChart(history);
+    }
+  }
+
+  function renderChart(history) {
+    const svg    = document.getElementById('score-chart');
+    const W = 600, H = 160, pad = 40;
+    const pts    = history.slice(-8);
+    const n      = pts.length;
+    const xStep  = (W - pad * 2) / Math.max(n - 1, 1);
+    const yScale = (H - pad * 2) / 100;
+
+    // Grid lines
+    [0,25,50,75,100].forEach(v => {
+      const y = H - pad - v * yScale;
+      svg.innerHTML += `<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="var(--gray-mid)" stroke-dasharray="4"/>`;
+      svg.innerHTML += `<text x="${pad-6}" y="${y+4}" font-size="10" fill="var(--gray-dark)" text-anchor="end">${v}</text>`;
+    });
+
+    // Line path
+    const pathD = pts.map((p,i) => (i===0?'M':'L') + (pad + i * xStep).toFixed(0) + ',' + (H - pad - p.score * yScale).toFixed(0)).join(' ');
+    svg.innerHTML += `<path d="${pathD}" fill="none" stroke="var(--orange)" stroke-width="2.5" stroke-linejoin="round"/>`;
+
+    // Points + delta
+    pts.forEach((p,i) => {
+      const x = pad + i * xStep, y = H - pad - p.score * yScale;
+      const delta = i > 0 ? p.score - pts[i-1].score : null;
+      const col   = delta === null ? 'var(--orange)' : delta >= 0 ? 'var(--green-lt)' : 'var(--red)';
+      svg.innerHTML += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="5" fill="${col}" stroke="var(--dark)" stroke-width="2"/>`;
+      svg.innerHTML += `<text x="${x.toFixed(0)}" y="${(y-10).toFixed(0)}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--dark)">${p.score}</text>`;
+      if (delta !== null) {
+        const sign = delta >= 0 ? '+' : '';
+        svg.innerHTML += `<text x="${x.toFixed(0)}" y="${(y-22).toFixed(0)}" text-anchor="middle" font-size="9" fill="${col}">${sign}${delta}pts</text>`;
+      }
+    });
+
+    // Legend
+    const legend = document.getElementById('score-history-legend');
+    pts.forEach((p,i) => {
+      const date = new Date(p.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+      legend.innerHTML += `<div style="font-size:.72rem;color:var(--gray-dark);">${date}: <strong style="color:var(--dark);">${p.score}</strong></div>`;
+    });
+  }
+
+  function renderSavedJobs() {
+    const saved   = getSavedJobs ? getSavedJobs() : [];
+    const card    = document.getElementById('saved-jobs-card');
+    const listEl  = document.getElementById('saved-jobs-list');
+    if (!card || !listEl) return;
+    if (!saved.length) return;
+    card.style.display = 'block';
+
+    function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+    listEl.innerHTML = saved.map(item => {
+      const j    = item.job_data || {};
+      const days = Math.ceil((new Date(j.deadline || Date.now()) - new Date()) / 86400000);
+      return `
+        <div class="saved-job-row" data-id="${item.job_id}" style="padding:16px 20px;border-bottom:1px solid var(--gray-mid);display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+            <div>
+              <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-dark);">${esc(j.organisation||'')}</div>
+              <div style="font-weight:700;font-size:.95rem;color:var(--dark);margin-top:2px;">${esc(j.title||'Saved role')}</div>
+              <div style="font-size:.75rem;color:var(--gray-dark);margin-top:3px;">📍 ${esc(j.location||'')} &bull; ${days > 0 ? days+'d left' : 'Expired'}</div>
+            </div>
+            <button class="bookmark-btn" data-remove="${item.job_id}" title="Remove from saved" style="flex-shrink:0;">✕ Remove</button>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:.82rem;cursor:pointer;">
+              <input type="checkbox" class="sj-cvready" data-id="${item.job_id}" ${item.cv_ready?'checked':''}>
+              CV ready
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:.82rem;cursor:pointer;">
+              <input type="checkbox" class="sj-applied" data-id="${item.job_id}" ${item.applied?'checked':''}>
+              Applied
+            </label>
+            <a href="cv-analyser.html" class="btn btn-primary btn-sm" style="font-size:.72rem;">Boost CV for this role</a>
+          </div>
+        </div>`;
+    }).join('') + '<div style="padding:12px 20px;font-size:.78rem;color:var(--gray-dark);">Save roles on the <a href="opportunities.html" style="font-weight:700;color:var(--orange);">opportunities page</a> to track them here.</div>';
+
+    // Remove
+    listEl.querySelectorAll('[data-remove]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.remove;
+        await unsaveJob?.(null, id);
+        btn.closest('.saved-job-row').remove();
+        if (!listEl.querySelector('.saved-job-row')) card.style.display = 'none';
+      });
+    });
+
+    // Toggles
+    listEl.querySelectorAll('.sj-cvready,.sj-applied').forEach(cb => {
+      cb.addEventListener('change', async () => {
+        const id    = cb.dataset.id;
+        const field = cb.classList.contains('sj-cvready') ? 'cv_ready' : 'applied';
+        await updateSavedJob?.(id, { [field]: cb.checked });
+      });
+    });
+  }
+
+  renderSavedJobs();
+  init();
+})();
+</script>
+</body>
+</html>

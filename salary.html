@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salary Intelligence — Afrorama</title>
+  <meta name="description" content="Search real salary data for Africa's social impact sector. Contributed by professionals like you — free for members who share their own salary.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <style>
+    /* ── Page header ── */
+    .salary-hero {
+      background: var(--green-dk);
+      padding: 60px 0;
+      border-bottom: 3px solid var(--dark);
+    }
+    .salary-hero-inner { display: grid; grid-template-columns: 1fr 400px; gap: 48px; align-items: start; }
+    .salary-hero h1 {
+      font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
+      font-size: clamp(3rem, 7vw, 6rem); font-weight: 400;
+      letter-spacing: .04em; text-transform: uppercase; line-height: 1;
+      color: var(--yellow);
+      text-shadow: 3px 3px 0 rgba(0,0,0,.25);
+      margin-bottom: 14px;
+    }
+    .salary-hero p { color: rgba(255,255,255,.75); font-size: .95rem; line-height: 1.7; max-width: 480px; }
+    .glassdoor-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,228,0,.15); border: 1.5px solid rgba(255,228,0,.35);
+      border-radius: 100px; padding: 6px 16px;
+      font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .12em;
+      color: var(--yellow); margin-bottom: 18px;
+      font-family: 'Bebas Neue', Impact, sans-serif;
+    }
+    .hero-stat-row { display: flex; gap: 28px; margin-top: 20px; flex-wrap: wrap; }
+    .hero-stat { color: rgba(255,255,255,.8); }
+    .hero-stat-num { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 2.4rem; color: var(--yellow); line-height: 1; letter-spacing: -.02em; }
+    .hero-stat-label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.55); }
+
+    /* ── Contribute card ── */
+    .contribute-card {
+      background: var(--white); border: 3px solid var(--dark);
+      border-radius: var(--radius-xl); padding: 28px;
+      box-shadow: 6px 6px 0 var(--dark);
+    }
+    .contribute-card h3 {
+      font-family: 'Bebas Neue', Impact, sans-serif;
+      font-size: 1.4rem; letter-spacing: .04em; text-transform: uppercase;
+      color: var(--dark); margin-bottom: 6px;
+    }
+    .contribute-card p { font-size: .84rem; color: var(--gray-dark); margin-bottom: 16px; }
+    .contribute-form { display: flex; flex-direction: column; gap: 10px; }
+    .contribute-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* ── Access layers ── */
+    .access-layer {
+      background: var(--white); border: 2.5px solid var(--dark);
+      border-radius: var(--radius-xl); padding: 56px 32px;
+      text-align: center; box-shadow: 6px 6px 0 var(--dark);
+      margin: 40px 0;
+    }
+    .access-layer-icon { font-size: 52px; margin-bottom: 16px; }
+    .access-layer h2 { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 2rem; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 10px; }
+    .access-layer p { color: var(--gray-dark); max-width: 420px; margin: 0 auto 24px; line-height: 1.65; }
+    .access-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── Main layout ── */
+    .salary-layout { display: grid; grid-template-columns: 280px 1fr; gap: 28px; padding: 40px 0 80px; align-items: start; }
+
+    /* ── Search panel ── */
+    .search-panel {
+      background: var(--white); border: 2.5px solid var(--dark);
+      border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: 4px 4px 0 var(--dark); margin-bottom: 20px;
+    }
+    .search-panel-head { background: var(--dark); padding: 14px 18px; }
+    .search-panel-head h4 { color: var(--yellow); font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1rem; font-weight: 400; letter-spacing: .06em; text-transform: uppercase; }
+    .search-panel-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+    .search-main-wrap {
+      display: flex; align-items: center; gap: 8px;
+      border: 2px solid var(--dark); border-radius: 100px;
+      padding: 9px 14px; background: var(--white);
+      box-shadow: 2px 2px 0 var(--dark);
+    }
+    .search-main-input { border: none; outline: none; font-family: inherit; font-size: .88rem; color: var(--dark); width: 100%; background: transparent; }
+
+    /* ── Results ── */
+    .results-panel { display: flex; flex-direction: column; gap: 14px; }
+    .salary-card {
+      background: var(--white); border: 2.5px solid var(--dark);
+      border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: 4px 4px 0 var(--dark);
+      transition: transform .12s, box-shadow .12s;
+    }
+    .salary-card:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--dark); }
+    .salary-card-head {
+      padding: 16px 20px; display: flex; justify-content: space-between;
+      align-items: flex-start; gap: 12px; flex-wrap: wrap;
+      border-bottom: 1.5px solid var(--gray-mid);
+    }
+    .salary-company { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--gray-dark); margin-bottom: 3px; }
+    .salary-position { font-size: 1rem; font-weight: 800; color: var(--dark); line-height: 1.2; }
+    .salary-tag { font-family: 'Bebas Neue', Impact, sans-serif; font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; border: 1.5px solid var(--dark); flex-shrink: 0; }
+    .salary-card-body { padding: 16px 20px; }
+    .salary-main-num {
+      font-family: 'Bebas Neue', Impact, sans-serif;
+      font-size: 2.2rem; letter-spacing: -.02em; color: var(--orange);
+      line-height: 1; margin-bottom: 4px;
+    }
+    .salary-label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--gray-dark); margin-bottom: 12px; }
+    .salary-bar-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .salary-bar-min { font-size: .75rem; color: var(--gray-dark); min-width: 56px; }
+    .salary-bar-max { font-size: .75rem; color: var(--gray-dark); min-width: 56px; text-align: right; }
+    .salary-range-bar { flex: 1; height: 8px; background: var(--gray-mid); border-radius: 4px; overflow: hidden; position: relative; }
+    /* Orange fill = where salaries cluster between min and max */
+    .salary-range-fill { position: absolute; height: 100%; background: var(--orange); border-radius: 4px; }
+    .salary-range-median {
+      position: absolute; top: 50%; transform: translate(-50%, -50%);
+      width: 12px; height: 12px; background: var(--dark);
+      border: 2px solid var(--white); border-radius: 50%;
+      box-shadow: 0 0 0 1px var(--dark);
+    }
+    .salary-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: .75rem; color: var(--gray-dark); padding-top: 10px; border-top: 1px solid var(--gray-mid); }
+    .salary-meta-item { display: flex; align-items: center; gap: 4px; }
+
+    /* ── Contribute success ── */
+    .contribute-success {
+      background: rgba(63,126,68,.08); border: 2px solid rgba(63,126,68,.3);
+      border-radius: var(--radius-md); padding: 14px 18px;
+      display: none; align-items: center; gap: 10px;
+      font-size: .88rem; color: var(--green-dk); font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .contribute-success.visible { display: flex; }
+
+    /* ── Database reveal animation ── */
+    #salary-database { animation: none; }
+    #salary-database.revealed { animation: fadeSlideUp .45s ease-out both; }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .building-indicator {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--yellow); border: 2.5px solid var(--dark);
+      border-radius: var(--radius-md); padding: 14px 18px;
+      box-shadow: 3px 3px 0 var(--dark);
+      margin-bottom: 20px; font-weight: 700; font-size: .9rem;
+    }
+    .building-dots span {
+      display: inline-block; width: 6px; height: 6px;
+      background: var(--dark); border-radius: 50%; margin: 0 2px;
+      animation: dot-bounce .9s infinite;
+    }
+    .building-dots span:nth-child(2) { animation-delay: .15s; }
+    .building-dots span:nth-child(3) { animation-delay: .30s; }
+    @keyframes dot-bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
+
+    /* ── Empty / no results ── */
+    .no-results-msg { text-align: center; padding: 48px 24px; color: var(--gray-dark); }
+    .no-results-msg h4 { color: var(--dark); margin-bottom: 6px; }
+
+    @media (max-width: 960px) {
+      .salary-hero-inner { grid-template-columns: 1fr; }
+      .salary-layout { grid-template-columns: 1fr; }
+      .contribute-row { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<nav class="nav" id="main-nav" role="navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+      <span class="nav-logo-text">afrorama</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="opportunities.html">Opportunities</a></li>
+      <li><a href="cv-analyser.html">No Wahala CV</a></li>
+      <li><a href="salary.html">Salary Intelligence</a></li>
+    </ul>
+    <div class="nav-cta-group">
+      <a href="auth.html"    class="btn btn-secondary btn-sm" id="nav-auth-btn">Sign in</a>
+      <a href="profile.html" class="btn btn-primary btn-sm"   id="nav-profile-btn" style="display:none;">My profile</a>
+    </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile-menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu">
+  <a href="opportunities.html">Opportunities</a>
+  <a href="cv-analyser.html">No Wahala CV</a>
+  <a href="salary.html">Salary Intelligence</a>
+  <a href="auth.html">Sign in</a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="salary-hero">
+  <div class="container">
+    <div class="salary-hero-inner">
+
+      <!-- Left: headline -->
+      <div>
+        <div class="glassdoor-pill">Salary Intelligence</div>
+        <h1>Make our sector<br>transparent</h1>
+        <p>Africa's impact sector has a pay transparency problem. Professionals accept below-market salaries because they have no reference point. This database — built from member contributions — changes that.</p>
+        <p style="margin-top:10px;"><em style="color:rgba(255,255,255,.6);font-style:italic;">Share your salary. Access everyone else's. Help each other get paid fairly.</em></p>
+        <div class="hero-stat-row">
+          <div class="hero-stat"><div class="hero-stat-num" id="stat-entries">—</div><div class="hero-stat-label">Salary entries</div></div>
+          <div class="hero-stat"><div class="hero-stat-num" id="stat-years">—</div><div class="hero-stat-label">Years of data</div></div>
+          <div class="hero-stat"><div class="hero-stat-num" id="stat-orgs">—</div><div class="hero-stat-label">Organisations</div></div>
+        </div>
+      </div>
+
+      <!-- Right: contribute card (members only) -->
+      <div class="contribute-card" id="contribute-card">
+
+        <!-- State: not signed in -->
+        <div id="card-state-signin">
+          <h3>Share your salary</h3>
+          <p>Anonymous and secure. Members contribute and access the full database for free.</p>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;margin-bottom:16px;">
+            <a href="auth.html?next=salary.html" class="btn btn-primary" style="justify-content:center;">Sign in to contribute</a>
+            <a href="auth.html?next=salary.html" class="btn btn-outline btn-sm" style="justify-content:center;">Create a free account →</a>
+          </div>
+          <!-- Greyed-out form preview -->
+          <div style="opacity:.35;pointer-events:none;user-select:none;">
+            <div class="form-group"><label class="form-label">Organisation</label><input class="form-input" placeholder="e.g. UNDP, Amref, Dalberg" disabled></div>
+            <div class="form-group" style="margin-top:10px;"><label class="form-label">Job title</label><input class="form-input" placeholder="e.g. Programme Officer" disabled></div>
+            <div class="contribute-row" style="margin-top:10px;">
+              <div class="form-group"><label class="form-label">Annual salary (USD)</label><input class="form-input" placeholder="e.g. 55000" disabled></div>
+              <div class="form-group"><label class="form-label">Years experience</label><select class="form-select" disabled><option>Select…</option></select></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- State: member, can contribute -->
+        <div id="card-state-form" style="display:none;">
+          <h3>Share your salary</h3>
+          <p>Anonymous and secure. Your submission unlocks full database access.</p>
+          <div class="contribute-success" id="contribute-success">
+            <span>✅</span> Thank you! Your data helps the whole community.
+          </div>
+          <form class="contribute-form" id="contribute-form" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="c-company">Organisation <span style="color:var(--orange)">*</span></label>
+              <input class="form-input" id="c-company" type="text" placeholder="e.g. UNDP, Amref, Dalberg" required autocomplete="organization">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="c-position">Job title <span style="color:var(--orange)">*</span></label>
+              <input class="form-input" id="c-position" type="text" placeholder="e.g. Programme Officer" required>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-mid);margin-bottom:2px;">
+              <div>
+                <div style="font-size:.88rem;font-weight:700;color:var(--dark);">Was this role paid?</div>
+                <div style="font-size:.72rem;color:var(--gray-dark);margin-top:1px;">Toggle off to log an unpaid / volunteer role</div>
+              </div>
+              <label class="toggle-switch" style="flex-shrink:0;">
+                <input type="checkbox" id="c-is-paid" checked>
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+            <div class="contribute-row" id="salary-field-wrap">
+              <div class="form-group">
+                <label class="form-label" for="c-salary">Annual salary (USD) <span style="color:var(--orange)">*</span></label>
+                <input class="form-input" id="c-salary" type="number" placeholder="e.g. 55000" min="1000" max="500000">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="c-years">Years of experience <span style="color:var(--orange)">*</span></label>
+                <select class="form-select" id="c-years" required>
+                  <option value="">Select…</option>
+                  <option value="0-1">0–1 years</option>
+                  <option value="2-4">2–4 years</option>
+                  <option value="5-8">5–8 years</option>
+                  <option value="9-14">9–14 years</option>
+                  <option value="15+">15+ years</option>
+                </select>
+              </div>
+            </div>
+            <div class="contribute-row">
+              <div class="form-group">
+                <label class="form-label" for="c-sector">Sector <span style="color:var(--orange)">*</span></label>
+                <select class="form-select" id="c-sector" required><option value="">Select…</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="c-country">Country <span style="color:var(--orange)">*</span></label>
+                <select class="form-select" id="c-country" required><option value="">Select…</option></select>
+              </div>
+            </div>
+            <p style="font-size:.72rem;color:var(--gray-dark);margin:4px 0;">Your submission is anonymous. We never share individual data points.</p>
+            <span class="form-error" id="contribute-error" role="alert"></span>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;" id="btn-contribute">
+              Submit and unlock access
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BLURRED PREVIEW (signed-out / not-yet-contributed) ═══ -->
+<!-- ═══ FREE FOR EVERYONE BANNER ═══ -->
+<div style="background:var(--yellow);border-top:2.5px solid var(--dark);border-bottom:2.5px solid var(--dark);padding:14px 0;">
+  <div class="container" style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;text-align:center;">
+    <span style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dark);">Free for Afrorama members</span>
+    <span style="font-size:.85rem;color:var(--dark);font-weight:600;">— Sign up, share your salary and access the full database at no cost.</span>
+    <a href="auth.html?next=salary.html" class="btn btn-secondary btn-sm" style="flex-shrink:0;">Sign up free →</a>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<main>
+  <div class="container">
+
+    <!-- FULL ACCESS → search + results -->
+    <div id="salary-database" style="display:none;">
+
+      <!-- Building indicator — shown briefly then hidden -->
+      <div class="building-indicator" id="building-indicator" style="display:none;margin-top:24px;">
+        <span>🔨</span>
+        <span>Building your database</span>
+        <div class="building-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <div class="contribute-success visible" id="top-success-msg" style="display:none;margin-top:24px;">
+        <span>✅</span> Your salary data has been added. Thank you for making the sector more transparent.
+      </div>
+
+      <div class="salary-layout">
+
+        <!-- LEFT: filters -->
+        <aside>
+          <div class="search-panel">
+            <div class="search-panel-head"><h4>Search</h4></div>
+            <div class="search-panel-body">
+              <div class="search-main-wrap">
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input class="search-main-input" id="salary-search" type="search" placeholder="Company or job title…" aria-label="Search salaries">
+              </div>
+            </div>
+          </div>
+
+          <div class="search-panel">
+            <div class="search-panel-head"><h4>Filter</h4></div>
+            <div class="search-panel-body">
+              <div class="form-group">
+                <label class="form-label" for="filter-sector">Sector</label>
+                <select class="form-select" id="filter-sector">
+                  <option value="">All sectors</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="filter-country">Country</label>
+                <select class="form-select" id="filter-country">
+                  <option value="">All countries</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="filter-exp">Experience</label>
+                <select class="form-select" id="filter-exp">
+                  <option value="">All levels</option>
+                  <option value="0-1">0–1 years</option>
+                  <option value="2-4">2–4 years</option>
+                  <option value="5-8">5–8 years</option>
+                  <option value="9-14">9–14 years</option>
+                  <option value="15+">15+ years</option>
+                </select>
+              </div>
+              <button class="btn btn-outline btn-sm" id="btn-clear-filters" style="width:100%;justify-content:center;">Clear filters</button>
+            </div>
+          </div>
+
+          <!-- Contribute again -->
+          <div class="search-panel">
+            <div class="search-panel-head"><h4>Add more data</h4></div>
+            <div class="search-panel-body">
+              <p style="font-size:.82rem;color:var(--gray-dark);margin-bottom:10px;">Changed jobs? Add another salary entry to help the community stay current.</p>
+              <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center;" onclick="document.getElementById('contribute-card').scrollIntoView({behavior:'smooth',block:'center'})">
+                Add another entry ↑
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- RIGHT: results -->
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+            <span class="results-count" id="salary-results-count" aria-live="polite">Loading…</span>
+            <select class="sort-select" id="salary-sort" aria-label="Sort results">
+              <option value="salary-desc">Highest salary first</option>
+              <option value="salary-asc">Lowest salary first</option>
+              <option value="company">A to Z (company)</option>
+              <option value="datapoints">Most data points</option>
+            </select>
+          </div>
+          <div class="results-panel" id="salary-results" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 Afrorama. All rights reserved.</span>
+      <span>Africa's #1 social impact job board</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/data.js"></script>
+<script src="js/salary-data.js"></script>
+<script src="js/main.js"></script>
+<script>
+(function () {
+  const { SALARY_SEED, searchSalaries, summarise } = window.AfroramaSalary;
+  const Auth   = window.AfroramaAuth;
+  const { SECTORS, AFRICAN_COUNTRIES } = window.AfroramaData;
+
+  const CONTRIBUTED_KEY = 'afrorama_salary_contributed';
+  let currentUser  = null;
+  let isMember     = false;
+  let hasContrib   = localStorage.getItem(CONTRIBUTED_KEY) === 'true';
+  let userSalaries = [];
+  let allData      = [...SALARY_SEED];
+
+  // ── Load community salary submissions from Supabase ──────────
+  async function loadSubmissions() {
+    const Supa = window.AfroramaSupabase;
+    if (Supa && !Supa.isDemoMode()) {
+      const sb = Supa.getSupabase();
+      const { data, error } = await sb.from('salary_submissions').select('*');
+      if (!error && data) userSalaries = data;
+    } else {
+      userSalaries = JSON.parse(localStorage.getItem('afrorama_salary_submissions') || '[]');
+    }
+    allData = [...SALARY_SEED, ...userSalaries];
+  }
+
+  // All countries of the world (ISO 3166-1 alpha-2, sorted A–Z)
+  const WORLD_COUNTRIES = [
+    {id:'AF',name:'Afghanistan'},{id:'AL',name:'Albania'},{id:'DZ',name:'Algeria'},
+    {id:'AD',name:'Andorra'},{id:'AO',name:'Angola'},{id:'AG',name:'Antigua & Barbuda'},
+    {id:'AR',name:'Argentina'},{id:'AM',name:'Armenia'},{id:'AU',name:'Australia'},
+    {id:'AT',name:'Austria'},{id:'AZ',name:'Azerbaijan'},{id:'BS',name:'Bahamas'},
+    {id:'BH',name:'Bahrain'},{id:'BD',name:'Bangladesh'},{id:'BB',name:'Barbados'},
+    {id:'BY',name:'Belarus'},{id:'BE',name:'Belgium'},{id:'BZ',name:'Belize'},
+    {id:'BJ',name:'Benin'},{id:'BT',name:'Bhutan'},{id:'BO',name:'Bolivia'},
+    {id:'BA',name:'Bosnia & Herzegovina'},{id:'BW',name:'Botswana'},{id:'BR',name:'Brazil'},
+    {id:'BN',name:'Brunei'},{id:'BG',name:'Bulgaria'},{id:'BF',name:'Burkina Faso'},
+    {id:'BI',name:'Burundi'},{id:'CV',name:'Cabo Verde'},{id:'KH',name:'Cambodia'},
+    {id:'CM',name:'Cameroon'},{id:'CA',name:'Canada'},{id:'CF',name:'Central African Republic'},
+    {id:'TD',name:'Chad'},{id:'CL',name:'Chile'},{id:'CN',name:'China'},
+    {id:'CO',name:'Colombia'},{id:'KM',name:'Comoros'},{id:'CG',name:'Congo (Republic)'},
+    {id:'CD',name:'Congo (DR)'},{id:'CR',name:'Costa Rica'},{id:'CI',name:"Côte d'Ivoire"},
+    {id:'HR',name:'Croatia'},{id:'CU',name:'Cuba'},{id:'CY',name:'Cyprus'},
+    {id:'CZ',name:'Czech Republic'},{id:'DK',name:'Denmark'},{id:'DJ',name:'Djibouti'},
+    {id:'DM',name:'Dominica'},{id:'DO',name:'Dominican Republic'},{id:'EC',name:'Ecuador'},
+    {id:'EG',name:'Egypt'},{id:'SV',name:'El Salvador'},{id:'GQ',name:'Equatorial Guinea'},
+    {id:'ER',name:'Eritrea'},{id:'EE',name:'Estonia'},{id:'SZ',name:'Eswatini'},
+    {id:'ET',name:'Ethiopia'},{id:'FJ',name:'Fiji'},{id:'FI',name:'Finland'},
+    {id:'FR',name:'France'},{id:'GA',name:'Gabon'},{id:'GM',name:'Gambia'},
+    {id:'GE',name:'Georgia'},{id:'DE',name:'Germany'},{id:'GH',name:'Ghana'},
+    {id:'GR',name:'Greece'},{id:'GD',name:'Grenada'},{id:'GT',name:'Guatemala'},
+    {id:'GN',name:'Guinea'},{id:'GW',name:'Guinea-Bissau'},{id:'GY',name:'Guyana'},
+    {id:'HT',name:'Haiti'},{id:'HN',name:'Honduras'},{id:'HU',name:'Hungary'},
+    {id:'IS',name:'Iceland'},{id:'IN',name:'India'},{id:'ID',name:'Indonesia'},
+    {id:'IR',name:'Iran'},{id:'IQ',name:'Iraq'},{id:'IE',name:'Ireland'},
+    {id:'IL',name:'Israel'},{id:'IT',name:'Italy'},{id:'JM',name:'Jamaica'},
+    {id:'JP',name:'Japan'},{id:'JO',name:'Jordan'},{id:'KZ',name:'Kazakhstan'},
+    {id:'KE',name:'Kenya'},{id:'KI',name:'Kiribati'},{id:'XK',name:'Kosovo'},
+    {id:'KW',name:'Kuwait'},{id:'KG',name:'Kyrgyzstan'},{id:'LA',name:'Laos'},
+    {id:'LV',name:'Latvia'},{id:'LB',name:'Lebanon'},{id:'LS',name:'Lesotho'},
+    {id:'LR',name:'Liberia'},{id:'LY',name:'Libya'},{id:'LI',name:'Liechtenstein'},
+    {id:'LT',name:'Lithuania'},{id:'LU',name:'Luxembourg'},{id:'MG',name:'Madagascar'},
+    {id:'MW',name:'Malawi'},{id:'MY',name:'Malaysia'},{id:'MV',name:'Maldives'},
+    {id:'ML',name:'Mali'},{id:'MT',name:'Malta'},{id:'MH',name:'Marshall Islands'},
+    {id:'MR',name:'Mauritania'},{id:'MU',name:'Mauritius'},{id:'MX',name:'Mexico'},
+    {id:'FM',name:'Micronesia'},{id:'MD',name:'Moldova'},{id:'MC',name:'Monaco'},
+    {id:'MN',name:'Mongolia'},{id:'ME',name:'Montenegro'},{id:'MA',name:'Morocco'},
+    {id:'MZ',name:'Mozambique'},{id:'MM',name:'Myanmar'},{id:'NA',name:'Namibia'},
+    {id:'NR',name:'Nauru'},{id:'NP',name:'Nepal'},{id:'NL',name:'Netherlands'},
+    {id:'NZ',name:'New Zealand'},{id:'NI',name:'Nicaragua'},{id:'NE',name:'Niger'},
+    {id:'NG',name:'Nigeria'},{id:'NO',name:'Norway'},{id:'OM',name:'Oman'},
+    {id:'PK',name:'Pakistan'},{id:'PW',name:'Palau'},{id:'PS',name:'Palestine'},
+    {id:'PA',name:'Panama'},{id:'PG',name:'Papua New Guinea'},{id:'PY',name:'Paraguay'},
+    {id:'PE',name:'Peru'},{id:'PH',name:'Philippines'},{id:'PL',name:'Poland'},
+    {id:'PT',name:'Portugal'},{id:'QA',name:'Qatar'},{id:'RO',name:'Romania'},
+    {id:'RU',name:'Russia'},{id:'RW',name:'Rwanda'},{id:'KN',name:'Saint Kitts & Nevis'},
+    {id:'LC',name:'Saint Lucia'},{id:'VC',name:'Saint Vincent & the Grenadines'},
+    {id:'WS',name:'Samoa'},{id:'SM',name:'San Marino'},{id:'ST',name:'São Tomé & Príncipe'},
+    {id:'SA',name:'Saudi Arabia'},{id:'SN',name:'Senegal'},{id:'RS',name:'Serbia'},
+    {id:'SC',name:'Seychelles'},{id:'SL',name:'Sierra Leone'},{id:'SG',name:'Singapore'},
+    {id:'SK',name:'Slovakia'},{id:'SI',name:'Slovenia'},{id:'SB',name:'Solomon Islands'},
+    {id:'SO',name:'Somalia'},{id:'ZA',name:'South Africa'},{id:'SS',name:'South Sudan'},
+    {id:'ES',name:'Spain'},{id:'LK',name:'Sri Lanka'},{id:'SD',name:'Sudan'},
+    {id:'SR',name:'Suriname'},{id:'SE',name:'Sweden'},{id:'CH',name:'Switzerland'},
+    {id:'SY',name:'Syria'},{id:'TW',name:'Taiwan'},{id:'TJ',name:'Tajikistan'},
+    {id:'TZ',name:'Tanzania'},{id:'TH',name:'Thailand'},{id:'TL',name:'Timor-Leste'},
+    {id:'TG',name:'Togo'},{id:'TO',name:'Tonga'},{id:'TT',name:'Trinidad & Tobago'},
+    {id:'TN',name:'Tunisia'},{id:'TR',name:'Turkey'},{id:'TM',name:'Turkmenistan'},
+    {id:'TV',name:'Tuvalu'},{id:'UG',name:'Uganda'},{id:'UA',name:'Ukraine'},
+    {id:'AE',name:'United Arab Emirates'},{id:'GB',name:'United Kingdom'},
+    {id:'US',name:'United States'},{id:'UY',name:'Uruguay'},{id:'UZ',name:'Uzbekistan'},
+    {id:'VU',name:'Vanuatu'},{id:'VE',name:'Venezuela'},{id:'VN',name:'Vietnam'},
+    {id:'YE',name:'Yemen'},{id:'ZM',name:'Zambia'},{id:'ZW',name:'Zimbabwe'},
+  ];
+
+  // ── Populate selects ──────────────────────────────────────────
+  function populateSelects() {
+    // All 13 sectors from data.js
+    const sectors = (SECTORS || []).slice().sort();
+
+    // All African countries for the FILTER sidebar (Africa-focused data)
+    const africaCountries = (AFRICAN_COUNTRIES || [])
+      .slice().sort((a, b) => a.name.localeCompare(b.name));
+
+    // Sector dropdowns — contribute form + filter sidebar
+    ['c-sector', 'filter-sector'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      sectors.forEach(s => {
+        const o = document.createElement('option');
+        o.value = s; o.textContent = s;
+        el.appendChild(o);
+      });
+    });
+
+    // Contribute form → ALL world countries
+    const contributeCountryEl = document.getElementById('c-country');
+    if (contributeCountryEl) {
+      WORLD_COUNTRIES.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.id; o.textContent = c.name;
+        contributeCountryEl.appendChild(o);
+      });
+    }
+
+    // Filter sidebar → African countries only (data is Africa-focused)
+    const filterCountryEl = document.getElementById('filter-country');
+    if (filterCountryEl) {
+      africaCountries.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.id; o.textContent = c.name;
+        filterCountryEl.appendChild(o);
+      });
+    }
+  }
+
+  // ── Hero stats — fully dynamic from the actual dataset ───────
+  function computeHeroStats() {
+    const all = allData;
+    const minYear  = Math.min(...all.map(r => r.year || 2024));
+    const maxYear  = Math.max(...all.map(r => r.year || 2024));
+    const orgs     = new Set(all.map(r => r.company)).size;
+    const yearsSpan = maxYear - minYear + 1;
+
+    const entriesEl = document.getElementById('stat-entries');
+    const yearsEl   = document.getElementById('stat-years');
+    const orgsEl    = document.getElementById('stat-orgs');
+    if (entriesEl) entriesEl.textContent = all.length + '+';
+    if (yearsEl)   yearsEl.textContent   = yearsSpan;
+    if (orgsEl)    orgsEl.textContent    = orgs + '+';
+  }
+
+  // ── Auth and access checks ────────────────────────────────────
+  async function init() {
+    populateSelects();
+    await loadSubmissions();
+    computeHeroStats();
+
+    currentUser = await Auth?.getUser().catch(() => null);
+    if (currentUser) {
+      document.getElementById('nav-auth-btn').style.display    = 'none';
+      document.getElementById('nav-profile-btn').style.display = 'inline-flex';
+    }
+
+    if (!currentUser) {
+      // Not signed in — show sign-in card state, keep blurred preview
+      showCardState('card-state-signin');
+      return;
+    }
+
+    const { profile } = await Auth?.getProfile(currentUser.id).catch(() => ({ profile: null })) || {};
+    isMember = !!profile?.is_member;
+
+    // Any signed-in (free) account can contribute — paid membership not required for launch
+    showCardState('card-state-form');
+
+    if (hasContrib) {
+      // Already contributed — skip straight to database
+      showDatabase(false);
+      renderResults();
+    }
+    // Otherwise: member sees contribute form + blurred preview
+  }
+
+  function showCardState(id) {
+    ['card-state-signin','card-state-not-member','card-state-form'].forEach(s => {
+      const el = document.getElementById(s);
+      if (el) el.style.display = s === id ? 'block' : 'none';
+    });
+  }
+
+  function showLayer(id) {
+    document.getElementById('salary-database').style.display = 'none';
+    if (id) document.getElementById(id).style.display = 'block';
+  }
+
+  function showDatabase(animate = false) {
+    showLayer(null);
+    const db = document.getElementById('salary-database');
+    db.style.display = 'block';
+    if (animate) {
+      // Show building indicator for 800ms, then fade in results
+      const indicator = document.getElementById('building-indicator');
+      if (indicator) indicator.style.display = 'flex';
+      setTimeout(() => {
+        if (indicator) indicator.style.display = 'none';
+        db.classList.add('revealed');
+        renderResults();
+        const topMsg = document.getElementById('top-success-msg');
+        if (topMsg) topMsg.style.display = 'flex';
+        db.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 900);
+    }
+  }
+
+  // ── Paid toggle — show/hide salary field ─────────────────────
+  document.getElementById('c-is-paid')?.addEventListener('change', function () {
+    const wrap  = document.getElementById('salary-field-wrap');
+    const input = document.getElementById('c-salary');
+    if (this.checked) {
+      wrap.style.display  = 'grid';
+      input.required      = false; // validated manually below
+    } else {
+      wrap.style.display  = 'none';
+      input.value         = '';
+      input.required      = false;
+    }
+  });
+
+  // ── Contribute form ───────────────────────────────────────────
+  document.getElementById('contribute-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const company  = document.getElementById('c-company').value.trim();
+    const position = document.getElementById('c-position').value.trim();
+    const isPaid   = document.getElementById('c-is-paid').checked;
+    const salaryRaw= document.getElementById('c-salary').value;
+    const salary   = isPaid ? parseInt(salaryRaw, 10) : 0;
+    const years    = document.getElementById('c-years').value;
+    const sector   = document.getElementById('c-sector').value;
+    const country  = document.getElementById('c-country').value;
+    const errEl    = document.getElementById('contribute-error');
+    errEl.textContent = ''; errEl.style.display = 'none';
+
+    // Validate required fields
+    if (!company || !position || !years || !sector || !country) {
+      errEl.textContent = 'Please fill in all required fields, including sector and country.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (isPaid && (isNaN(salary) || salary < 1000 || salary > 500000)) {
+      errEl.textContent = 'Please enter a realistic annual salary in USD (e.g. 45000).';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    const dbEntry = {
+      company, position,
+      salary: isPaid ? Number(salary) : 0,
+      unpaid: !isPaid,
+      years_exp: years,
+      sector,
+      country,
+      currency: 'USD',
+      year: new Date().getFullYear(),
+    };
+
+    const Supa = window.AfroramaSupabase;
+    if (Supa && !Supa.isDemoMode()) {
+      const sb = Supa.getSupabase();
+      const { data, error } = await sb.from('salary_submissions').insert(dbEntry).select().single();
+      if (error) {
+        errEl.textContent = 'Could not save your submission. Please try again.';
+        errEl.style.display = 'block';
+        return;
+      }
+      userSalaries.push(data);
+    } else {
+      userSalaries.push({ id: 'u-' + Date.now(), ...dbEntry });
+      localStorage.setItem('afrorama_salary_submissions', JSON.stringify(userSalaries));
+    }
+    allData = [...SALARY_SEED, ...userSalaries];
+    localStorage.setItem(CONTRIBUTED_KEY, 'true');
+    hasContrib = true;
+
+    // Mark button as loading
+    const btn = document.getElementById('btn-contribute');
+    btn.disabled  = true;
+    btn.textContent = '⏳ Building your database…';
+
+    // Short delay so the user sees the animation, then reveal
+    setTimeout(() => {
+      // Recompute all hero stats from live data
+      computeHeroStats();
+
+      // Show success message in the card
+      document.getElementById('contribute-success').classList.add('visible');
+      document.getElementById('contribute-form').reset();
+      btn.textContent = '✅ Submitted — thank you!';
+
+      // Demo mode: any signed-in user gets access; once Supabase is live,
+      // keep only `isMember` here and enforce real subscription checks.
+      const effectivelyMember = isMember || !!currentUser || true; // `|| true` = open while in demo mode
+
+      if (unlockEl) unlockEl.style.display = 'none';
+      showDatabase(true);
+    }, 1200);
+  });
+
+  // ── Search and filter ─────────────────────────────────────────
+  function getFilters() {
+    return {
+      query:   (document.getElementById('salary-search')?.value || '').trim(),
+      sector:  document.getElementById('filter-sector')?.value || '',
+      country: document.getElementById('filter-country')?.value || '',
+      exp:     document.getElementById('filter-exp')?.value || '',
+    };
+  }
+
+  function renderResults() {
+    const { query, sector, country, exp } = getFilters();
+    const sort = document.getElementById('salary-sort')?.value || 'salary-desc';
+
+    // Filter
+    let records = allData.filter(r => {
+      const q = query.toLowerCase();
+      const matchQ = !q || r.company.toLowerCase().includes(q) || r.position.toLowerCase().includes(q);
+      const matchS = !sector  || r.sector === sector;
+      const matchC = !country || r.country === country;
+      const matchE = !exp     || r.years_exp === exp;
+      return matchQ && matchS && matchC && matchE;
+    });
+
+    // Group by company + position (aggregate)
+    const groups = {};
+    records.forEach(r => {
+      const key = (r.company + '|' + r.position).toLowerCase();
+      if (!groups[key]) groups[key] = { company: r.company, position: r.position, sector: r.sector, country: r.country, records: [] };
+      groups[key].records.push(r);
+    });
+
+    let grouped = Object.values(groups).map(g => ({ ...g, stats: summarise(g.records) }));
+
+    // Sort
+    grouped.sort((a, b) => {
+      if (sort === 'salary-desc')  return b.stats.median - a.stats.median;
+      if (sort === 'salary-asc')   return a.stats.median - b.stats.median;
+      if (sort === 'company')      return a.company.localeCompare(b.company);
+      if (sort === 'datapoints')   return b.records.length - a.records.length;
+      return 0;
+    });
+
+    const counter = document.getElementById('salary-results-count');
+    if (counter) counter.innerHTML = `<strong>${grouped.length}</strong> result${grouped.length !== 1 ? 's' : ''} found`;
+
+    const container = document.getElementById('salary-results');
+    if (!grouped.length) {
+      container.innerHTML = `<div class="no-results-msg"><div style="font-size:36px;margin-bottom:12px;">🔍</div><h4>No results</h4><p>Try adjusting your search or filters.</p></div>`;
+      return;
+    }
+
+    // Build country name lookup from both world + African country lists
+    const COUNTRY_NAMES = {};
+    WORLD_COUNTRIES.forEach(c => { COUNTRY_NAMES[c.id] = c.name; });
+    (AFRICAN_COUNTRIES || []).forEach(c => { COUNTRY_NAMES[c.id] = c.name; });
+    const MAX_GLOBAL = Math.max(...grouped.map(g => g.stats.max), 1);
+
+    container.innerHTML = grouped.map(g => {
+      const { median, min, max, count } = g.stats;
+      const allUnpaid = g.records.every(r => r.unpaid || r.salary === 0);
+      const someUnpaid = g.records.some(r => r.unpaid || r.salary === 0);
+      const paidRecords = g.records.filter(r => !r.unpaid && r.salary > 0);
+      const yrs = g.records.map(r => r.years_exp).filter((v,i,a) => a.indexOf(v) === i).join(', ');
+
+      // Paid salary display
+      let salaryHTML = '';
+      if (allUnpaid) {
+        salaryHTML = `
+          <div class="salary-main-num" style="color:var(--green-dk);font-size:1.8rem;">Unpaid / Voluntary</div>
+          <div class="salary-label">No financial compensation</div>`;
+      } else {
+        const ps = paidRecords.map(r => r.salary);
+        const pMin = Math.min(...ps), pMax = Math.max(...ps);
+        const pMedian = ps.sort((a,b)=>a-b)[Math.floor(ps.length/2)];
+        const minPct = ((pMin / MAX_GLOBAL) * 100).toFixed(0);
+        const maxPct = ((pMax / MAX_GLOBAL) * 100).toFixed(0);
+        const fillWidth = Math.max(1, maxPct - minPct);
+        // Median dot position on the bar
+        const medianPct = ((pMedian - pMin) / Math.max(pMax - pMin, 1) * fillWidth + Number(minPct)).toFixed(1);
+        salaryHTML = `
+          <div class="salary-main-num">$${pMedian.toLocaleString()}</div>
+          <div class="salary-label">Median annual salary (USD)${someUnpaid ? ' · includes unpaid variants' : ''}</div>
+          <div class="salary-bar-wrap" style="margin-bottom:6px;">
+            <span class="salary-bar-min" title="Lowest reported">$${(pMin/1000).toFixed(0)}k</span>
+            <div class="salary-range-bar" title="Range: $${pMin.toLocaleString()} – $${pMax.toLocaleString()} · Median: $${pMedian.toLocaleString()}">
+              <div class="salary-range-fill" style="left:${minPct}%;width:${fillWidth}%;"></div>
+              <div class="salary-range-median" style="left:${medianPct}%;" title="Median: $${pMedian.toLocaleString()}"></div>
+            </div>
+            <span class="salary-bar-max" title="Highest reported">$${(pMax/1000).toFixed(0)}k</span>
+          </div>
+          <div style="font-size:.68rem;color:var(--gray-dark);display:flex;gap:12px;flex-wrap:wrap;">
+            <span>◼ orange bar = salary range</span>
+            <span>● black dot = median</span>
+          </div>`;
+      }
+
+      return `
+        <div class="salary-card">
+          <div class="salary-card-head">
+            <div>
+              <div class="salary-company">${esc(g.company)}</div>
+              <div class="salary-position">${esc(g.position)}</div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;">
+              ${allUnpaid ? '<span class="salary-tag" style="background:rgba(63,126,68,.1);border-color:#3F7E44;color:#275a2a;">Voluntary</span>' : ''}
+              <span class="salary-tag" style="background:rgba(63,126,68,.08);border-color:#3F7E44;color:#275a2a;">${esc(g.sector.split('&')[0].trim())}</span>
+              ${g.country ? `<span class="salary-tag">${COUNTRY_NAMES[g.country] || g.country}</span>` : ''}
+            </div>
+          </div>
+          <div class="salary-card-body">
+            ${salaryHTML}
+            <div class="salary-meta">
+              <span class="salary-meta-item">📊 ${count} data point${count !== 1 ? 's' : ''}</span>
+              ${yrs ? `<span class="salary-meta-item">💼 ${esc(yrs)} exp</span>` : ''}
+              ${!allUnpaid ? `<span class="salary-meta-item">📈 Range: $${Math.min(...paidRecords.map(r=>r.salary)).toLocaleString()} – $${Math.max(...paidRecords.map(r=>r.salary)).toLocaleString()}</span>` : ''}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+  // Live search + filter listeners
+  let t;
+  ['salary-search','filter-sector','filter-country','filter-exp','salary-sort'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => { clearTimeout(t); t = setTimeout(renderResults, 300); });
+    document.getElementById(id)?.addEventListener('change', renderResults);
+  });
+  document.getElementById('btn-clear-filters')?.addEventListener('click', () => {
+    ['filter-sector','filter-country','filter-exp'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    document.getElementById('salary-search').value = '';
+    renderResults();
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>

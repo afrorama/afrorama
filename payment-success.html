@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment confirmed — Afrorama</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/post.css">
+  <style>
+    .success-wrap {
+      min-height: calc(100vh - var(--nav-h));
+      display: flex; align-items: center; justify-content: center;
+      padding: 48px 24px;
+      background: #F6F5F2;
+      background-image: radial-gradient(circle, rgba(28,29,28,.04) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .success-card {
+      background: var(--white);
+      border: 2.5px solid var(--dark);
+      border-radius: var(--radius-xl);
+      max-width: 520px; width: 100%;
+      box-shadow: 8px 8px 0 var(--dark);
+      overflow: hidden;
+    }
+    .success-card-head {
+      background: var(--green-dk);
+      background-image: radial-gradient(circle, rgba(255,255,255,.08) 2px, transparent 2px);
+      background-size: 18px 18px;
+      padding: 36px 28px; text-align: center;
+    }
+    .success-card-head .s-eyebrow {
+      font-family: 'Bebas Neue', Impact, sans-serif;
+      font-size: .85rem; letter-spacing: .2em; text-transform: uppercase;
+      color: rgba(255,228,0,.65); margin-bottom: 10px; display: block;
+    }
+    .success-card-head h1 {
+      font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      font-weight: 400; letter-spacing: .04em; text-transform: uppercase;
+      color: var(--yellow);
+      text-shadow: 3px 3px 0 var(--dark), 5px 5px 0 rgba(0,0,0,.2);
+      line-height: 1;
+    }
+    .success-card-body { padding: 32px 28px; }
+    .success-card-body p { color: var(--gray-dark); line-height: 1.7; margin-bottom: 14px; }
+    .success-actions { display: flex; flex-direction: column; gap: 10px; }
+    .calendly-box {
+      background: var(--yellow);
+      border: 2.5px solid var(--dark);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: 4px 4px 0 var(--dark);
+      text-align: center; margin-bottom: 20px;
+    }
+    .calendly-box h4 {
+      font-family: 'Bebas Neue', Impact, sans-serif;
+      font-size: 1.3rem; letter-spacing: .04em; text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .calendly-box p { font-size: .84rem; color: rgba(28,29,28,.65); margin-bottom: 14px; }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="main-nav" role="navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+      <span class="nav-logo-text">afrorama</span>
+    </a>
+  </div>
+</nav>
+
+<div class="success-wrap">
+  <div class="success-card">
+    <div class="success-card-head">
+      <span class="s-eyebrow">Payment confirmed</span>
+      <h1 id="success-heading">You are in!</h1>
+    </div>
+    <div class="success-card-body">
+      <div id="success-content">
+        <!-- Filled by JS based on ?type= URL param -->
+        <p>Loading your confirmation…</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/stripe.js"></script>
+<script src="js/main.js"></script>
+<script>
+(function () {
+  const params  = new URLSearchParams(location.search);
+  const type    = params.get('type') || 'unknown';
+  const heading = document.getElementById('success-heading');
+  const content = document.getElementById('success-content');
+
+  const { getUser, getProfile, upsertProfile } = window.AfroramaAuth;
+
+  const CONFIGS = {
+    membership: {
+      heading: 'Welcome, Member!',
+      intro:   'Your Afrorama membership is now active. You now have access to the CV Bank, unlimited CV Boosts, the Interview Preparator, discounted coaching and the member community.',
+      actions: [
+        { href: 'profile.html',    label: 'Go to my profile',   cls: 'btn-primary' },
+        { href: 'cv-analyser.html',label: 'Boost my CV',        cls: 'btn-yellow'  },
+        { href: 'community.html',  label: 'Join the community', cls: 'btn-outline'  },
+      ],
+    },
+    cv_boost: {
+      heading: 'Boost unlocked!',
+      intro:   'You now have one additional CV analysis. Head back to the No Wahala CV Booster, upload your updated CV and track your progress.',
+      actions: [
+        { href: 'cv-analyser.html',  label: 'Boost my CV now', cls: 'btn-primary' },
+        { href: 'opportunities.html',label: 'Browse opportunities', cls: 'btn-outline' },
+      ],
+    },
+    office_hours: {
+      heading: 'Session booked!',
+      intro:   'Your $49 payment is confirmed. Book your 30-minute Office Hours session with the Afrorama team using the link below.',
+      calendly: true,
+      actions: [
+        { href: 'opportunities.html', label: 'Browse opportunities', cls: 'btn-outline' },
+        { href: 'profile.html',       label: 'My profile',           cls: 'btn-secondary' },
+      ],
+    },
+    job_listing: {
+      heading: 'Listing live!',
+      intro:   'Your job listing payment is confirmed and your opportunity is now visible to thousands of Africa-focused professionals. It will automatically expire after 30 days or on your deadline date.',
+      actions: [
+        { href: 'opportunities.html', label: 'View listings', cls: 'btn-primary' },
+        { href: 'post.html',          label: 'Post another', cls: 'btn-outline'  },
+      ],
+    },
+    unknown: {
+      heading: 'Payment confirmed!',
+      intro:   'Thank you for your payment. Your account has been updated.',
+      actions: [
+        { href: 'index.html', label: 'Go home', cls: 'btn-primary' },
+      ],
+    },
+  };
+
+  const cfg = CONFIGS[type] || CONFIGS.unknown;
+  heading.textContent = cfg.heading;
+
+  let html = `<p>${cfg.intro}</p>`;
+
+  if (cfg.calendly) {
+    const calendlyUrl = window.AfroramaStripe?.getCalendlyUrl() || 'https://calendly.com/hello-afrorama';
+    html += `
+      <div class="calendly-box">
+        <h4>Book your session</h4>
+        <p>Pick a time that suits you. The session is 30 minutes via video call.</p>
+        <a href="${calendlyUrl}" target="_blank" rel="noopener" class="btn btn-primary btn-lg" style="justify-content:center;width:100%;">
+          Book on Calendly →
+        </a>
+      </div>`;
+  }
+
+  html += `<div class="success-actions">`;
+  cfg.actions.forEach(a => {
+    html += `<a href="${a.href}" class="btn ${a.cls}" style="justify-content:center;">${a.label}</a>`;
+  });
+  html += `</div>`;
+
+  content.innerHTML = html;
+
+  // Update profile if membership payment
+  (async () => {
+    if (type === 'cv_boost') {
+      // Unlock a free re-upload on the CV Analyser
+      localStorage.setItem('afrorama_cv_reupload_used', 'false');
+      return;
+    }
+    if (type !== 'membership') return;
+    const user = await getUser();
+    if (!user) return;
+    // Webhook handles the real update; this is an optimistic client-side flag
+    await upsertProfile(user.id, { is_member: true, member_since: new Date().toISOString() });
+  })();
+})();
+</script>
+</body>
+</html>

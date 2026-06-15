@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Micro-Courses — Afrorama</title>
+  <meta name="description" content="Free and members-only bitesize courses in productivity and financial literacy — built for Africa's social impact professionals.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/courses.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<nav class="nav" id="main-nav" role="navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+      <span class="nav-logo-text">afrorama</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="opportunities.html">Opportunities</a></li>
+      <li><a href="cv-analyser.html">No Wahala CV</a></li>
+      <li><a href="courses.html">Courses</a></li>
+      <li><a href="community.html">Community</a></li>
+      
+      <li><a href="salary.html">Salary</a></li>
+    </ul>
+    <div class="nav-cta-group">
+      <a href="auth.html" class="btn btn-secondary btn-sm" id="nav-auth-btn">Sign in</a>
+      <a href="profile.html" class="btn btn-primary btn-sm" id="nav-profile-btn" style="display:none;">My profile</a>
+    </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile-menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu">
+  <a href="opportunities.html">Opportunities</a>
+  <a href="cv-analyser.html">No Wahala CV Booster</a>
+  <a href="courses.html">Courses</a>
+  <a href="community.html">Community</a>
+  <a href="auth.html">Sign in</a>
+</div>
+
+<!-- Hero -->
+<header class="courses-hero">
+  <div class="container">
+    <div class="courses-hero-inner">
+      <div>
+        <div class="cv-eyebrow" style="background:rgba(253,105,37,.12);color:#8a3400;border-color:rgba(253,105,37,.3);">Bitesize learning · 5–10 min per lesson</div>
+        <h1>Grow every day</h1>
+        <p>Daily micro-courses in productivity and financial literacy — built for Africa's social impact professionals. Free courses available. Members unlock the full library.</p>
+      </div>
+      <div id="streak-display" style="display:none;flex-direction:column;align-items:center;gap:6px;">
+        <div class="streak-pill" aria-live="polite">
+          🔥 <span id="streak-count">0</span>-day streak
+        </div>
+        <div style="font-size:.72rem;color:var(--gray-dark);">Keep it going!</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Continue learning banner (shown for enrolled users) -->
+<div class="continue-banner" id="continue-banner" style="display:none;">
+  <div class="container">
+    <div class="continue-inner">
+      <span class="continue-label">Continue</span>
+      <div class="continue-card" id="continue-card" style="cursor:pointer;"></div>
+      <a href="#" class="btn btn-yellow btn-sm" id="continue-btn">Resume →</a>
+    </div>
+  </div>
+</div>
+
+<!-- Email reminders banner -->
+<div class="container">
+  <div class="reminder-banner" id="reminder-banner" style="display:none;">
+    <span style="font-size:18px;">📬</span>
+    <p><strong>Get daily lesson reminders.</strong> We will send you a nudge each morning so you never break your streak.</p>
+    <button class="btn btn-primary btn-sm" id="btn-reminders">Enable reminders</button>
+    <button class="btn btn-outline btn-sm" id="btn-dismiss-reminders">Not now</button>
+  </div>
+</div>
+
+<!-- Filters + Course grid -->
+<main>
+  <div class="container">
+
+    <div class="courses-filters" role="group" aria-label="Filter courses">
+      <button class="filter-btn active" data-filter="all">All courses</button>
+      <button class="filter-btn" data-filter="productivity">Productivity</button>
+      <button class="filter-btn" data-filter="finance">Financial Literacy</button>
+      <button class="filter-btn" data-filter="free">Free only</button>
+      <button class="filter-btn" data-filter="enrolled">In progress</button>
+    </div>
+
+    <div class="courses-grid" id="courses-grid" aria-live="polite"></div>
+
+  </div>
+</main>
+
+<!-- Badge celebration modal -->
+<div class="badge-modal-backdrop" id="badge-modal" role="dialog" aria-modal="true" aria-label="Badge earned">
+  <div class="badge-modal">
+    <div class="badge-modal-icon" id="badge-modal-icon">🏆</div>
+    <h3>Badge earned!</h3>
+    <div class="badge-modal-name" id="badge-modal-name"></div>
+    <p id="badge-modal-desc"></p>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="document.getElementById('badge-modal').classList.remove('open')">Keep learning →</button>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 Afrorama. All rights reserved.</span>
+      <span>Africa's #1 social impact job board</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script src="js/courses-data.js"></script>
+<script>
+(function () {
+  const { COURSES, BADGES, getCourseProgress, getEarnedBadges, getStreak } = window.AfroramaCourses;
+  const Auth = window.AfroramaAuth;
+  let currentUser = null;
+  let currentFilter = 'all';
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+  async function init() {
+    currentUser = await Auth?.getUser().catch(() => null);
+    if (currentUser) {
+      document.getElementById('nav-auth-btn').style.display    = 'none';
+      document.getElementById('nav-profile-btn').style.display = 'inline-flex';
+    }
+
+    // Streak
+    const streak = getStreak();
+    if (streak.count >= 1) {
+      document.getElementById('streak-display').style.display = 'flex';
+      document.getElementById('streak-count').textContent = streak.count;
+    }
+
+    renderCourses();
+    renderBadges();
+    renderContinueBanner();
+    renderReminderBanner();
+  }
+
+  function renderCourses() {
+    const grid = document.getElementById('courses-grid');
+    let filtered = COURSES;
+    if (currentFilter === 'productivity') filtered = COURSES.filter(c => c.track === 'productivity');
+    else if (currentFilter === 'finance')  filtered = COURSES.filter(c => c.track === 'finance');
+    else if (currentFilter === 'free')     filtered = COURSES.filter(c => c.free);
+    else if (currentFilter === 'enrolled') filtered = COURSES.filter(c => getCourseProgress(c.id).enrolled);
+
+    if (!filtered.length) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--gray-dark);">No courses match this filter.</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(c => {
+      const prog    = getCourseProgress(c.id);
+      const pct     = prog.enrolled ? Math.round(prog.completed_lessons.length / c.lessons_data.length * 100) : 0;
+      const isLocked = !c.free && !currentUser;
+      return `
+        <a class="course-card" href="course.html?id=${c.id}" aria-label="${esc(c.title)}${isLocked?' (members only)':''}">
+          <div class="course-thumb" style="background:${c.colour}22;">
+            <span>${c.icon}</span>
+            ${isLocked ? '<span class="course-lock">Members</span>' : (c.free ? '<span class="course-free-badge">Free</span>' : '')}
+          </div>
+          <div class="course-body">
+            <div class="course-track" style="color:${c.colour};">${c.track === 'productivity' ? 'Productivity' : 'Financial Literacy'}</div>
+            <div class="course-title">${esc(c.title)}</div>
+            <div class="course-subtitle">${esc(c.subtitle)}</div>
+            ${prog.enrolled ? `
+              <div class="course-progress-wrap">
+                <div class="course-progress-label">
+                  <span>${prog.completed ? '✅ Completed!' : 'In progress'}</span>
+                  <span>${pct}%</span>
+                </div>
+                <div class="course-progress-bar"><div class="course-progress-fill" style="width:${pct}%;"></div></div>
+              </div>` : ''}
+            <div class="course-meta">
+              <span class="course-meta-item">📖 ${c.lessons_data.length} lessons</span>
+              <span class="course-meta-item">⏱ ${c.duration}</span>
+              <span class="course-meta-item" style="color:${c.colour};font-weight:700;">${c.difficulty}</span>
+            </div>
+          </div>
+        </a>`;
+    }).join('');
+  }
+
+  function renderBadges() {
+    const earned = new Set(getEarnedBadges());
+    document.getElementById('badges-grid').innerHTML = BADGES.map(b => `
+      <div class="badge-item ${earned.has(b.id) ? 'earned' : 'locked'}" title="${esc(b.desc)}">
+        <div class="badge-circle" style="background:${earned.has(b.id) ? b.colour+'22' : 'var(--gray-light)'};">
+          ${b.icon}
+        </div>
+        <div class="badge-name">${esc(b.name)}</div>
+      </div>`).join('');
+  }
+
+  function renderContinueBanner() {
+    const inProgress = COURSES.filter(c => {
+      const p = getCourseProgress(c.id);
+      return p.enrolled && !p.completed;
+    });
+    if (!inProgress.length) return;
+    const last  = inProgress[0];
+    const prog  = getCourseProgress(last.id);
+    const pct   = Math.round(prog.completed_lessons.length / last.lessons_data.length * 100);
+    const nextLesson = last.lessons_data.find(l => !prog.completed_lessons.includes(l.id));
+
+    document.getElementById('continue-banner').style.display = 'block';
+    document.getElementById('continue-card').innerHTML = `
+      <div class="continue-icon">${last.icon}</div>
+      <div style="flex:1;">
+        <div class="continue-title">${esc(last.title)}</div>
+        <div class="continue-progress-wrap"><div class="continue-progress-fill" style="width:${pct}%;"></div></div>
+        <div class="continue-pct">${nextLesson ? 'Next: '+esc(nextLesson.title) : 'Final lesson'}</div>
+      </div>`;
+    document.getElementById('continue-btn').href = `course.html?id=${last.id}`;
+  }
+
+  function renderReminderBanner() {
+    if (!currentUser) return;
+    if (localStorage.getItem('afrorama_reminders') === 'enabled') return;
+    if (localStorage.getItem('afrorama_reminders') === 'dismissed') return;
+    document.getElementById('reminder-banner').style.display = 'flex';
+  }
+
+  // Filters
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderCourses();
+    });
+  });
+
+  // Reminders
+  document.getElementById('btn-reminders')?.addEventListener('click', () => {
+    localStorage.setItem('afrorama_reminders', 'enabled');
+    document.getElementById('reminder-banner').style.display = 'none';
+    alert('Done! We will send you a daily lesson reminder. Add hello@afrorama.org to your contacts so it does not end up in spam.');
+  });
+  document.getElementById('btn-dismiss-reminders')?.addEventListener('click', () => {
+    localStorage.setItem('afrorama_reminders', 'dismissed');
+    document.getElementById('reminder-banner').style.display = 'none';
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>

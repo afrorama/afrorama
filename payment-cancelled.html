@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment cancelled — Afrorama</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .cancel-wrap {
+      min-height: calc(100vh - var(--nav-h));
+      display: flex; align-items: center; justify-content: center;
+      padding: 48px 24px; background: #F6F5F2;
+    }
+    .cancel-card {
+      background: var(--white); border: 2.5px solid var(--dark);
+      border-radius: var(--radius-xl); max-width: 420px; width: 100%;
+      box-shadow: 6px 6px 0 var(--dark); overflow: hidden; text-align: center;
+    }
+    .cancel-card-head { background: var(--orange); padding: 28px; border-bottom: 2px solid var(--dark); }
+    .cancel-card-head h1 {
+      font-family: 'Bebas Neue', Impact, sans-serif;
+      font-size: 2.4rem; letter-spacing: .04em; text-transform: uppercase;
+      color: var(--white); text-shadow: 2px 2px 0 rgba(0,0,0,.2);
+    }
+    .cancel-card-body { padding: 28px; }
+    .cancel-card-body p { color: var(--gray-dark); margin-bottom: 20px; line-height: 1.65; }
+  </style>
+</head>
+<body>
+<nav class="nav" id="main-nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+      <span class="nav-logo-text">afrorama</span>
+    </a>
+  </div>
+</nav>
+<div class="cancel-wrap">
+  <div class="cancel-card">
+    <div class="cancel-card-head"><h1>No charge made</h1></div>
+    <div class="cancel-card-body">
+      <p>You cancelled before completing payment. No charge was made to your card.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a href="opportunities.html" class="btn btn-primary" style="justify-content:center;">Browse opportunities</a>
+        <a href="index.html"       class="btn btn-outline"  style="justify-content:center;">Go home</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/main.js"></script>
+</body>
+</html>

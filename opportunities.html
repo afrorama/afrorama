@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Impact Jobs in Africa | NGO Careers, Fellowships &amp; Consultancies — Afrorama</title>
+  <meta name="description" content="Browse social impact jobs, NGO careers, consultancies and fellowships across Africa. Filter by country, sector and type. Kenya, South Africa, Senegal and more.">
+  <meta name="keywords" content="social impact jobs Africa, NGO jobs Africa, development jobs Kenya, NGO careers South Africa, social impact Senegal, fellowship Africa, consultancy Africa">
+  <link rel="canonical" href="https://afrorama.org/opportunities.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/opportunities.css">
+
+  <!-- SEO: JobPosting structured data — injected dynamically by opportunities.js -->
+  <script type="application/ld+json" id="jobposting-schema">[]</script>
+  <!-- SEO: WebSite schema -->
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"JobPosting","@id":"https://afrorama.org/opportunities.html",
+   "name":"Social Impact Jobs across Africa","description":"Browse social impact jobs, NGO careers, consultancies and fellowships across Africa.",
+   "hiringOrganization":{"@type":"Organization","name":"Afrorama","url":"https://afrorama.org"},
+   "jobLocation":{"@type":"Place","addressCountry":"Africa"},
+   "employmentType":"FULL_TIME"}
+  </script>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html" aria-label="Afrorama home">
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+      <span class="nav-logo-text">afrorama</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="opportunities.html">Opportunities</a></li>
+      <li><a href="cv-analyser.html">No Wahala CV</a></li>
+      <li><a href="salary.html">Salary Intelligence</a></li>
+    </ul>
+    <div class="nav-cta-group">
+      <a href="post.html" class="btn btn-primary btn-sm">Post a role</a>
+    </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu" role="dialog" aria-label="Mobile menu">
+  <a href="opportunities.html">Opportunities</a>
+  <a href="cv-analyser.html">No Wahala CV Booster</a>
+  <a href="salary.html">Salary Intelligence</a>
+  <a href="post.html" class="btn btn-primary">Post a role</a>
+</div>
+
+<!-- ===== PAGE HEADER ===== -->
+<header class="page-header">
+  <div class="container">
+    <div class="page-header-inner">
+      <div>
+        <h1>Opportunities</h1>
+        <p>Browse through <strong id="opp-header-count">—</strong> social impact roles, consultancies, research assignments and fellowships across Africa.</p>
+      </div>
+      <div class="page-header-actions">
+        <a href="cv-analyser.html" class="btn btn-secondary btn-sm">Improve your CV</a>
+        <a href="post.html" class="btn btn-primary btn-sm">Post a role</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== MAIN LAYOUT ===== -->
+<main>
+  <div class="container">
+    <div class="opp-layout">
+
+      <!-- ===== SIDEBAR ===== -->
+      <aside class="sidebar" aria-label="Filters">
+
+        <div class="filter-card">
+          <div class="filter-card-head">
+            <h4>Search</h4>
+          </div>
+          <div class="filter-body">
+            <div class="search-input-wrap">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input class="filter-search-input" id="search-filter" type="search" placeholder="Title, org or sector…" aria-label="Search opportunities">
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-card">
+          <div class="filter-card-head">
+            <h4>Type</h4>
+            <button class="filter-clear" id="clear-types" aria-label="Clear type filters">Clear</button>
+          </div>
+          <div class="filter-body">
+            <label class="filter-check">
+              <input type="checkbox" data-filter-type="jobs" aria-label="Filter by Jobs">
+              <span class="filter-check-label">
+                <span class="type-dot" style="background:#DDA63A"></span>
+                Jobs
+                <span class="filter-check-count" id="filter-count-jobs">0</span>
+              </span>
+            </label>
+            <label class="filter-check">
+              <input type="checkbox" data-filter-type="internship" aria-label="Filter by Internship and Volunteering">
+              <span class="filter-check-label">
+                <span class="type-dot" style="background:#26BDE2"></span>
+                Internship &amp; Volunteering
+                <span class="filter-check-count" id="filter-count-internship">0</span>
+              </span>
+            </label>
+            <label class="filter-check">
+              <input type="checkbox" data-filter-type="consultancy" aria-label="Filter by Consultancy and Research">
+              <span class="filter-check-label">
+                <span class="type-dot" style="background:#FD6925"></span>
+                Consultancy &amp; Research
+                <span class="filter-check-count" id="filter-count-consultancy">0</span>
+              </span>
+            </label>
+            <label class="filter-check">
+              <input type="checkbox" data-filter-type="capacity" aria-label="Filter by Capacity Building and Funding">
+              <span class="filter-check-label">
+                <span class="type-dot" style="background:#3F7E44"></span>
+                Capacity Building &amp; Funding
+                <span class="filter-check-count" id="filter-count-capacity">0</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="filter-card">
+          <div class="filter-card-head">
+            <h4>Region</h4>
+            <button class="filter-clear" id="clear-regions" aria-label="Clear region filters">Clear</button>
+          </div>
+          <div class="filter-body">
+            <label class="filter-check">
+              <input type="checkbox" data-filter-region="North Africa">
+              <span class="filter-check-label">North Africa</span>
+            </label>
+            <label class="filter-check">
+              <input type="checkbox" data-filter-region="West Africa">
+              <span class="filter-check-label">West Africa</span>
+            </label>
+            <label class="filter-check">
+              <input type="checkbox" data-filter-region="East Africa">
+              <span class="filter-check-label">East Africa</span>
+            </label>
+            <label class="filter-check">
+              <input type="checkbox" data-filter-region="Central Africa">
+              <span class="filter-check-label">Central Africa</span>
+            </label>
+            <label class="filter-check">
+              <input type="checkbox" data-filter-region="Southern Africa">
+              <span class="filter-check-label">Southern Africa</span>
+            </label>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- ===== MAIN CONTENT ===== -->
+      <div class="opp-main">
+
+        <!-- Leaflet Map -->
+        <div class="map-section" aria-label="Africa interactive map">
+          <div class="map-header">
+            <div>
+              <h4>Opportunities by country</h4>
+              <p>Click a country marker to filter</p>
+            </div>
+            <button class="map-reset-btn" id="map-reset-btn" style="position:static;display:none" aria-label="Reset country filter">✕ Clear filter</button>
+          </div>
+          <div id="opp-leaflet-map" role="application" aria-label="Interactive Africa map — click a marker to filter listings" style="height:340px;border-radius:var(--radius-md);overflow:hidden;border:3px solid var(--dark);box-shadow:6px 6px 0 var(--dark);"></div>
+        </div>
+
+        <!-- Active Filters -->
+        <div id="active-filters" class="active-filters" aria-live="polite" aria-label="Active filters"></div>
+
+        <!-- Results bar -->
+        <div class="results-header">
+          <span class="results-count" id="results-count" aria-live="polite">Loading…</span>
+          <select class="sort-select" id="sort-select" aria-label="Sort opportunities">
+            <option value="newest">Newest first</option>
+            <option value="deadline">Deadline soonest</option>
+            <option value="title">A to Z</option>
+          </select>
+        </div>
+
+        <!-- Listings -->
+        <div id="jobs-list" class="jobs-list" role="list" aria-live="polite" aria-label="Job listings"></div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ===== DETAIL MODAL ===== -->
+<div class="modal-backdrop" id="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-org" id="modal-org"></div>
+        <span id="modal-type"></span>
+      </div>
+      <button class="modal-close" id="modal-close-btn" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <h2 class="modal-title" id="modal-title"></h2>
+      <div class="modal-meta-grid">
+        <div class="modal-meta-item"><label>Location</label><span id="modal-location"></span></div>
+        <div class="modal-meta-item"><label>Deadline</label><span id="modal-deadline"></span></div>
+        <div class="modal-meta-item"><label>Salary / Stipend</label><span id="modal-salary"></span></div>
+        <div class="modal-meta-item"><label>Sector</label><span id="modal-sector"></span></div>
+        <div class="modal-meta-item"><label>Experience</label><span id="modal-experience"></span></div>
+        <div class="modal-meta-item"><label>Date Posted</label><span id="modal-posted"></span></div>
+      </div>
+      <div class="modal-section">
+        <div id="modal-description"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="post.html" class="btn btn-outline btn-sm">Post a similar role</a>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn btn-outline btn-sm" id="modal-share-btn" title="Share this opportunity">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share
+        </button>
+        <button class="bookmark-btn" id="modal-save-btn" style="display:none;">+ Save to profile</button>
+        <a href="#" class="btn btn-primary" id="modal-apply-btn" target="_blank" rel="noopener">Apply now</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer" aria-label="Site footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="assets/logo-icon.svg" class="footer-logo-icon" alt="" aria-hidden="true">
+          <span style="font-size:1.1rem;font-weight:800;letter-spacing:-.03em;">afrorama</span>
+        </div>
+        <p>Africa's dedicated platform for social impact careers. Connecting talent with organisations driving meaningful change across all 54 countries.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Opportunities</h5>
+        <ul>
+          <li><a href="opportunities.html?type=jobs">Jobs</a></li>
+          <li><a href="opportunities.html?type=internship">Internships</a></li>
+          <li><a href="opportunities.html?type=consultancy">Consultancies</a></li>
+          <li><a href="opportunities.html?type=capacity">Funding &amp; Fellowships</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>For Organisations</h5>
+        <ul>
+          
+          <li><a href="#">CV Bank</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="mailto:hello@afrorama.org">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="about.html">Our Mission</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Use</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Afrorama. All rights reserved.</span>
+      <span>Africa's #1 social impact job board</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/data.js"></script>
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script src="js/opportunities.js"></script>
+</body>
+</html>

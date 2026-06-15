@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community — Afrorama</title>
+  <meta name="description" content="Ask questions, share wins and connect with 40,000+ African changemakers on the Afrorama community board.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<nav class="nav" id="main-nav" role="navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+      <span class="nav-logo-text">afrorama</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="opportunities.html">Opportunities</a></li>
+      <li><a href="cv-analyser.html">No Wahala CV</a></li>
+      <li><a href="courses.html">Courses</a></li>
+      <li><a href="community.html">Community</a></li>
+      
+      <li><a href="salary.html">Salary</a></li>
+      <li><a href="templates.html">Templates</a></li>
+    </ul>
+    <div class="nav-cta-group">
+      <a href="auth.html" class="btn btn-secondary btn-sm" id="nav-auth-btn">Sign in</a>
+      <a href="profile.html" class="btn btn-primary btn-sm" id="nav-profile-btn" style="display:none;">My profile</a>
+    </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile-menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu">
+  <a href="opportunities.html">Opportunities</a>
+  <a href="cv-analyser.html">No Wahala CV Booster</a>
+  <a href="community.html">Community</a>
+  
+  <a href="auth.html" class="btn btn-primary">Sign in</a>
+</div>
+
+<header class="member-page-header">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+    <div>
+      <h1>Community</h1>
+      <p>Ask questions, share wins and support each other. You don't have to figure it all out alone.</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="community-layout">
+
+      <!-- MAIN FEED -->
+      <div>
+        <!-- Tabs -->
+        <div class="community-tabs" role="tablist">
+          <button class="community-tab active" role="tab" data-tab="general" aria-selected="true">General</button>
+          <button class="community-tab" role="tab" data-tab="kenya">Kenya <span class="coming-soon">soon</span></button>
+          <button class="community-tab" role="tab" data-tab="southaf">South Africa <span class="coming-soon">soon</span></button>
+          <button class="community-tab" role="tab" data-tab="diaspora">Diaspora <span class="coming-soon">soon</span></button>
+        </div>
+
+        <!-- Search -->
+        <div class="community-search-wrap">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="community-search-input" id="community-search" type="search" placeholder="Search posts…" aria-label="Search community">
+        </div>
+
+        <!-- Composer (hidden until signed in) -->
+        <div class="post-composer" id="post-composer" style="display:none;">
+          <div class="composer-header">Share something with the community</div>
+          <textarea class="composer-textarea" id="composer-text" placeholder="Ask a question, share a win, request support…" aria-label="Post content" maxlength="1000"></textarea>
+          <div class="composer-footer">
+            <span class="composer-hint" id="char-count">0 / 1000</span>
+            <button class="btn btn-primary btn-sm" id="btn-post">Post</button>
+          </div>
+        </div>
+
+        <!-- Sign-in CTA for non-members -->
+        <div id="signin-cta" style="text-align:center;padding:20px;background:var(--gray-light);border:2px dashed var(--gray-mid);border-radius:var(--radius-lg);margin-bottom:20px;">
+          <p style="margin-bottom:12px;font-size:.88rem;color:var(--gray-dark);">Sign in to post, comment and upvote</p>
+          <a href="auth.html?next=community.html" class="btn btn-primary btn-sm">Sign in to join the conversation</a>
+        </div>
+
+        <!-- Posts feed -->
+        <div id="posts-feed" aria-live="polite">
+          <div style="text-align:center;padding:40px;color:var(--gray-dark);">
+            <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+            Loading posts…
+          </div>
+        </div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <aside class="community-sidebar">
+
+        <div class="community-info-card">
+          <div class="community-info-head"><h4>Community guidelines</h4></div>
+          <div class="community-info-body">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;">
+              <li style="display:flex;gap:8px;font-size:.83rem;color:#444;">
+                <span style="color:var(--orange);flex-shrink:0;">🤝</span> Be respectful and supportive
+              </li>
+              <li style="display:flex;gap:8px;font-size:.83rem;color:#444;">
+                <span style="color:var(--orange);flex-shrink:0;">💡</span> Share knowledge freely
+              </li>
+              <li style="display:flex;gap:8px;font-size:.83rem;color:#444;">
+                <span style="color:var(--orange);flex-shrink:0;">🚫</span> No spam or self-promotion
+              </li>
+              <li style="display:flex;gap:8px;font-size:.83rem;color:#444;">
+                <span style="color:var(--orange);flex-shrink:0;">🌍</span> Africa-focused conversations
+              </li>
+              <li style="display:flex;gap:8px;font-size:.83rem;color:#444;">
+                <span style="color:var(--orange);flex-shrink:0;">🔑</span> Moderator posts are marked
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="community-info-card">
+          <div class="community-info-head"><h4>Quick links</h4></div>
+          <div class="community-info-body">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+              <li><a href="opportunities.html" style="font-size:.84rem;font-weight:600;color:var(--dark);">Browse opportunities →</a></li>
+              <li><a href="cv-analyser.html"   style="font-size:.84rem;font-weight:600;color:var(--dark);">Boost your CV →</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="community-info-card" style="background:var(--yellow);border-color:var(--dark);box-shadow:4px 4px 0 var(--dark);">
+          <div class="community-info-body" style="padding:20px;">
+            <div style="font-size:24px;margin-bottom:8px;">💬</div>
+            <h4 style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1.1rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px;">Office hours</h4>
+            <p style="font-size:.82rem;color:rgba(28,29,28,.7);line-height:1.55;margin-bottom:14px;">Want human feedback on your CV or job search? Book a session with the Afrorama team.</p>
+            <a href="https://calendly.com/hello-afrorama" target="_blank" rel="noopener" class="btn btn-dark btn-sm" style="width:100%;justify-content:center;">Book office hours</a>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 Afrorama. All rights reserved.</span>
+      <span>Africa's #1 social impact job board</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script>
+(function () {
+  const { getUser, getPosts, createPost, upvotePost, getComments, addComment } = window.AfroramaAuth;
+  let currentUser = null;
+  let currentTab  = 'general';
+  let voted       = JSON.parse(localStorage.getItem('afrorama_voted') || '[]');
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+  }
+  function timeAgo(dateStr) {
+    const d = (Date.now() - new Date(dateStr)) / 1000;
+    if (d < 60)   return 'just now';
+    if (d < 3600) return Math.floor(d/60) + 'm ago';
+    if (d < 86400)return Math.floor(d/3600) + 'h ago';
+    return Math.floor(d/86400) + 'd ago';
+  }
+
+  async function init() {
+    currentUser = await getUser();
+    if (currentUser) {
+      document.getElementById('post-composer').style.display = 'block';
+      document.getElementById('signin-cta').style.display    = 'none';
+      document.getElementById('nav-auth-btn').style.display   = 'none';
+      document.getElementById('nav-profile-btn').style.display = 'inline-flex';
+    }
+    loadPosts();
+  }
+
+  async function loadPosts(search = '') {
+    const feed = document.getElementById('posts-feed');
+    feed.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-dark);">Loading…</div>';
+    const { posts } = await getPosts(currentTab, search);
+    if (!posts.length) {
+      feed.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-dark);">No posts yet. Be the first to start a conversation!</div>';
+      return;
+    }
+    feed.innerHTML = posts.map(p => renderPost(p)).join('');
+    attachPostListeners();
+  }
+
+  function renderPost(p) {
+    const author  = p.profiles?.full_name || 'Member';
+    const initials= author.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    const isMod   = p.profiles?.is_moderator;
+    const isVoted = voted.includes(p.id);
+    const count   = p.community_comments?.[0]?.count ?? 0;
+    return `
+      <div class="post-card" data-id="${p.id}">
+        <div class="post-header">
+          <div class="post-avatar">${esc(initials)}</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
+              <span class="post-author">${esc(author)}</span>
+              ${isMod ? '<span class="mod-badge">Moderator</span>' : ''}
+            </div>
+            <div class="post-date">${timeAgo(p.created_at)}</div>
+          </div>
+        </div>
+        <div class="post-content">${esc(p.content)}</div>
+        <div class="post-actions">
+          <button class="post-action-btn upvote-btn ${isVoted?'upvoted':''}" data-id="${p.id}">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+            <span class="upvote-count">${p.upvotes || 0}</span>
+          </button>
+          <button class="post-action-btn comment-btn" data-id="${p.id}">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            ${count} comment${count === 1 ? '' : 's'}
+          </button>
+        </div>
+        <div class="comments-section" id="comments-${p.id}">
+          <div class="comments-list" id="comments-list-${p.id}">Loading…</div>
+          ${currentUser ? `
+          <div class="comment-compose">
+            <div class="comment-avatar">${esc(initials)}</div>
+            <input class="comment-input" data-post="${p.id}" placeholder="Add a comment…" aria-label="Write a comment">
+            <button class="btn btn-primary btn-sm comment-submit" data-post="${p.id}">Post</button>
+          </div>` : '<p style="font-size:.78rem;color:var(--gray-dark);padding:10px 0;"><a href="auth.html">Sign in</a> to comment.</p>'}
+        </div>
+      </div>`;
+  }
+
+  function attachPostListeners() {
+    // Upvote
+    document.querySelectorAll('.upvote-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!currentUser) { window.location.href = 'auth.html?next=community.html'; return; }
+        const id = btn.dataset.id;
+        await upvotePost(currentUser.id, id);
+        voted = JSON.parse(localStorage.getItem('afrorama_voted') || '[]');
+        const countEl = btn.querySelector('.upvote-count');
+        const wasVoted = !btn.classList.contains('upvoted');
+        btn.classList.toggle('upvoted');
+        countEl.textContent = parseInt(countEl.textContent) + (wasVoted ? 1 : -1);
+      });
+    });
+
+    // Toggle comments
+    document.querySelectorAll('.comment-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id  = btn.dataset.id;
+        const sec = document.getElementById('comments-' + id);
+        if (sec.classList.toggle('open')) {
+          const listEl = document.getElementById('comments-list-' + id);
+          const { comments } = await getComments(id);
+          listEl.innerHTML = comments.length
+            ? comments.map(c => renderComment(c)).join('')
+            : '<p style="font-size:.78rem;color:var(--gray-dark);padding:8px 0;">No comments yet.</p>';
+        }
+      });
+    });
+
+    // Submit comment
+    document.querySelectorAll('.comment-submit').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const postId = btn.dataset.post;
+        const input  = document.querySelector(`.comment-input[data-post="${postId}"]`);
+        const text   = input?.value.trim();
+        if (!text || !currentUser) return;
+        input.value = '';
+        const { comment } = await addComment(currentUser.id, postId, text);
+        if (comment) {
+          const listEl = document.getElementById('comments-list-' + postId);
+          listEl.innerHTML += renderComment(comment);
+        }
+      });
+    });
+
+    // Enter key in comment input
+    document.querySelectorAll('.comment-input').forEach(input => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          document.querySelector(`.comment-submit[data-post="${input.dataset.post}"]`)?.click();
+        }
+      });
+    });
+  }
+
+  function renderComment(c) {
+    const author  = c.profiles?.full_name || 'Member';
+    const initials= author.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    const isMod   = c.profiles?.is_moderator;
+    return `
+      <div class="comment-item">
+        <div class="comment-avatar">${esc(initials)}</div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span class="comment-author">${esc(author)}</span>
+            ${isMod ? '<span class="mod-badge" style="font-size:.56rem;padding:1px 5px;">Mod</span>' : ''}
+            <span class="comment-date">${timeAgo(c.created_at)}</span>
+          </div>
+          <div class="comment-text">${esc(c.content)}</div>
+        </div>
+      </div>`;
+  }
+
+  // Tabs
+  document.querySelectorAll('.community-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      if (tab.dataset.tab !== 'general') return; // coming soon
+      document.querySelectorAll('.community-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentTab = tab.dataset.tab;
+      loadPosts();
+    });
+  });
+
+  // Search
+  let searchTimer;
+  document.getElementById('community-search')?.addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => loadPosts(e.target.value.trim()), 350);
+  });
+
+  // Char count
+  const textarea = document.getElementById('composer-text');
+  textarea?.addEventListener('input', () => {
+    document.getElementById('char-count').textContent = textarea.value.length + ' / 1000';
+  });
+
+  // Post
+  document.getElementById('btn-post')?.addEventListener('click', async () => {
+    const text = textarea.value.trim();
+    if (!text || !currentUser) return;
+    const { post } = await createPost(currentUser.id, text, currentTab);
+    textarea.value = '';
+    document.getElementById('char-count').textContent = '0 / 1000';
+    if (post) {
+      const feed = document.getElementById('posts-feed');
+      feed.insertAdjacentHTML('afterbegin', renderPost(post));
+      attachPostListeners();
+    }
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opportunities Admin — Afrorama</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body { background: #F6F5F2; }
+    .gate-wrap { min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px; }
+    .gate-card { background:var(--white);border:2.5px solid var(--dark);border-radius:var(--radius-xl);max-width:380px;width:100%;box-shadow:6px 6px 0 var(--dark);overflow:hidden; }
+    .gate-head { background:var(--dark);padding:24px 28px;text-align:center; }
+    .gate-head h2 { font-family:'Bebas Neue',Impact,sans-serif;font-size:1.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--yellow); }
+    .gate-body { padding:24px 28px; }
+
+    .admin-wrap { max-width:1400px;margin:0 auto;padding:28px 24px 80px; }
+    .admin-top { display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:24px; }
+    .admin-top h1 { font-family:'Bebas Neue',Impact,sans-serif;font-size:2.4rem;letter-spacing:.04em;text-transform:uppercase; }
+    .stats-bar { display:flex;gap:16px;flex-wrap:wrap;background:var(--yellow);border:2.5px solid var(--dark);border-radius:var(--radius-md);padding:14px 20px;box-shadow:3px 3px 0 var(--dark);margin-bottom:22px; }
+    .stat-item { display:flex;flex-direction:column; }
+    .stat-num { font-family:'Bebas Neue',Impact,sans-serif;font-size:1.8rem;color:var(--dark);line-height:1; }
+    .stat-lbl { font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:rgba(28,29,28,.5); }
+
+    /* Tabs */
+    .admin-tabs { display:flex;gap:6px;margin-bottom:20px;border-bottom:2.5px solid var(--dark);padding-bottom:0;flex-wrap:wrap; }
+    .admin-tab { font-family:'Bebas Neue',Impact,sans-serif;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;padding:9px 18px;border-radius:6px 6px 0 0;border:2px solid var(--dark);border-bottom:none;cursor:pointer;background:var(--white);color:var(--gray-dark);margin-bottom:-2px;transition:all .12s;white-space:nowrap; }
+    .admin-tab.active { background:var(--dark);color:var(--yellow); }
+    .admin-tab:hover:not(.active) { background:var(--gray-light);color:var(--dark); }
+    .admin-tab.highlight { background:rgba(63,126,68,.12);color:var(--green-dk);border-color:var(--green-dk); }
+    .admin-tab.highlight:hover, .admin-tab.highlight.active { background:var(--green-dk);color:var(--yellow);border-color:var(--green-dk); }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    /* Panel card */
+    .panel { background:var(--white);border:2.5px solid var(--dark);border-radius:var(--radius-lg);box-shadow:4px 4px 0 var(--dark);overflow:hidden;margin-bottom:20px; }
+    .panel-head { background:var(--green-dk);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px; }
+    .panel-head h3 { font-family:'Bebas Neue',Impact,sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--yellow); }
+    .panel-body { padding:20px; }
+
+    /* Form grid */
+    .fg { display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px; }
+    .fg .s2 { grid-column:span 2; }
+    .fg .s3 { grid-column:span 3; }
+
+    /* Table */
+    .table-wrap { background:var(--white);border:2.5px solid var(--dark);border-radius:var(--radius-lg);box-shadow:4px 4px 0 var(--dark);overflow:hidden; }
+    .table-controls { padding:12px 16px;background:var(--gray-light);border-bottom:2px solid var(--dark);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px; }
+    .table-controls h3 { font-family:'Bebas Neue',Impact,sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase; }
+    .search-inline { display:flex;align-items:center;gap:6px;border:1.5px solid var(--gray-mid);border-radius:100px;padding:6px 12px;background:var(--white); }
+    .search-inline input { border:none;outline:none;font-family:inherit;font-size:.82rem;width:180px; }
+    table { width:100%;border-collapse:collapse;font-size:.78rem; }
+    th { text-align:left;padding:9px 12px;font-family:'Bebas Neue',Impact,sans-serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-dark);border-bottom:1.5px solid var(--gray-mid);background:var(--white);white-space:nowrap; }
+    td { padding:9px 12px;border-bottom:1px solid var(--gray-light);vertical-align:middle;color:var(--dark); }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:var(--gray-light); }
+    .td-title { font-weight:700;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+    .td-org { color:var(--gray-dark);font-size:.72rem;font-weight:600; }
+    .status-live { background:rgba(76,159,56,.12);color:var(--green-dk);border:1.5px solid rgba(76,159,56,.3);border-radius:100px;padding:2px 8px;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-family:'Bebas Neue',Impact,sans-serif; }
+    .status-expired { background:rgba(229,36,59,.08);color:var(--red);border:1.5px solid rgba(229,36,59,.25);border-radius:100px;padding:2px 8px;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-family:'Bebas Neue',Impact,sans-serif; }
+    .status-paid { background:rgba(255,228,0,.25);color:#7a5800;border:1.5px solid rgba(255,200,0,.4);border-radius:100px;padding:2px 8px;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-family:'Bebas Neue',Impact,sans-serif; }
+    .btn-sm2 { background:none;border:1.5px solid var(--dark);border-radius:100px;padding:3px 9px;cursor:pointer;font-size:.68rem;font-weight:700;font-family:inherit;color:var(--dark);transition:all .12s; }
+    .btn-sm2:hover { background:var(--dark);color:var(--yellow); }
+    .btn-del2 { background:none;border:1.5px solid var(--red);border-radius:100px;padding:3px 9px;cursor:pointer;font-size:.68rem;font-weight:700;font-family:inherit;color:var(--red);transition:all .12s; }
+    .btn-del2:hover { background:var(--red);color:white; }
+    .bitly-cell { font-size:.68rem;color:var(--orange);font-weight:700;white-space:nowrap; }
+    .bitly-cell a { color:var(--orange); }
+    .track-cell { font-size:.72rem;color:var(--gray-dark);text-align:center; }
+    .track-num { font-family:'Bebas Neue',Impact,sans-serif;font-size:1.1rem;color:var(--dark); }
+
+    /* ReliefWeb panel */
+    .rw-filters { display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px; }
+    .rw-result { border:1.5px solid var(--gray-mid);border-radius:8px;padding:12px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start; }
+    .rw-result label { display:flex;gap:8px;align-items:flex-start;cursor:pointer;flex:1;font-size:.82rem; }
+    .rw-result h4 { font-size:.88rem;font-weight:700;margin-bottom:2px; }
+    .rw-result-meta { font-size:.72rem;color:var(--gray-dark); }
+    #rw-list { max-height:400px;overflow-y:auto;border:1.5px solid var(--gray-mid);border-radius:8px;padding:8px; }
+
+    /* Bitly / UTM info panel */
+    .info-box { background:rgba(38,189,226,.08);border:1.5px solid rgba(38,189,226,.3);border-radius:8px;padding:14px 18px;font-size:.82rem;line-height:1.65;color:var(--dark);margin-bottom:14px; }
+    .info-box strong { color:#005270; }
+    code { background:var(--gray-light);padding:1px 5px;border-radius:4px;font-family:'Monaco',monospace;font-size:.78rem; }
+
+    /* Export panel */
+    .export-panel { background:var(--dark);border-radius:8px;padding:16px 20px;margin-top:16px; }
+    .export-panel h4 { font-family:'Bebas Neue',Impact,sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--yellow);margin-bottom:8px; }
+    .export-panel p { font-size:.8rem;color:rgba(255,255,255,.65);margin-bottom:12px; }
+    #opp-export { width:100%;font-family:'Monaco',monospace;font-size:.72rem;background:#0d0d0d;color:#7ec8a0;border:1.5px solid #333;border-radius:6px;padding:12px;resize:vertical;min-height:120px; }
+
+    @media (max-width:768px) { .fg { grid-template-columns:1fr 1fr; } .fg .s2,.fg .s3 { grid-column:span 1; } .rw-filters { grid-template-columns:1fr 1fr; } }
+  </style>
+</head>
+<body>
+
+<!-- Password gate -->
+<div class="gate-wrap" id="gate">
+  <div class="gate-card">
+    <div class="gate-head">
+      <div style="font-size:32px;margin-bottom:6px;">📋</div>
+      <h2>Opportunities Admin</h2>
+      <p style="color:rgba(255,255,255,.6);font-size:.82rem;margin-top:4px;">Afrorama internal tool</p>
+    </div>
+    <div class="gate-body">
+      <div class="form-group">
+        <label class="form-label" for="admin-pass">Password</label>
+        <input class="form-input" id="admin-pass" type="password" placeholder="Enter admin password" autocomplete="current-password">
+        <span class="form-error" id="pass-error" role="alert"></span>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:14px;" id="btn-login">Enter admin</button>
+      <p style="font-size:.72rem;color:var(--gray-dark);text-align:center;margin-top:10px;">Default: <code>afrorama2026</code></p>
+    </div>
+  </div>
+</div>
+
+<!-- Admin UI -->
+<div id="admin-ui" style="display:none;">
+
+  <nav class="nav" style="position:relative;">
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html">
+        <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+        <span class="nav-logo-text">afrorama</span>
+      </a>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-left:8px;">· Opportunities Admin</span>
+      <div style="margin-left:auto;display:flex;gap:10px;">
+        <a href="opportunities.html" class="btn btn-secondary btn-sm" target="_blank">Public page</a>
+        <a href="admin-salary.html"  class="btn btn-outline btn-sm">Salary admin</a>
+        <button class="btn btn-outline btn-sm" id="btn-logout">Log out</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-wrap">
+
+    <!-- Stats -->
+    <div class="stats-bar" id="stats-bar"></div>
+
+    <div class="admin-top">
+      <h1>Opportunities</h1>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div class="search-inline">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="opp-search" placeholder="Search listings…">
+        </div>
+        <select class="sort-select" id="opp-sort" style="border-radius:100px;font-size:.78rem;">
+          <option value="newest">Newest first</option>
+          <option value="deadline">Deadline soonest</option>
+          <option value="views">Most viewed</option>
+          <option value="clicks">Most clicked</option>
+          <option value="org">Organisation A–Z</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="list">📋 All listings</button>
+      <button class="admin-tab highlight" data-tab="sheets">📊 Google Sheets</button>
+      <button class="admin-tab" data-tab="add">✏️ Add manually</button>
+      <button class="admin-tab" data-tab="reliefweb">🌍 ReliefWeb</button>
+      <button class="admin-tab" data-tab="rssfeeds">📡 RSS Feeds</button>
+      <button class="admin-tab" data-tab="adzuna">🔎 Adzuna</button>
+      <button class="admin-tab" data-tab="csv">📂 CSV</button>
+      <button class="admin-tab" data-tab="links">🔗 UTM &amp; Bitly</button>
+    </div>
+
+    <!-- TAB: List -->
+    <div class="tab-panel active" id="tab-list">
+      <div class="table-wrap">
+        <div class="table-controls">
+          <h3>Listings (<span id="opp-count">0</span>)</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <span style="font-size:.72rem;color:var(--gray-dark);padding:6px 0;">
+              Live: <strong id="count-live">0</strong> · Expired: <strong id="count-expired">0</strong> · Paid: <strong id="count-paid">0</strong>
+            </span>
+            <a href="opportunities.html" target="_blank" class="btn btn-yellow btn-sm">
+              👁 Preview live site
+            </a>
+            <button class="btn btn-primary btn-sm" id="btn-publish" title="Imported listings already appear on the opportunities page in this browser. Click to open the opportunities page and confirm.">
+              🚀 Publish &amp; check
+            </button>
+          </div>
+        </div>
+        <div id="publish-notice" style="display:none;padding:12px 16px;background:rgba(63,126,68,.1);border-bottom:1.5px solid rgba(63,126,68,.3);font-size:.84rem;color:var(--green-dk);">
+          <strong>✅ Published to this browser.</strong> All imported listings are now live on the opportunities page.
+          To publish to the live website for all visitors: use the <strong>Export to data.js</strong> button in the UTM tab, then paste the output into <code>js/data.js</code>.
+          For automatic publishing to everyone: connect <strong>Supabase</strong> — see setup instructions below.
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Organisation</th>
+                <th>Type</th>
+                <th>Location</th>
+                <th>Deadline</th>
+                <th>Status</th>
+                <th>Views</th>
+                <th>Clicks</th>
+                <th>Bitly link</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="opp-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- How to publish -->
+      <div style="margin-top:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+
+        <div style="background:rgba(76,159,56,.08);border:2px solid rgba(76,159,56,.3);border-radius:10px;padding:16px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--green-dk);margin-bottom:6px;">✅ Option 1 — This browser (instant)</div>
+          <p style="font-size:.8rem;color:#444;line-height:1.6;margin:0;">Imported listings are <strong>already live</strong> on opportunities.html in this browser. Click <strong>Publish &amp; check</strong> above to confirm. Anyone else visiting the site won't see them yet.</p>
+        </div>
+
+        <div style="background:rgba(253,105,37,.08);border:2px solid rgba(253,105,37,.25);border-radius:10px;padding:16px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--orange);margin-bottom:6px;">📋 Option 2 — Static site (for all visitors)</div>
+          <p style="font-size:.8rem;color:#444;line-height:1.6;margin:0;">Go to <strong>UTM &amp; Bitly</strong> tab → click <strong>Generate export</strong> → copy the output → paste into <code>js/data.js</code> replacing the <code>SEED_JOBS</code> array → save and deploy.</p>
+        </div>
+
+        <div style="background:rgba(0,104,157,.08);border:2px solid rgba(0,104,157,.25);border-radius:10px;padding:16px;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--blue-md);margin-bottom:6px;">🚀 Option 3 — Supabase (best, for everyone)</div>
+          <p style="font-size:.8rem;color:#444;line-height:1.6;margin:0;">Connect Supabase (see <code>js/supabase.js</code>). Listings stored in the database appear for all visitors instantly, no file editing or deploy needed.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB: Google Sheets -->
+    <div class="tab-panel" id="tab-sheets">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Sync from Google Sheets</h3>
+          <a href="https://sheets.google.com" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">Open Google Sheets</a>
+        </div>
+        <div class="panel-body">
+
+          <div class="info-box">
+            <strong>How it works:</strong> Manage all your opportunities in a Google Sheet — add rows, edit details, mark deadlines. Click Sync here and the listings update instantly on Afrorama. No CSV export needed.
+          </div>
+
+          <!-- Step 1 -->
+          <h4 style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;margin-top:4px;">Step 1 — Set up your Google Sheet</h4>
+          <p style="font-size:.84rem;color:var(--gray-dark);margin-bottom:10px;">Create a sheet with these exact column headers in row 1 (copy and paste):</p>
+          <div style="background:var(--gray-light);border:1.5px solid var(--gray-mid);border-radius:8px;padding:12px 16px;font-family:Monaco,monospace;font-size:.75rem;color:var(--dark);letter-spacing:.02em;margin-bottom:4px;overflow-x:auto;white-space:nowrap;">
+            title &nbsp;|&nbsp; organisation &nbsp;|&nbsp; type &nbsp;|&nbsp; sector &nbsp;|&nbsp; location &nbsp;|&nbsp; country &nbsp;|&nbsp; deadline &nbsp;|&nbsp; salary &nbsp;|&nbsp; apply_url &nbsp;|&nbsp; description &nbsp;|&nbsp; requirements &nbsp;|&nbsp; paid_listing
+          </div>
+          <div style="font-size:.75rem;color:var(--gray-dark);margin-bottom:18px;">
+            <strong>type</strong>: <code>jobs</code> · <code>internship</code> · <code>consultancy</code> · <code>capacity</code> &nbsp;&nbsp;
+            <strong>country</strong>: ISO 2-letter code e.g. <code>KE</code> <code>ZA</code> <code>NG</code> &nbsp;&nbsp;
+            <strong>deadline</strong>: <code>YYYY-MM-DD</code> &nbsp;&nbsp;
+            <strong>paid_listing</strong>: <code>TRUE</code> or <code>FALSE</code>
+          </div>
+
+          <!-- Step 2 -->
+          <h4 style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Step 2 — Add the Apps Script</h4>
+          <p style="font-size:.84rem;color:var(--gray-dark);margin-bottom:8px;">In your Google Sheet: <strong>Extensions → Apps Script</strong>. Paste this code, click <strong>Save</strong>, then <strong>Deploy → New deployment → Web app → Access: Anyone → Deploy</strong>. Copy the URL.</p>
+          <div style="background:#0d1a0d;border-radius:8px;padding:16px;font-family:Monaco,monospace;font-size:.73rem;color:#7ec8a0;line-height:1.8;overflow-x:auto;white-space:pre;margin-bottom:16px;">function doGet() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const rows  = sheet.getDataRange().getValues();
+  const keys  = rows[0].map(k => k.toString().toLowerCase().trim().replace(/\s+/g,'_'));
+
+  const data = rows.slice(1).filter(r => r[0]).map((r, i) => {
+    const obj = {};
+    keys.forEach((k, j) => { obj[k] = r[j] !== undefined && r[j] !== null ? r[j] : ''; });
+
+    // Format date fields
+    if (obj.deadline instanceof Date) obj.deadline = obj.deadline.toISOString().split('T')[0];
+    if (typeof obj.deadline === 'number') obj.deadline = new Date((obj.deadline - 25569) * 86400000).toISOString().split('T')[0];
+
+    obj.paid_listing = String(obj.paid_listing).toLowerCase() === 'true';
+    obj.id = obj.id || ('sheets-' + (i + 1));
+    obj.posted = obj.posted || new Date().toISOString().split('T')[0];
+
+    return obj;
+  });
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ data, updated: new Date().toISOString() }))
+    .setMimeType(ContentService.MimeType.JSON);
+}</div>
+
+          <!-- Step 3 -->
+          <h4 style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Step 3 — Sync</h4>
+          <p style="font-size:.84rem;color:var(--gray-dark);margin-bottom:12px;">Paste your Apps Script web app URL below. The URL is saved in your browser so you only need to do this once.</p>
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;">
+            <div class="form-group" style="flex:1;min-width:280px;margin:0;">
+              <label class="form-label" for="sheets-opp-url">Apps Script URL</label>
+              <input class="form-input" id="sheets-opp-url" type="url" placeholder="https://script.google.com/macros/s/…/exec">
+            </div>
+            <button class="btn btn-primary" id="btn-sync-sheets-opp">Sync from Sheet</button>
+            <button class="btn btn-yellow" id="btn-test-sheets-opp">Test connection</button>
+          </div>
+          <div id="sheets-opp-status" style="font-size:.84rem;min-height:20px;"></div>
+
+          <!-- Preview after sync -->
+          <div id="sheets-opp-preview" style="display:none;margin-top:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+              <h4 style="font-family:'Bebas Neue',Impact,sans-serif;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;" id="sheets-preview-label">Preview</h4>
+              <button class="btn btn-primary btn-sm" id="btn-confirm-sheets-import">Confirm import</button>
+            </div>
+            <div id="sheets-preview-table" style="overflow-x:auto;border:1.5px solid var(--gray-mid);border-radius:8px;max-height:360px;overflow-y:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:.78rem;">
+                <thead id="sheets-preview-head" style="position:sticky;top:0;background:var(--gray-light);"></thead>
+                <tbody id="sheets-preview-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Auto-sync info -->
+          <div style="background:rgba(38,189,226,.08);border:1.5px solid rgba(38,189,226,.25);border-radius:8px;padding:14px 18px;margin-top:20px;font-size:.82rem;line-height:1.7;color:var(--dark);">
+            <strong style="color:#005270;">Auto-sync tip:</strong> Bookmark this admin page and click Sync once a day to keep the site current with your Sheet. For fully automatic sync without visiting this page, set up the <code>reliefweb-scraper</code> Edge Function pattern pointing at your Sheet URL — or use a Supabase scheduled cron job that calls your Apps Script URL and writes directly to the listings table.
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Add manually -->
+    <div class="tab-panel" id="tab-add">
+      <div class="panel">
+        <div class="panel-head">
+          <h3 id="form-mode-lbl">Add new opportunity</h3>
+          <button class="btn btn-secondary btn-sm" id="btn-cancel-edit" style="display:none;">Cancel edit</button>
+        </div>
+        <div class="panel-body">
+          <div class="fg">
+            <div class="form-group s2">
+              <label class="form-label" for="f-title">Job title *</label>
+              <input class="form-input" id="f-title" type="text" placeholder="e.g. Programme Officer – Climate">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-org">Organisation *</label>
+              <input class="form-input" id="f-org" type="text" placeholder="e.g. UNDP">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-type">Type *</label>
+              <select class="form-select" id="f-type">
+                <option value="jobs">Job</option>
+                <option value="internship">Internship / Volunteering</option>
+                <option value="consultancy">Consultancy / Research</option>
+                <option value="capacity">Capacity Building / Funding</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-sector">Sector *</label>
+              <select class="form-select" id="f-sector"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-location">City / Location *</label>
+              <input class="form-input" id="f-location" type="text" placeholder="e.g. Nairobi or Remote">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-country">Country *</label>
+              <select class="form-select" id="f-country"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-deadline">Deadline *</label>
+              <input class="form-input" id="f-deadline" type="date">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-salary">Salary / Stipend</label>
+              <input class="form-input" id="f-salary" type="text" placeholder="e.g. $60,000 or Volunteer">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-apply">Apply URL *</label>
+              <input class="form-input" id="f-apply" type="url" placeholder="https://…">
+            </div>
+            <div class="form-group s3">
+              <label class="form-label" for="f-desc">Description — one bullet point per line *</label>
+              <textarea class="form-textarea" id="f-desc" rows="5" placeholder="Build internal products and automations to drive impact&#10;Redesign workflows and identify bottlenecks&#10;Train teams on new tools and processes"></textarea>
+            </div>
+            <div class="form-group s3">
+              <label class="form-label" for="f-req">Requirements — one bullet point per line *</label>
+              <textarea class="form-textarea" id="f-req" rows="5" placeholder="3+ years experience in programme management&#10;Strong written and verbal communication skills&#10;Based in or willing to relocate to Nairobi"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Paid listing?</label>
+              <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:.88rem;cursor:pointer;">
+                <input type="checkbox" id="f-paid"> Mark as paid post ($29)
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-source">Source / provenance</label>
+              <input class="form-input" id="f-source" type="text" placeholder="e.g. ReliefWeb, LinkedIn, Direct">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-domain">Org domain (for logo)</label>
+              <input class="form-input" id="f-domain" type="text" placeholder="e.g. undp.org or rescue.org">
+              <span class="form-hint" style="font-size:.72rem;color:var(--gray-dark);margin-top:4px;display:block;">Leave blank to auto-detect from apply URL.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-logo-url">Logo URL (manual override)</label>
+              <input class="form-input" id="f-logo-url" type="url" placeholder="https://example.com/logo.png">
+              <span class="form-hint" style="font-size:.72rem;color:var(--gray-dark);margin-top:4px;display:block;">Paste any image URL to override the auto-fetched logo.</span>
+            </div>
+          </div>
+          <span class="form-error" id="f-error" role="alert"></span>
+          <div style="display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;">
+            <button class="btn btn-primary" id="btn-save-opp">Save listing</button>
+            <button class="btn btn-yellow" id="btn-save-gen-bitly">Save + generate Bitly link</button>
+            <button class="btn btn-outline" id="btn-reset-form">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: ReliefWeb import -->
+    <div class="tab-panel" id="tab-reliefweb">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Import from ReliefWeb API</h3>
+          <a href="https://reliefweb.int/jobs" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">Browse ReliefWeb</a>
+        </div>
+        <div class="panel-body">
+          <div class="info-box">
+            <strong>ReliefWeb</strong> is the world's largest humanitarian and development job board. Their API is free and covers Africa-based roles extensively. Filter by country, category and keywords then import directly.
+          </div>
+          <div class="rw-filters">
+            <div class="form-group">
+              <label class="form-label">Country filter</label>
+              <select class="form-select" id="rw-country">
+                <option value="">All Africa</option>
+                <option value="Kenya">Kenya</option>
+                <option value="South Africa">South Africa</option>
+                <option value="Nigeria">Nigeria</option>
+                <option value="Senegal">Senegal</option>
+                <option value="Ethiopia">Ethiopia</option>
+                <option value="Ghana">Ghana</option>
+                <option value="Tanzania">Tanzania</option>
+                <option value="Uganda">Uganda</option>
+                <option value="Rwanda">Rwanda</option>
+                <option value="Zambia">Zambia</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="rw-category">
+                <option value="">Any</option>
+                <option value="Program/Project Management">Programme Management</option>
+                <option value="Monitoring and Evaluation">M&amp;E</option>
+                <option value="Communication and Outreach">Communications</option>
+                <option value="Finance">Finance</option>
+                <option value="Human Resources">HR</option>
+                <option value="Information and Communication Technology">ICT</option>
+                <option value="Research">Research</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Keyword</label>
+              <input class="form-input" id="rw-keyword" type="text" placeholder="e.g. climate, health">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max results</label>
+              <select class="form-select" id="rw-limit">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+            <button class="btn btn-primary" id="btn-rw-fetch">Fetch from ReliefWeb</button>
+            <button class="btn btn-yellow" id="btn-rw-import-selected" disabled>Import selected (<span id="rw-selected-count">0</span>)</button>
+          </div>
+          <div id="rw-status" style="font-size:.82rem;color:var(--gray-dark);margin-bottom:10px;"></div>
+          <div id="rw-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: RSS Feeds -->
+    <div class="tab-panel" id="tab-rssfeeds">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>RSS Feeds — Idealist, DevEx, AfDB, UN, World Bank</h3>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:.1em;background:rgba(76,159,56,.15);color:var(--green-dk);padding:3px 10px;border-radius:100px;border:1.5px solid rgba(76,159,66,.3);">FREE · NO AUTH NEEDED</span>
+        </div>
+        <div class="panel-body">
+          <div class="info-box">
+            <strong>RSS feeds</strong> give you structured job data from the development sector's biggest platforms — parsed here directly in the browser. No API keys, no scraping restrictions.
+          </div>
+
+          <div class="fg" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:4px;">
+            <div class="form-group">
+              <label class="form-label">Feed source</label>
+              <select class="form-select" id="rss-source">
+                <option value="idealist_ke">Idealist — Kenya</option>
+                <option value="idealist_za">Idealist — South Africa</option>
+                <option value="idealist_ng">Idealist — Nigeria</option>
+                <option value="idealist_sn">Idealist — Senegal</option>
+                <option value="un_africa">UN Careers — Africa</option>
+                <option value="afdb">African Development Bank</option>
+                <option value="devex">DevEx — Africa focus</option>
+                <option value="wb">World Bank Jobs</option>
+                <option value="custom">Custom RSS URL…</option>
+              </select>
+            </div>
+            <div class="form-group" id="rss-custom-wrap" style="display:none;">
+              <label class="form-label">Custom RSS URL</label>
+              <input class="form-input" id="rss-custom-url" type="url" placeholder="https://example.org/jobs.rss">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Parse via</label>
+              <select class="form-select" id="rss-parser">
+                <option value="rss2json">rss2json.com (free)</option>
+                <option value="direct">Direct (CORS must be open)</option>
+              </select>
+            </div>
+          </div>
+          <div style="font-size:.75rem;color:var(--gray-dark);margin-bottom:14px;">rss2json.com converts any RSS into JSON. Free tier: 10 req/min · 10,000/day. No signup needed.</div>
+          <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+            <button class="btn btn-primary" id="btn-rss-fetch">Fetch RSS feed</button>
+            <button class="btn btn-yellow" id="btn-rss-import" disabled>Import selected (<span id="rss-sel-count">0</span>)</button>
+          </div>
+          <div id="rss-status" style="font-size:.82rem;color:var(--gray-dark);margin-bottom:10px;"></div>
+          <div id="rss-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Adzuna -->
+    <div class="tab-panel" id="tab-adzuna">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Adzuna — Job aggregator</h3>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:.1em;background:rgba(253,105,37,.12);color:#8a3400;padding:3px 10px;border-radius:100px;border:1.5px solid rgba(253,105,37,.3);">FREE API KEY REQUIRED</span>
+        </div>
+        <div class="panel-body">
+          <div class="info-box">
+            <strong>Adzuna</strong> aggregates jobs from hundreds of boards across 20+ African countries. Free tier: 1,000 API calls/month. <a href="https://developer.adzuna.com/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:700;">Get your free key at developer.adzuna.com →</a>
+          </div>
+          <div class="fg" style="grid-template-columns:1fr 1fr 1fr;">
+            <div class="form-group">
+              <label class="form-label">App ID <span style="color:var(--orange)">*</span></label>
+              <input class="form-input" id="adz-app-id" type="text" placeholder="Your Adzuna App ID">
+            </div>
+            <div class="form-group">
+              <label class="form-label">API Key <span style="color:var(--orange)">*</span></label>
+              <input class="form-input" id="adz-api-key" type="text" placeholder="Your Adzuna API Key">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Country <span style="font-size:.7rem;color:var(--gray-dark);font-weight:400;">(Adzuna supported)</span></label>
+              <select class="form-select" id="adz-country">
+                <option value="za">South Africa 🇿🇦</option>
+                <option value="gb">United Kingdom 🇬🇧 (diaspora)</option>
+                <option value="us">United States 🇺🇸 (diaspora)</option>
+                <option value="fr">France 🇫🇷 (francophone Africa)</option>
+                <option value="ca">Canada 🇨🇦 (diaspora)</option>
+                <option value="au">Australia 🇦🇺</option>
+                <option value="de">Germany 🇩🇪</option>
+                <option value="nl">Netherlands 🇳🇱</option>
+                <option value="sg">Singapore 🇸🇬</option>
+              </select>
+              <span style="font-size:.72rem;color:var(--gray-dark);display:block;margin-top:3px;">⚠ Adzuna only covers South Africa on the continent. Use ReliefWeb for Kenya, Nigeria, Senegal etc.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Keyword</label>
+              <input class="form-input" id="adz-keyword" type="text" placeholder="e.g. NGO social impact" value="NGO social impact">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Results</label>
+              <select class="form-select" id="adz-results">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+              </select>
+            </div>
+          </div>
+          <p style="font-size:.75rem;color:var(--gray-dark);margin-bottom:12px;">Keys are saved locally so you only enter them once.</p>
+          <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+            <button class="btn btn-primary" id="btn-adz-fetch">Search Adzuna</button>
+            <button class="btn btn-yellow" id="btn-adz-import" disabled>Import selected (<span id="adz-sel-count">0</span>)</button>
+          </div>
+          <div id="adz-status" style="font-size:.82rem;color:var(--gray-dark);margin-bottom:10px;"></div>
+          <div id="adz-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: CSV Import -->
+    <div class="tab-panel" id="tab-csv">
+      <div class="panel">
+        <div class="panel-head"><h3>Import from CSV</h3></div>
+        <div class="panel-body">
+          <div class="info-box">
+            <strong>CSV column headers (required):</strong><br>
+            <code>title, organisation, type, sector, location, country, deadline, salary, apply_url, description, requirements</code><br><br>
+            <strong>type</strong> values: <code>jobs</code> · <code>internship</code> · <code>consultancy</code> · <code>capacity</code><br>
+            <strong>country</strong>: ISO 2-letter code (e.g. <code>KE</code>, <code>ZA</code>, <code>NG</code>)<br>
+            <strong>deadline</strong>: YYYY-MM-DD format
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+            <a href="#" id="btn-download-template" class="btn btn-outline btn-sm">Download CSV template</a>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="csv-file">Upload CSV file</label>
+            <input class="form-input" id="csv-file" type="file" accept=".csv" style="padding:8px;">
+          </div>
+          <div id="csv-preview" style="margin-top:12px;"></div>
+          <div style="display:flex;gap:10px;margin-top:12px;">
+            <button class="btn btn-primary" id="btn-csv-import" disabled>Import CSV listings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: UTM & Bitly -->
+    <div class="tab-panel" id="tab-links">
+      <div class="panel">
+        <div class="panel-head"><h3>UTM tracking &amp; Bitly links</h3></div>
+        <div class="panel-body">
+          <div class="info-box">
+            <strong>How UTM tracking works:</strong> Every "Apply Now" link includes UTM parameters so you can see in Google Analytics which listings drive applications.<br>
+            <code>utm_source=afrorama</code> · <code>utm_medium=jobboard</code> · <code>utm_campaign=[organisation]</code> · <code>utm_content=[job-title]</code><br><br>
+            <strong>Bitly links</strong> are generated via the Bitly API and stored with each listing. They wrap the UTM URL into a short, trackable link. Set your <code>BITLY_TOKEN</code> in Supabase secrets and deploy the Edge Function to enable auto-generation.
+          </div>
+
+          <h4 style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;">Generate UTM link manually</h4>
+          <div class="fg" style="grid-template-columns:1fr 1fr 1fr;">
+            <div class="form-group">
+              <label class="form-label" for="utm-org">Organisation</label>
+              <input class="form-input" id="utm-org" type="text" placeholder="e.g. UNDP">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="utm-title">Job title</label>
+              <input class="form-input" id="utm-title" type="text" placeholder="e.g. Programme Officer">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="utm-dest">Destination URL</label>
+              <input class="form-input" id="utm-dest" type="url" placeholder="https://jobs.undp.org/…">
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btn-gen-utm">Generate UTM link</button>
+          <div id="utm-output" style="margin-top:12px;display:none;">
+            <label class="form-label">Your UTM link (copy this)</label>
+            <div style="display:flex;gap:8px;margin-top:4px;">
+              <input class="form-input" id="utm-result" type="text" readonly style="font-size:.78rem;">
+              <button class="btn btn-yellow btn-sm" id="btn-copy-utm">Copy</button>
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1.5px solid var(--gray-mid);margin:20px 0;">
+
+          <h4 style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;">Bitly API setup</h4>
+          <div style="background:#1a1a1a;border-radius:8px;padding:16px;font-size:.78rem;color:#7ec8a0;font-family:Monaco,monospace;line-height:1.7;overflow-x:auto;white-space:pre;"># 1. Get a free Bitly account at bitly.com
+# 2. Go to Settings → Developer → API → Generate token
+# 3. Store in Supabase secrets:
+supabase secrets set BITLY_TOKEN=your_token_here
+
+# 4. Deploy the Edge Function:
+supabase functions deploy bitly-link
+
+# 5. The function auto-generates short links when you post a listing.
+#    Test manually:
+curl -X POST https://YOUR_PROJECT.supabase.co/functions/v1/bitly-link \
+  -H "Authorization: Bearer YOUR_ANON_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"long_url":"https://afrorama.org/opportunities.html?id=seed-1&utm_source=afrorama&utm_medium=jobboard&utm_campaign=UNDP"}'</div>
+
+          <hr style="border:none;border-top:1.5px solid var(--gray-mid);margin:20px 0;">
+
+          <h4 style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;">Bulk generate UTM links for all listings</h4>
+          <button class="btn btn-primary btn-sm" id="btn-bulk-utm">Generate UTM links for all</button>
+          <div id="bulk-utm-output" style="margin-top:12px;display:none;"></div>
+        </div>
+      </div>
+
+      <!-- Export -->
+      <div class="export-panel">
+        <h4>Export all listings</h4>
+        <p>Download the full historical record — includes live, expired and all scraped listings.</p>
+        <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+          <button class="btn btn-yellow btn-sm" id="btn-export-csv">⬇ Download CSV</button>
+          <button class="btn btn-secondary btn-sm" id="btn-export-opp">Generate JS export</button>
+          <button class="btn btn-secondary btn-sm" id="btn-copy-opp-export">Copy to clipboard</button>
+        </div>
+        <textarea id="opp-export" readonly placeholder="Click 'Generate JS export'…"></textarea>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/data.js"></script>
+<script src="js/supabase.js"></script>
+<script>
+(function () {
+  const ADMIN_PASSWORD = 'afrorama2026';
+  const ADMIN_KEY      = 'afrorama_admin_opp_session';
+  const STORE_KEY      = 'afrorama_admin_opps';
+  const TRACK_KEY      = 'afrorama_opp_tracking';
+  const SITE_URL       = 'https://afrorama.org';
+
+  const { SECTORS, AFRICAN_COUNTRIES, SEED_JOBS } = window.AfroramaData;
+
+  // ── State ──────────────────────────────────────────────────────
+  let adminOpps = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+  let tracking  = JSON.parse(localStorage.getItem(TRACK_KEY) || '{}');
+  let allOpps   = mergeOpps();
+  let editingId = null;
+  let searchQ   = '';
+  let csvRows   = [];
+  let rwResults = [];
+  let rwSelected= new Set();
+
+  function mergeOpps() {
+    const adminMap = {};
+    adminOpps.forEach(o => { adminMap[o.id] = o; });
+    const base = (SEED_JOBS || []).map(o => adminMap[o.id] ? { ...o, ...adminMap[o.id] } : o)
+      .filter(o => !adminMap[o.id + '_deleted']);
+    const newOnes = adminOpps.filter(o => !(SEED_JOBS||[]).find(s => s.id === o.id) && !o.id.endsWith('_deleted'));
+    return [...base, ...newOnes];
+  }
+
+  function saveAdmin() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(adminOpps));
+    allOpps = mergeOpps();
+  }
+
+  function getTrack(id) { return tracking[id] || { views:0, clicks:0 }; }
+
+  // ── Auth ────────────────────────────────────────────────────────
+  if (sessionStorage.getItem(ADMIN_KEY) === '1') showAdmin();
+
+  document.getElementById('btn-login').addEventListener('click', () => {
+    const pass = document.getElementById('admin-pass').value;
+    const err  = document.getElementById('pass-error');
+    if (pass === ADMIN_PASSWORD) { sessionStorage.setItem(ADMIN_KEY,'1'); showAdmin(); }
+    else { err.textContent = 'Incorrect password.'; err.style.display='block'; }
+  });
+  document.getElementById('admin-pass').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('btn-login').click(); });
+  document.getElementById('btn-logout')?.addEventListener('click', () => { sessionStorage.removeItem(ADMIN_KEY); location.reload(); });
+
+  async function showAdmin() {
+    document.getElementById('gate').style.display    = 'none';
+    document.getElementById('admin-ui').style.display = 'block';
+    populateSelects();
+    await loadFromSupabase();
+    renderTable();
+    renderStats();
+  }
+
+  async function loadFromSupabase() {
+    const Supa = window.AfroramaSupabase;
+    if (!Supa || Supa.isDemoMode()) return;
+    const sb = Supa.getSupabase();
+    const { data, error } = await sb.from('listings').select('*').order('created_at', { ascending: false });
+    if (error) { console.error('Admin Supabase load error:', error.message); return; }
+    if (data?.length) {
+      allOpps = data;
+    }
+  }
+
+  // ── Form selects ───────────────────────────────────────────────
+  function populateSelects() {
+    const sectEl = document.getElementById('f-sector');
+    if (sectEl) { sectEl.innerHTML='<option value="">Select…</option>'; (SECTORS||[]).sort().forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sectEl.appendChild(o);}); }
+    const ctryEl = document.getElementById('f-country');
+    if (ctryEl) { ctryEl.innerHTML='<option value="">Select…</option>'; (AFRICAN_COUNTRIES||[]).sort((a,b)=>a.name.localeCompare(b.name)).forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name;ctryEl.appendChild(o);}); }
+  }
+
+  // ── Tabs ───────────────────────────────────────────────────────
+  document.querySelectorAll('.admin-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.admin-tab,.tab-panel').forEach(el => el.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ── Stats ──────────────────────────────────────────────────────
+  function renderStats() {
+    const now  = new Date();
+    const live = allOpps.filter(o => new Date(o.deadline) > now).length;
+    const exp  = allOpps.filter(o => new Date(o.deadline) <= now).length;
+    const paid = allOpps.filter(o => o.paid_listing).length;
+    const totalViews  = Object.values(tracking).reduce((s,t) => s+(t.views||0), 0);
+    const totalClicks = Object.values(tracking).reduce((s,t) => s+(t.clicks||0), 0);
+    document.getElementById('stats-bar').innerHTML = `
+      <div class="stat-item"><div class="stat-num">${allOpps.length}</div><div class="stat-lbl">Total listings</div></div>
+      <div class="stat-item"><div class="stat-num">${live}</div><div class="stat-lbl">Live</div></div>
+      <div class="stat-item"><div class="stat-num">${exp}</div><div class="stat-lbl">Expired</div></div>
+      <div class="stat-item"><div class="stat-num">${paid}</div><div class="stat-lbl">Paid posts</div></div>
+      <div class="stat-item"><div class="stat-num">${totalViews}</div><div class="stat-lbl">Total views</div></div>
+      <div class="stat-item"><div class="stat-num">${totalClicks}</div><div class="stat-lbl">Apply clicks</div></div>`;
+    document.getElementById('count-live').textContent    = live;
+    document.getElementById('count-expired').textContent = exp;
+    document.getElementById('count-paid').textContent    = paid;
+  }
+
+  // ── Table ──────────────────────────────────────────────────────
+  function renderTable() {
+    const sort = document.getElementById('opp-sort').value;
+    let data = searchQ ? allOpps.filter(o => o.title?.toLowerCase().includes(searchQ) || o.organisation?.toLowerCase().includes(searchQ)) : [...allOpps];
+    data.sort((a,b) => {
+      if (sort==='newest')   return new Date(b.posted||0) - new Date(a.posted||0);
+      if (sort==='deadline') return new Date(a.deadline) - new Date(b.deadline);
+      if (sort==='views')    return (getTrack(b.id).views||0) - (getTrack(a.id).views||0);
+      if (sort==='clicks')   return (getTrack(b.id).clicks||0) - (getTrack(a.id).clicks||0);
+      if (sort==='org')      return (a.organisation||'').localeCompare(b.organisation||'');
+      return 0;
+    });
+    document.getElementById('opp-count').textContent = data.length;
+    const now = new Date();
+    const isSeed = id => !!(SEED_JOBS||[]).find(s=>s.id===id);
+    document.getElementById('opp-tbody').innerHTML = data.map(o => {
+      const isLive = o.deadline
+        ? new Date(o.deadline) > now
+        : new Date(o.created_at || o.posted) >= new Date(now - 30*864e5);
+      const t    = getTrack(o.id);
+      const utmUrl = makeUTM(o);
+      const bitly  = o.bitly_url ? `<a href="${o.bitly_url}" target="_blank" rel="noopener">${o.bitly_url}</a>` : '<span style="color:var(--gray-dark)">—</span>';
+      return `<tr>
+        <td><div class="td-title" title="${esc(o.title)}">${esc(o.title)}</div>
+            ${o.paid_listing?'<span class="status-paid">Paid post</span>':''}
+            ${isSeed(o.id)?'':'<span style="font-size:.6rem;background:rgba(38,189,226,.12);color:#005270;padding:1px 5px;border-radius:4px;margin-left:3px;">Admin</span>'}</td>
+        <td class="td-org">${esc(o.organisation||'')}</td>
+        <td><span class="badge badge-${o.type}" style="font-size:.62rem;">${o.type||''}</span></td>
+        <td style="font-size:.75rem;">${esc(o.location||'')}${o.country?', '+o.country:''}</td>
+        <td style="font-size:.75rem;white-space:nowrap;">${o.deadline||'—'}</td>
+        <td><span class="${isLive?'status-live':'status-expired'}">${isLive?'Live':'Expired'}</span></td>
+        <td class="track-cell"><div class="track-num">${t.views}</div></td>
+        <td class="track-cell"><div class="track-num">${t.clicks}</div></td>
+        <td class="bitly-cell">${bitly}</td>
+        <td>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <button class="btn-sm2" data-edit="${o.id}">Edit</button>
+            <button class="btn-sm2" data-utm="${o.id}" title="${utmUrl}">UTM</button>
+            <button class="btn-del2" data-del="${o.id}">Del</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    document.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', () => startEdit(btn.dataset.edit)));
+    document.querySelectorAll('[data-del]').forEach(btn  => btn.addEventListener('click', () => deleteOpp(btn.dataset.del)));
+    document.querySelectorAll('[data-utm]').forEach(btn  => {
+      btn.addEventListener('click', () => {
+        const url = btn.title;
+        navigator.clipboard.writeText(url).then(() => alert('UTM link copied:\n' + url)).catch(() => prompt('Copy this UTM link:', url));
+      });
+    });
+  }
+
+  function makeUTM(o) {
+    const dest = o.apply_url || (SITE_URL + '/opportunities.html');
+    const campaign = encodeURIComponent((o.organisation||'afrorama').toLowerCase().replace(/\s+/g,'-'));
+    const content  = encodeURIComponent((o.title||'job').toLowerCase().replace(/\s+/g,'-').slice(0,40));
+    const sep = dest.includes('?') ? '&' : '?';
+    return `${dest}${sep}utm_source=afrorama&utm_medium=jobboard&utm_campaign=${campaign}&utm_content=${content}`;
+  }
+
+  let searchTimer;
+  document.getElementById('opp-search').addEventListener('input', e => { clearTimeout(searchTimer); searchTimer=setTimeout(()=>{searchQ=e.target.value.toLowerCase().trim();renderTable();},200); });
+  document.getElementById('opp-sort').addEventListener('change', renderTable);
+
+  // ── Add / Edit ────────────────────────────────────────────────
+  document.getElementById('btn-cancel-edit').addEventListener('click', resetForm);
+  document.getElementById('btn-reset-form').addEventListener('click', resetForm);
+
+  function resetForm() {
+    editingId = null;
+    ['f-title','f-org','f-location','f-salary','f-apply','f-desc','f-req','f-source'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    ['f-type','f-sector','f-country'].forEach(id => { const el=document.getElementById(id); if(el) el.selectedIndex=0; });
+    document.getElementById('f-paid').checked = false;
+    document.getElementById('f-deadline').value = '';
+    document.getElementById('f-error').textContent = '';
+    document.getElementById('form-mode-lbl').textContent = 'Add new opportunity';
+    document.getElementById('btn-cancel-edit').style.display = 'none';
+  }
+
+  function startEdit(id) {
+    const o = allOpps.find(op => op.id === id);
+    if (!o) return;
+    editingId = id;
+    document.getElementById('f-title').value    = o.title||'';
+    document.getElementById('f-org').value      = o.organisation||'';
+    document.getElementById('f-type').value     = o.type||'jobs';
+    document.getElementById('f-sector').value   = o.sector||'';
+    document.getElementById('f-location').value = o.location||'';
+    document.getElementById('f-country').value  = o.country||'';
+    document.getElementById('f-deadline').value = o.deadline||'';
+    document.getElementById('f-salary').value   = o.salary||'';
+    document.getElementById('f-apply').value    = o.apply_url||'';
+    document.getElementById('f-desc').value     = o.description||'';
+    document.getElementById('f-req').value      = o.requirements||'';
+    document.getElementById('f-paid').checked   = !!o.paid_listing;
+    document.getElementById('f-source').value   = o.source||'';
+    document.getElementById('form-mode-lbl').textContent = `Editing: ${o.title}`;
+    document.getElementById('btn-cancel-edit').style.display = 'inline-flex';
+    document.querySelectorAll('.admin-tab')[1].click(); // go to add tab
+    document.getElementById('tab-add').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  function saveOpp(genBitly = false) {
+    const title   = document.getElementById('f-title').value.trim();
+    const org     = document.getElementById('f-org').value.trim();
+    const type    = document.getElementById('f-type').value;
+    const sector  = document.getElementById('f-sector').value;
+    const location= document.getElementById('f-location').value.trim();
+    const country = document.getElementById('f-country').value;
+    const deadline= document.getElementById('f-deadline').value;
+    const errEl   = document.getElementById('f-error');
+    errEl.textContent = '';
+
+    if (!title||!org||!type||!sector||!location||!country||!deadline) {
+      errEl.textContent = 'Please fill in all required fields.'; return;
+    }
+
+    const entry = {
+      id:           editingId || ('admin-' + Date.now()),
+      title, organisation: org, type, sector, location, country,
+      deadline,
+      salary:       document.getElementById('f-salary').value.trim() || 'Not specified',
+      apply_url:    document.getElementById('f-apply').value.trim(),
+      description:  document.getElementById('f-desc').value.trim(),
+      requirements: document.getElementById('f-req').value.trim(),
+      paid_listing: document.getElementById('f-paid').checked,
+      source:       document.getElementById('f-source').value.trim() || 'Admin',
+      posted:       new Date().toISOString().split('T')[0],
+    };
+
+    if (genBitly) {
+      const utmUrl = makeUTM(entry);
+      entry.utm_url = utmUrl;
+      // Note: Bitly shortening requires the Edge Function. Storing UTM URL for now.
+      entry.bitly_url = null;
+      alert('UTM link generated:\n' + utmUrl + '\n\nDeploy the Bitly Edge Function to auto-shorten. The UTM link is stored with this listing.');
+    }
+
+    const idx = adminOpps.findIndex(o => o.id === entry.id);
+    if (idx >= 0) adminOpps[idx] = entry;
+    else           adminOpps.push(entry);
+    saveAdmin();
+    renderTable();
+    renderStats();
+    resetForm();
+  }
+
+  document.getElementById('btn-save-opp').addEventListener('click', () => saveOpp(false));
+  document.getElementById('btn-save-gen-bitly').addEventListener('click', () => saveOpp(true));
+
+  function deleteOpp(id) {
+    if (!confirm('Delete this listing?')) return;
+    const isSeed = !!(SEED_JOBS||[]).find(s => s.id === id);
+    if (isSeed) { adminOpps = adminOpps.filter(o=>o.id!==id); adminOpps.push({id:id+'_deleted'}); }
+    else         { adminOpps = adminOpps.filter(o=>o.id!==id); }
+    saveAdmin(); allOpps = mergeOpps();
+    renderTable(); renderStats();
+  }
+
+  // ── ReliefWeb Scraper ─────────────────────────────────────────
+  document.getElementById('btn-rw-fetch').addEventListener('click', async () => {
+    const status   = document.getElementById('rw-status');
+    const country  = document.getElementById('rw-country').value;
+    const category = document.getElementById('rw-category').value;
+    const keyword  = document.getElementById('rw-keyword').value.trim();
+    const limit    = document.getElementById('rw-limit').value;
+    status.textContent = '⏳ Fetching from ReliefWeb…';
+    rwSelected.clear(); rwResults = [];
+
+    try {
+      // Build the simplest valid ReliefWeb payload
+      const conditions = [{ field: 'status', value: 'open' }];
+      if (country)  conditions.push({ field: 'country.name',           value: country  });
+      if (category) conditions.push({ field: 'career_categories.name', value: category });
+
+      const payload = {
+        filter: conditions.length === 1
+          ? conditions[0]                              // single condition — no operator wrapper needed
+          : { operator: 'AND', conditions },
+        ...(keyword && { query: { value: keyword, operator: 'AND' } }),
+        sort:   ['date:desc'],
+        limit:  parseInt(limit, 10),
+        fields: { include: ['title', 'date', 'source', 'country', 'url'] },
+      };
+
+      status.textContent = '⏳ Trying ReliefWeb directly…';
+
+      // Try direct first (ReliefWeb supports CORS from https origins)
+      // If running from file:// the browser will block it — we fall back to proxy
+      let res;
+      try {
+        res = await fetch('https://api.reliefweb.int/v1/jobs?appname=afrorama', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body:    JSON.stringify(payload),
+        });
+      } catch (corsErr) {
+        // Direct request blocked (file:// origin or firewall) — try via proxy
+        status.textContent = '⏳ Retrying via CORS proxy…';
+        res = await fetch(proxied('https://api.reliefweb.int/v1/jobs?appname=afrorama'), {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body:    JSON.stringify(payload),
+        });
+      }
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => res.statusText);
+        throw new Error(`ReliefWeb ${res.status}: ${errText.slice(0, 300)}`);
+      }
+
+      const json = await res.json();
+
+      // Map country name → ISO2 for Afrorama
+      const NAME_TO_ISO = {
+        'Kenya':'KE','South Africa':'ZA','Nigeria':'NG','Senegal':'SN','Ethiopia':'ET',
+        'Ghana':'GH','Tanzania':'TZ','Uganda':'UG','Rwanda':'RW','Zambia':'ZM',
+        'Mozambique':'MZ','Malawi':'MW','Zimbabwe':'ZW','Cameroon':'CM','Mali':'ML',
+        'Niger':'NE','Chad':'TD','Sudan':'SD','South Sudan':'SS','Somalia':'SO',
+        "Côte d'Ivoire":'CI','DR Congo':'CD','Congo':'CG','Botswana':'BW',
+        'Namibia':'NA','Angola':'AO','Eritrea':'ER','Djibouti':'DJ',
+      };
+
+      rwResults = (json.data || []).map(item => {
+        const f            = item.fields;
+        const countryName  = (f.country || [])[0]?.name || '';
+        const countryCode  = NAME_TO_ISO[countryName] || 'KE';
+        return {
+          rw_id:        item.id,
+          title:        f.title || '',
+          organisation: (f.source || []).map(s => s.name).join(', ') || '',
+          country_name: countryName,
+          country_code: countryCode,
+          url:          f.url || '',
+          body:         '',  // fetched separately if needed
+          date:         (f.date || {}).created || '',
+        };
+      });
+      status.textContent = `✅ Found ${rwResults.length} open listings.`;
+      document.getElementById('rw-list').innerHTML = rwResults.length
+        ? rwResults.map((r,i) => `
+          <div class="rw-result">
+            <input type="checkbox" id="rw-${i}" value="${i}" class="rw-check" style="flex-shrink:0;margin-top:3px;">
+            <label for="rw-${i}">
+              <div>
+                <h4>${esc(r.title)}</h4>
+                <div class="rw-result-meta">${esc(r.organisation)} · ${esc(r.country_name)} · Posted: ${r.date ? r.date.slice(0,10) : '—'} · <a href="${esc(r.url)}" target="_blank" rel="noopener" style="color:var(--orange);">View on ReliefWeb →</a></div>
+              </div>
+            </label>
+          </div>`).join('')
+        : '<p style="color:var(--gray-dark);padding:12px;">No results found. Try broadening your filters.</p>';
+      document.querySelectorAll('.rw-check').forEach(cb => {
+        cb.addEventListener('change', () => {
+          const idx = parseInt(cb.value,10);
+          cb.checked ? rwSelected.add(idx) : rwSelected.delete(idx);
+          const btn = document.getElementById('btn-rw-import-selected');
+          btn.disabled = rwSelected.size === 0;
+          document.getElementById('rw-selected-count').textContent = rwSelected.size;
+        });
+      });
+      document.getElementById('btn-rw-import-selected').disabled = true;
+    } catch (err) {
+      status.textContent = '❌ ' + err.message;
+    }
+  });
+
+  document.getElementById('btn-rw-import-selected').addEventListener('click', () => {
+    let imported = 0;
+    rwSelected.forEach(idx => {
+      const r = rwResults[idx];
+      if (!r) return;
+      const entry = {
+        id:           'rw-' + r.rw_id,
+        title:        r.title,
+        organisation: r.organisation,
+        type:         'jobs',
+        sector:       'Governance & Public Policy',
+        location:     r.country_name,
+        country:      r.country_code.slice(0,2).toUpperCase() || 'KE',
+        deadline:     new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
+        salary:       'See listing',
+        apply_url:    r.url,
+        description:  r.body.slice(0,300),
+        requirements: 'See full listing on ReliefWeb.',
+        source:       'ReliefWeb',
+        posted:       r.date.slice(0,10),
+      };
+      const exists = adminOpps.find(o => o.id === entry.id);
+      if (!exists) { adminOpps.push(entry); imported++; }
+    });
+    saveAdmin(); allOpps = mergeOpps();
+    renderTable(); renderStats();
+    document.querySelectorAll('.admin-tab')[0].click();
+    document.getElementById('rw-status').textContent = `✅ Imported ${imported} listing${imported!==1?'s':''}. ${rwSelected.size-imported} skipped (already exist).`;
+    rwSelected.clear();
+    document.getElementById('btn-rw-import-selected').disabled = true;
+    document.getElementById('rw-selected-count').textContent = '0';
+  });
+
+  // ── CSV Import ────────────────────────────────────────────────
+  document.getElementById('btn-download-template').addEventListener('click', e => {
+    e.preventDefault();
+    const csv = 'title,organisation,type,sector,location,country,deadline,salary,apply_url,description,requirements\n' +
+      '"Programme Officer","UNDP","jobs","Health","Nairobi","KE","2026-07-31","$55,000","https://jobs.undp.org","Lead health programming. Manage key partners.","MPH or equivalent. 4+ years experience."';
+    const a = document.createElement('a'); a.href = 'data:text/csv,' + encodeURIComponent(csv);
+    a.download = 'afrorama-listings-template.csv'; a.click();
+  });
+
+  document.getElementById('csv-file').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const lines = ev.target.result.split('\n').filter(l=>l.trim());
+      const headers = lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,'').toLowerCase());
+      csvRows = lines.slice(1).map(line => {
+        const vals = [];
+        let inQ=false, cur='';
+        for (const ch of line) {
+          if (ch==='"') { inQ=!inQ; }
+          else if (ch===','&&!inQ) { vals.push(cur.trim()); cur=''; }
+          else cur+=ch;
+        }
+        vals.push(cur.trim());
+        const obj={};
+        headers.forEach((h,i)=>{ obj[h]=vals[i]||''; });
+        return obj;
+      }).filter(r=>r.title);
+      const preview = document.getElementById('csv-preview');
+      preview.innerHTML = `<div style="font-size:.82rem;color:var(--green-dk);font-weight:700;margin-bottom:6px;">✅ Found ${csvRows.length} rows ready to import.</div>` +
+        '<div style="font-size:.75rem;color:var(--gray-dark);">First row: ' + (csvRows[0]?.title||'') + ' · ' + (csvRows[0]?.organisation||'') + '</div>';
+      document.getElementById('btn-csv-import').disabled = false;
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('btn-csv-import').addEventListener('click', () => {
+    let added = 0;
+    csvRows.forEach(r => {
+      const entry = {
+        id:           'csv-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+        title:        r.title||'',
+        organisation: r.organisation||r.org||'',
+        type:         r.type||'jobs',
+        sector:       r.sector||'',
+        location:     r.location||'',
+        country:      (r.country||'').toUpperCase().slice(0,2),
+        deadline:     r.deadline||'',
+        salary:       r.salary||'Not specified',
+        apply_url:    r.apply_url||r['apply url']||'',
+        description:  r.description||'',
+        requirements: r.requirements||'',
+        source:       'CSV import',
+        posted:       new Date().toISOString().split('T')[0],
+      };
+      adminOpps.push(entry); added++;
+    });
+    saveAdmin(); allOpps = mergeOpps();
+    renderTable(); renderStats();
+    document.querySelectorAll('.admin-tab')[0].click();
+    csvRows = [];
+    document.getElementById('csv-preview').innerHTML = `<div style="font-size:.82rem;color:var(--green-dk);font-weight:700;">✅ Imported ${added} listing${added!==1?'s':''}.</div>`;
+    document.getElementById('btn-csv-import').disabled = true;
+  });
+
+  // ── UTM generator ─────────────────────────────────────────────
+  document.getElementById('btn-gen-utm').addEventListener('click', () => {
+    const org   = document.getElementById('utm-org').value.trim();
+    const title = document.getElementById('utm-title').value.trim();
+    const dest  = document.getElementById('utm-dest').value.trim() || SITE_URL + '/opportunities.html';
+    const campaign = encodeURIComponent(org.toLowerCase().replace(/\s+/g,'-') || 'afrorama');
+    const content  = encodeURIComponent(title.toLowerCase().replace(/\s+/g,'-').slice(0,40) || 'job');
+    const sep = dest.includes('?') ? '&' : '?';
+    const url = `${dest}${sep}utm_source=afrorama&utm_medium=jobboard&utm_campaign=${campaign}&utm_content=${content}`;
+    document.getElementById('utm-result').value = url;
+    document.getElementById('utm-output').style.display = 'block';
+  });
+
+  document.getElementById('btn-copy-utm').addEventListener('click', () => {
+    const el = document.getElementById('utm-result');
+    navigator.clipboard.writeText(el.value).then(()=>alert('Copied!')).catch(()=>{el.select();document.execCommand('copy');});
+  });
+
+  // Bulk UTM
+  document.getElementById('btn-bulk-utm').addEventListener('click', () => {
+    const output = document.getElementById('bulk-utm-output');
+    output.style.display = 'block';
+    output.innerHTML = allOpps.slice(0,50).map(o => {
+      const utm = makeUTM(o);
+      return `<div style="padding:6px 0;border-bottom:1px solid var(--gray-mid);display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;font-size:.78rem;"><strong>${esc(o.title)}</strong><br><span style="color:var(--gray-dark);">${esc(o.organisation)}</span></div>
+        <input value="${esc(utm)}" readonly style="flex:2;min-width:200px;font-size:.68rem;padding:5px 8px;border:1.5px solid var(--gray-mid);border-radius:6px;font-family:monospace;background:var(--gray-light);" onclick="this.select()">
+      </div>`;
+    }).join('');
+  });
+
+  // ── CSV Download ─────────────────────────────────────────────
+  document.getElementById('btn-export-csv').addEventListener('click', async () => {
+    let rows = allOpps;
+    // If Supabase is live, fetch full unfiltered set for export
+    const Supa = window.AfroramaSupabase;
+    if (Supa && !Supa.isDemoMode()) {
+      const { data } = await Supa.getSupabase().from('listings').select('*').order('created_at', { ascending: false });
+      if (data?.length) rows = data;
+    }
+    const now = new Date();
+    const cols = ['id','title','organisation','type','sector','location','country','deadline','posted','salary','apply_url','source','views','apply_clicks','paid_listing','created_at','status'];
+    const csvLines = [
+      cols.join(','),
+      ...rows.map(r => {
+        const status = !r.deadline
+          ? (new Date(r.created_at || r.posted) < new Date(now - 30*864e5) ? 'expired' : 'live')
+          : (new Date(r.deadline) < now ? 'expired' : 'live');
+        const row = { ...r, status };
+        return cols.map(c => {
+          const v = row[c] ?? '';
+          return '"' + String(v).replace(/"/g, '""') + '"';
+        }).join(',');
+      })
+    ];
+    const blob = new Blob([csvLines.join('\n')], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `afrorama-listings-${now.toISOString().slice(0,10)}.csv`;
+    a.click();
+  });
+
+  // ── Export ───────────────────────────────────────────────────
+  document.getElementById('btn-export-opp').addEventListener('click', () => {
+    const lines = allOpps.map(o => `  { id:${JSON.stringify(o.id)}, title:${JSON.stringify(o.title)}, organisation:${JSON.stringify(o.organisation)}, location:${JSON.stringify(o.location)}, country:${JSON.stringify(o.country)}, type:${JSON.stringify(o.type||'jobs')}, sector:${JSON.stringify(o.sector||'')}, deadline:${JSON.stringify(o.deadline)}, posted:${JSON.stringify(o.posted||'')}, salary:${JSON.stringify(o.salary||'Not specified')}, description:${JSON.stringify(o.description||'')}, requirements:${JSON.stringify(o.requirements||'')}${o.apply_url?`, apply_url:${JSON.stringify(o.apply_url)}`:''}${o.bitly_url?`, bitly_url:${JSON.stringify(o.bitly_url)}`:''}${o.utm_url?`, utm_url:${JSON.stringify(o.utm_url)}`:''} }`);
+    document.getElementById('opp-export').value = `const SEED_JOBS = [\n${lines.join(',\n')}\n];`;
+  });
+  document.getElementById('btn-copy-opp-export').addEventListener('click', () => {
+    const ta = document.getElementById('opp-export');
+    if (!ta.value) { alert("Click 'Generate export' first."); return; }
+    navigator.clipboard.writeText(ta.value).then(()=>alert('Copied!')).catch(()=>{ta.select();document.execCommand('copy');});
+  });
+
+  /* ── Generic result renderer (shared by all scrapers) ───────── */
+  function renderScrapeResults(containerId, results, selSet, selCountId, importBtnId) {
+    const el = document.getElementById(containerId);
+    if (!results.length) { el.innerHTML = '<p style="color:var(--gray-dark);padding:12px;">No results found.</p>'; return; }
+    el.innerHTML = results.map((r, i) => `
+      <div style="border:1.5px solid var(--gray-mid);border-radius:8px;padding:12px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;">
+        <input type="checkbox" id="res-${containerId}-${i}" value="${i}" class="scrape-check" data-set="${containerId}" style="flex-shrink:0;margin-top:3px;">
+        <label for="res-${containerId}-${i}" style="flex:1;cursor:pointer;">
+          <div style="font-weight:700;font-size:.88rem;color:var(--dark);margin-bottom:2px;">${esc(r.title||'')}</div>
+          <div style="font-size:.75rem;color:var(--gray-dark);">${esc(r.organisation||'')} · ${esc(r.location||'')} · <a href="${esc(r.apply_url||'#')}" target="_blank" rel="noopener" style="color:var(--orange);">View →</a></div>
+          ${r.description ? `<div style="font-size:.73rem;color:var(--gray-dark);margin-top:3px;">${esc(r.description.slice(0,150))}…</div>` : ''}
+        </label>
+      </div>`).join('');
+    el.querySelectorAll('.scrape-check').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const idx = parseInt(cb.value, 10);
+        cb.checked ? selSet.add(idx) : selSet.delete(idx);
+        document.getElementById(selCountId).textContent = selSet.size;
+        document.getElementById(importBtnId).disabled = selSet.size === 0;
+      });
+    });
+  }
+
+  function importScrapeResults(results, selSet, statusId) {
+    let added = 0;
+    selSet.forEach(idx => {
+      const r = results[idx];
+      if (!r) return;
+      const entry = {
+        id:           r.id || ('import-' + Date.now() + '-' + idx),
+        title:        r.title || '',
+        organisation: r.organisation || '',
+        type:         r.type || 'jobs',
+        sector:       r.sector || 'Governance & Public Policy',
+        location:     r.location || '',
+        country:      r.country || 'KE',
+        deadline:     r.deadline || new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
+        salary:       r.salary || 'See listing',
+        apply_url:    r.apply_url || '',
+        description:  r.description || '',
+        requirements: r.requirements || 'See full listing.',
+        source:       r.source || 'API import',
+        posted:       new Date().toISOString().split('T')[0],
+      };
+      if (!adminOpps.find(o => o.id === entry.id)) { adminOpps.push(entry); added++; }
+    });
+    saveAdmin(); allOpps = mergeOpps(); renderTable(); renderStats();
+    document.getElementById(statusId).innerHTML = `✅ Imported <strong>${added}</strong> listing${added!==1?'s':''}. <a href="#" onclick="document.querySelectorAll('.admin-tab')[0].click();return false;">View all →</a>`;
+    selSet.clear();
+    document.querySelectorAll('.admin-tab')[0].click();
+  }
+
+  /* ================================================================
+     CORS PROXY — routes external requests through corsproxy.io
+     which is free, requires no signup and works in the browser.
+  ================================================================= */
+  function proxied(url) {
+    return 'https://corsproxy.io/?' + encodeURIComponent(url);
+  }
+
+  /* ── Remotive → replaced with Arbeitnow (Remotive deprecated) ── */
+  // Arbeitnow: free, no auth, supports CORS natively
+  let remResults = [], remSel = new Set();
+  document.getElementById('btn-rem-fetch').addEventListener('click', async () => {
+    const status  = document.getElementById('rem-status');
+    const keyword = document.getElementById('rem-keyword').value.trim().toLowerCase();
+    const limit   = parseInt(document.getElementById('rem-limit').value, 10);
+    status.textContent = '⏳ Fetching from Arbeitnow (remote jobs)…';
+    remResults = []; remSel.clear();
+    try {
+      // Arbeitnow API: free, no auth, CORS enabled, returns remote jobs globally
+      const res  = await fetch('https://www.arbeitnow.com/api/job-board-api');
+      if (!res.ok) throw new Error('API error: ' + res.status);
+      const json = await res.json();
+      let jobs   = (json.data || []);
+      if (keyword) jobs = jobs.filter(j =>
+        (j.title + ' ' + (j.company_name||'')).toLowerCase().includes(keyword)
+      );
+      jobs = jobs.slice(0, limit);
+      remResults = jobs.map(j => ({
+        id:           'arbeitnow-' + j.slug,
+        title:        j.title,
+        organisation: j.company_name || '',
+        type:         'jobs',
+        sector:       'Innovation & Technology',
+        location:     'Remote',
+        country:      'ZA',
+        apply_url:    j.url,
+        description:  (j.description || '').replace(/<[^>]+>/g,' ').slice(0,400),
+        source:       'Arbeitnow (remote)',
+      }));
+      status.textContent = `✅ Found ${remResults.length} remote listings.`;
+      renderScrapeResults('rem-list', remResults, remSel, 'rem-sel-count', 'btn-rem-import');
+    } catch (err) {
+      status.textContent = '❌ ' + err.message;
+    }
+  });
+  document.getElementById('btn-rem-import').addEventListener('click', () => importScrapeResults(remResults, remSel, 'rem-status'));
+
+  /* ── RSS Feeds — via corsproxy.io + native XML parser ─────────── */
+  // Verified RSS feeds — all work through the CORS proxy
+  const RSS_FEEDS = {
+    reliefweb_all: { url:'https://reliefweb.int/jobs/rss.xml',                       label:'ReliefWeb — All jobs',       country:'KE' },
+    reliefweb_ke:  { url:'https://reliefweb.int/taxonomy/term/254/jobs/rss.xml',     label:'ReliefWeb — Kenya',          country:'KE' },
+    reliefweb_za:  { url:'https://reliefweb.int/taxonomy/term/200/jobs/rss.xml',     label:'ReliefWeb — South Africa',   country:'ZA' },
+    reliefweb_ng:  { url:'https://reliefweb.int/taxonomy/term/171/jobs/rss.xml',     label:'ReliefWeb — Nigeria',        country:'NG' },
+    reliefweb_sn:  { url:'https://reliefweb.int/taxonomy/term/190/jobs/rss.xml',     label:'ReliefWeb — Senegal',        country:'SN' },
+    reliefweb_et:  { url:'https://reliefweb.int/taxonomy/term/119/jobs/rss.xml',     label:'ReliefWeb — Ethiopia',       country:'ET' },
+    reliefweb_gh:  { url:'https://reliefweb.int/taxonomy/term/130/jobs/rss.xml',     label:'ReliefWeb — Ghana',          country:'GH' },
+    un_jobs:       { url:'https://unjobs.org/duty_stations/africa.rss',              label:'UN Jobs — Africa',           country:'ET' },
+  };
+
+  document.getElementById('rss-source').addEventListener('change', function() {
+    document.getElementById('rss-custom-wrap').style.display = this.value === 'custom' ? 'block' : 'none';
+  });
+
+  function parseRSSXML(xmlText, feed) {
+    const parser = new DOMParser();
+    const doc    = parser.parseFromString(xmlText, 'text/xml');
+    const items  = [...doc.querySelectorAll('item')];
+    return items.map((item, i) => {
+      const get = tag => item.querySelector(tag)?.textContent?.trim() || '';
+      return {
+        id:           'rss-' + feed.label.toLowerCase().replace(/\W+/g,'-') + '-' + i,
+        title:        get('title'),
+        organisation: get('author') || get('dc\\:creator') || feed.label,
+        type:         'jobs',
+        sector:       'Governance & Public Policy',
+        location:     feed.country,
+        country:      feed.country,
+        apply_url:    get('link') || get('guid'),
+        description:  get('description').replace(/<[^>]+>/g,' ').slice(0,400),
+        source:       feed.label,
+      };
+    }).filter(r => r.title);
+  }
+
+  let rssResults = [], rssSel = new Set();
+  document.getElementById('btn-rss-fetch').addEventListener('click', async () => {
+    const status = document.getElementById('rss-status');
+    const srcKey = document.getElementById('rss-source').value;
+    const feed   = srcKey === 'custom'
+      ? { url: document.getElementById('rss-custom-url').value.trim(), label:'Custom', country:'KE' }
+      : RSS_FEEDS[srcKey];
+    if (!feed?.url) { status.textContent = '⚠ Please enter a feed URL.'; return; }
+    status.textContent = '⏳ Fetching RSS feed…';
+    rssResults = []; rssSel.clear();
+
+    // Try three proxy strategies in order until one works
+    const strategies = [
+      // 1. allorigins.win — wraps any URL as JSON { contents: "<xml>..." }
+      async () => {
+        const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(feed.url)}`);
+        if (!r.ok) throw new Error('allorigins ' + r.status);
+        const j = await r.json();
+        return j.contents;
+      },
+      // 2. corsproxy.io — returns raw body
+      async () => {
+        const r = await fetch(`https://corsproxy.io/?${encodeURIComponent(feed.url)}`);
+        if (!r.ok) throw new Error('corsproxy ' + r.status);
+        return r.text();
+      },
+      // 3. Direct — works if the feed has open CORS headers
+      async () => {
+        const r = await fetch(feed.url);
+        if (!r.ok) throw new Error('direct ' + r.status);
+        return r.text();
+      },
+    ];
+
+    let xml = null, lastErr = '';
+    for (const strategy of strategies) {
+      try { xml = await strategy(); if (xml) break; }
+      catch (e) { lastErr = e.message; }
+    }
+
+    if (!xml) {
+      status.textContent = `❌ All proxies failed (${lastErr}). This RSS feed may block external access.`;
+      return;
+    }
+
+    try {
+      rssResults = parseRSSXML(xml, feed);
+      if (!rssResults.length) throw new Error('Feed is empty or returned no job items.');
+      status.textContent = `✅ Found ${rssResults.length} listings from ${feed.label}.`;
+      renderScrapeResults('rss-list', rssResults, rssSel, 'rss-sel-count', 'btn-rss-import');
+    } catch (err) {
+      status.textContent = '❌ ' + err.message;
+    }
+  });
+  document.getElementById('btn-rss-import').addEventListener('click', () => importScrapeResults(rssResults, rssSel, 'rss-status'));
+
+  /* ── Adzuna — via corsproxy.io to bypass CORS ─────────────────── */
+  const ADZ_ID_KEY  = 'afrorama_adz_app_id';
+  const ADZ_KEY_KEY = 'afrorama_adz_api_key';
+  // Pre-fill Adzuna credentials
+  if (!localStorage.getItem(ADZ_ID_KEY))  localStorage.setItem(ADZ_ID_KEY,  '1b7aa655');
+  if (!localStorage.getItem(ADZ_KEY_KEY)) localStorage.setItem(ADZ_KEY_KEY, 'b0aaa7c2a60dd6e38fd75c7e1e62ac95');
+  document.getElementById('adz-app-id').value  = localStorage.getItem(ADZ_ID_KEY);
+  document.getElementById('adz-api-key').value = localStorage.getItem(ADZ_KEY_KEY);
+
+  let adzResults = [], adzSel = new Set();
+  document.getElementById('btn-adz-fetch').addEventListener('click', async () => {
+    const status  = document.getElementById('adz-status');
+    const appId   = document.getElementById('adz-app-id').value.trim();
+    const apiKey  = document.getElementById('adz-api-key').value.trim();
+    const country = document.getElementById('adz-country').value;
+    const keyword = document.getElementById('adz-keyword').value.trim();
+    const results = document.getElementById('adz-results').value;
+    if (!appId || !apiKey) { status.textContent = '⚠ Enter your Adzuna App ID and API Key. Get them free at developer.adzuna.com'; return; }
+    localStorage.setItem(ADZ_ID_KEY, appId);
+    localStorage.setItem(ADZ_KEY_KEY, apiKey);
+    status.textContent = '⏳ Searching Adzuna…';
+    adzResults = []; adzSel.clear();
+    try {
+      // Adzuna API — direct fetch (they support CORS natively, proxying causes 403)
+      // Note: content-type is NOT a query param; JSON is the default response format
+      const directUrl = `https://api.adzuna.com/v1/api/jobs/${country}/search/1?app_id=${appId}&app_key=${apiKey}&results_per_page=${results}&what=${encodeURIComponent(keyword)}`;
+      const res = await fetch(directUrl, {
+        headers: { 'Accept': 'application/json' },
+      });
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        throw new Error(`Adzuna API error ${res.status}. ${res.status === 403 ? 'Check your App ID and Key are correct, and that the selected country is in Adzuna\'s supported list.' : errText.slice(0,200)}`);
+      }
+      const json = await res.json();
+      const jobs = json.results || [];
+      const COUNTRY_MAP = { za:'ZA', ng:'NG', ke:'KE', gh:'GH', et:'ET', tz:'TZ', ug:'UG', gb:'GB' };
+      adzResults = jobs.map(j => ({
+        id:           'adzuna-' + j.id,
+        title:        j.title,
+        organisation: j.company?.display_name || '',
+        type:         'jobs',
+        sector:       'Governance & Public Policy',
+        location:     j.location?.display_name || '',
+        country:      COUNTRY_MAP[country] || 'ZA',
+        apply_url:    j.redirect_url || '',
+        description:  (j.description || '').slice(0, 400),
+        salary:       j.salary_min ? `$${Math.round(j.salary_min).toLocaleString()} – $${Math.round(j.salary_max||j.salary_min).toLocaleString()}` : 'See listing',
+        source:       'Adzuna',
+      }));
+      status.textContent = `✅ Found ${adzResults.length} listings on Adzuna ${country.toUpperCase()}.`;
+      renderScrapeResults('adz-list', adzResults, adzSel, 'adz-sel-count', 'btn-adz-import');
+    } catch (err) { status.textContent = '❌ ' + err.message; }
+  });
+  document.getElementById('btn-adz-import').addEventListener('click', () => importScrapeResults(adzResults, adzSel, 'adz-status'));
+
+  /* ── Google Sheets sync ─────────────────────────────────────── */
+  const SHEETS_URL_KEY = 'afrorama_opp_sheets_url';
+  let sheetsPreviewRows = [];
+
+  // Restore saved URL
+  const savedSheetsUrl = localStorage.getItem(SHEETS_URL_KEY);
+  if (savedSheetsUrl) document.getElementById('sheets-opp-url').value = savedSheetsUrl;
+
+  async function fetchSheetData(url) {
+    const status = document.getElementById('sheets-opp-status');
+    status.textContent = '⏳ Connecting to Google Sheets…';
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status + '. Check the URL and that the script is deployed as a public web app.');
+    const text = await res.text();
+    let json;
+    try { json = JSON.parse(text); } catch { throw new Error('Response is not valid JSON. Make sure the script uses ContentService.MimeType.JSON.'); }
+    const rows = Array.isArray(json) ? json : (json.data || json.rows || []);
+    if (!Array.isArray(rows)) throw new Error('Expected an array of rows. Check your Apps Script doGet() function.');
+    return { rows, updated: json.updated };
+  }
+
+  document.getElementById('btn-test-sheets-opp').addEventListener('click', async () => {
+    const url    = document.getElementById('sheets-opp-url').value.trim();
+    const status = document.getElementById('sheets-opp-status');
+    if (!url) { status.textContent = '⚠ Paste your Apps Script URL first.'; return; }
+    try {
+      const { rows, updated } = await fetchSheetData(url);
+      localStorage.setItem(SHEETS_URL_KEY, url);
+      status.innerHTML = `✅ Connected! Found <strong>${rows.length} rows</strong> in the sheet.${updated ? ' Last updated: ' + updated.slice(0,19).replace('T',' ') : ''}`;
+    } catch (err) {
+      status.textContent = '❌ ' + err.message;
+    }
+  });
+
+  document.getElementById('btn-sync-sheets-opp').addEventListener('click', async () => {
+    const url    = document.getElementById('sheets-opp-url').value.trim();
+    const status = document.getElementById('sheets-opp-status');
+    if (!url) { status.textContent = '⚠ Paste your Apps Script URL first.'; return; }
+
+    try {
+      const { rows } = await fetchSheetData(url);
+      localStorage.setItem(SHEETS_URL_KEY, url);
+      sheetsPreviewRows = rows;
+
+      // Build preview table
+      if (!rows.length) { status.textContent = '⚠ The sheet appears to be empty.'; return; }
+      const keys = Object.keys(rows[0]);
+      const SHOW_KEYS = ['title','organisation','type','sector','location','country','deadline','paid_listing'].filter(k => keys.includes(k));
+
+      document.getElementById('sheets-preview-head').innerHTML = '<tr>' + SHOW_KEYS.map(k=>`<th style="padding:8px 12px;text-align:left;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-dark);white-space:nowrap;background:var(--gray-light);">${esc(k)}</th>`).join('') + '</tr>';
+      document.getElementById('sheets-preview-body').innerHTML = rows.slice(0,20).map((r,i) =>
+        '<tr style="border-bottom:1px solid var(--gray-light);">' +
+        SHOW_KEYS.map(k => `<td style="padding:8px 12px;font-size:.78rem;vertical-align:middle;color:var(--dark);">${esc(String(r[k]||''))}</td>`).join('') +
+        '</tr>'
+      ).join('');
+
+      document.getElementById('sheets-preview-label').textContent = `Preview — ${rows.length} rows from sheet`;
+      document.getElementById('sheets-opp-preview').style.display = 'block';
+      status.innerHTML = `📊 Preview ready. <strong>${rows.length} listings</strong> found. Review below and click <strong>Confirm import</strong>.`;
+    } catch (err) {
+      status.textContent = '❌ ' + err.message;
+    }
+  });
+
+  document.getElementById('btn-confirm-sheets-import').addEventListener('click', () => {
+    if (!sheetsPreviewRows.length) return;
+    const status = document.getElementById('sheets-opp-status');
+    let added = 0, updated = 0, skipped = 0;
+
+    sheetsPreviewRows.forEach((r, i) => {
+      if (!r.title) { skipped++; return; }
+
+      const entry = {
+        id:           r.id || ('sheets-' + (Date.now() + i)),
+        title:        String(r.title        || '').trim(),
+        organisation: String(r.organisation || r.org || '').trim(),
+        type:         (['jobs','internship','consultancy','capacity'].includes(r.type) ? r.type : 'jobs'),
+        sector:       String(r.sector       || '').trim(),
+        location:     String(r.location     || '').trim(),
+        country:      String(r.country      || '').toUpperCase().trim().slice(0,2),
+        deadline:     String(r.deadline     || '').trim(),
+        salary:       String(r.salary       || 'See listing').trim(),
+        apply_url:    String(r.apply_url    || r.url || '').trim(),
+        description:  String(r.description  || '').trim(),
+        requirements: String(r.requirements || '').trim(),
+        paid_listing: r.paid_listing === true || String(r.paid_listing).toLowerCase() === 'true',
+        source:       'Google Sheets',
+        posted:       String(r.posted || new Date().toISOString().split('T')[0]),
+      };
+
+      const existIdx = adminOpps.findIndex(o => o.id === entry.id);
+      if (existIdx >= 0) { adminOpps[existIdx] = entry; updated++; }
+      else               { adminOpps.push(entry); added++; }
+    });
+
+    saveAdmin();
+    allOpps = mergeOpps();
+    renderTable();
+    renderStats();
+
+    document.getElementById('sheets-opp-preview').style.display = 'none';
+    status.innerHTML = `✅ <strong>${added} added</strong>, ${updated} updated, ${skipped} skipped (no title). <a href="#" onclick="document.querySelectorAll('.admin-tab')[0].click();return false;">View all listings →</a>`;
+    sheetsPreviewRows = [];
+  });
+
+  /* ── Publish button ── */
+  document.getElementById('btn-publish').addEventListener('click', () => {
+    document.getElementById('publish-notice').style.display = 'block';
+    setTimeout(() => window.open('opportunities.html', '_blank'), 400);
+  });
+
+  function esc(s) { return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+})();
+</script>
+</body>
+</html>

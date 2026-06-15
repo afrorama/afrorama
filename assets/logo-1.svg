@@ -1,0 +1,20 @@
+<svg viewBox="0 0 56 36" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+  <defs>
+    <clipPath id="sun-rays-clip">
+      <path d="M -2,36 A 30,30 0 0,1 58,36 Z"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#sun-rays-clip)">
+    <rect x="26.5" y="6"  width="3" height="30" rx="1.5" transform="rotate(-72 28 36)"/>
+    <rect x="26.5" y="6"  width="3" height="30" rx="1.5" transform="rotate(-54 28 36)"/>
+    <rect x="26.5" y="6"  width="3" height="30" rx="1.5" transform="rotate(-36 28 36)"/>
+    <rect x="26.5" y="6"  width="3" height="30" rx="1.5" transform="rotate(-18 28 36)"/>
+    <rect x="26.5" y="6"  width="3" height="30" rx="1.5" transform="rotate(0   28 36)"/>
+    <rect x="26.5" y="6"  width="3" height="30" rx="1.5" transform="rotate(18  28 36)"/>
+    <rect x="26.5" y="6"  width="3" height="30" rx="1.5" transform="rotate(36  28 36)"/>
+    <rect x="26.5" y="6"  width="3" height="30" rx="1.5" transform="rotate(54  28 36)"/>
+    <rect x="26.5" y="6"  width="3" height="30" rx="1.5" transform="rotate(72  28 36)"/>
+  </g>
+  <path d="M 12,36 A 16,16 0 0,1 44,36 L 40,36 A 12,12 0 0,0 16,36 Z"/>
+  <path d="M 16,36 A 12,12 0 0,1 40,36 Z"/>
+</svg>
