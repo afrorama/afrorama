@@ -522,7 +522,9 @@ document.getElementById('btn-generate').addEventListener('click', async () => {
 
   let hasContent = false;
   SECTIONS.forEach(section => {
-    const items = (sectionListings[section.key] || []).filter(l => checkedIds.has(l.id));
+    const items = (sectionListings[section.key] || [])
+      .filter(l => checkedIds.has(l.id))
+      .sort((a, b) => a.organisation.localeCompare(b.organisation));
     if (!items.length) return;
     hasContent = true;
     lines.push('');
