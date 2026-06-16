@@ -22,7 +22,11 @@
   <meta property="og:description" content="Africa's #1 platform for NGO jobs, social impact careers, fellowships and consultancies across all 54 countries.">
   <meta property="og:locale" content="en_GB">
   <meta property="og:site_name" content="Afrorama">
+  <meta property="og:image" content="https://afrorama.org/assets/hero.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://afrorama.org/assets/hero.jpg">
   <meta name="geo.region" content="AF">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +34,33 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/home.css">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Afrorama","url":"https://afrorama.org","potentialAction":{"@type":"SearchAction","target":"https://afrorama.org/opportunities.html?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://afrorama.org/#organization",
+        "name": "Afrorama",
+        "url": "https://afrorama.org",
+        "logo": "https://afrorama.org/assets/logo-icon.svg",
+        "description": "Africa's leading platform for social impact jobs, NGO careers, fellowships and consultancies across all 54 countries."
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://afrorama.org/#website",
+        "url": "https://afrorama.org",
+        "name": "Afrorama",
+        "publisher": { "@id": "https://afrorama.org/#organization" },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://afrorama.org/opportunities.html?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 

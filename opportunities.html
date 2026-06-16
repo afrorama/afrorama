@@ -14,7 +14,16 @@
   <title>Social Impact Jobs in Africa | NGO Careers, Fellowships &amp; Consultancies | Afrorama</title>
   <meta name="description" content="Browse social impact jobs, NGO careers, consultancies and fellowships across Africa. Filter by country, sector and type. Kenya, South Africa, Senegal and more.">
   <meta name="keywords" content="social impact jobs Africa, NGO jobs Africa, development jobs Kenya, NGO careers South Africa, social impact Senegal, fellowship Africa, consultancy Africa">
+  <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://afrorama.org/opportunities.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://afrorama.org/opportunities.html">
+  <meta property="og:title" content="Social Impact &amp; NGO Jobs in Africa | Afrorama">
+  <meta property="og:description" content="Browse social impact jobs, NGO careers, consultancies and fellowships across Africa. Filter by country, sector and type.">
+  <meta property="og:image" content="https://afrorama.org/assets/hero.jpg">
+  <meta property="og:site_name" content="Afrorama">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://afrorama.org/assets/hero.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -25,13 +34,18 @@
 
   <!-- SEO: JobPosting structured data — injected dynamically by opportunities.js -->
   <script type="application/ld+json" id="jobposting-schema">[]</script>
-  <!-- SEO: WebSite schema -->
+  <!-- SEO: EmploymentAgency schema for the job board -->
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"JobPosting","@id":"https://afrorama.org/opportunities.html",
-   "name":"Social Impact Jobs across Africa","description":"Browse social impact jobs, NGO careers, consultancies and fellowships across Africa.",
-   "hiringOrganization":{"@type":"Organization","name":"Afrorama","url":"https://afrorama.org"},
-   "jobLocation":{"@type":"Place","addressCountry":"Africa"},
-   "employmentType":"FULL_TIME"}
+  {
+    "@context": "https://schema.org",
+    "@type": "EmploymentAgency",
+    "@id": "https://afrorama.org/#organization",
+    "name": "Afrorama",
+    "url": "https://afrorama.org",
+    "description": "Africa's leading platform for social impact jobs, NGO careers, fellowships and consultancies.",
+    "areaServed": { "@type": "Place", "name": "Africa" },
+    "knowsAbout": ["Social Impact", "NGO Careers", "International Development", "Fellowships", "Consultancies"]
+  }
   </script>
 </head>
 <body>
