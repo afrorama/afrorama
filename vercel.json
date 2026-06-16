@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/opportunity/:id",
+      "destination": "https://vqchwioyhyiuunpyildz.supabase.co/functions/v1/opportunity/:id"
+    }
+  ]
+}

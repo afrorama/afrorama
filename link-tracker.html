@@ -100,7 +100,7 @@
       <p class="error" id="error-msg"></p>
 
       <div class="result" id="result">
-        <p class="result-label">Your Bitly link</p>
+        <p class="result-label">Your tracked link</p>
         <p class="result-url" id="result-url"></p>
         <button class="copy-btn" onclick="copyLink()">Copy link</button>
         <p class="utm-preview" id="utm-preview"></p>
@@ -110,10 +110,10 @@
     <!-- Bookmarklet -->
     <div class="card bookmarklet-card">
       <h2>One-click bookmarklet</h2>
-      <p>Drag the button below to your bookmarks bar. Then click it on any webpage to instantly generate a tracked Bitly link for that page.</p>
+      <p>Drag the button below to your bookmarks bar. Then click it on any webpage to instantly generate a tracked afrorama.org link for that page.</p>
       <div class="step"><div class="step-num">1</div><p>Drag the yellow button to your browser's bookmarks bar</p></div>
       <div class="step"><div class="step-num">2</div><p>Browse to any page you want to share</p></div>
-      <div class="step"><div class="step-num">3</div><p>Click the bookmark. The Bitly link is copied to your clipboard instantly</p></div>
+      <div class="step"><div class="step-num">3</div><p>Click the bookmark. The tracked link is copied to your clipboard instantly</p></div>
       <a class="bookmarklet-link" id="bookmarklet-link" href="#">⚡ Afrorama Link</a>
     </div>
 
@@ -138,11 +138,11 @@
         headers:{'Content-Type':'application/json','Authorization':'Bearer ${ANON_KEY}'},
         body:JSON.stringify({url:url,title:title,medium:'bookmarklet'})
       }).then(r=>r.json()).then(d=>{
-        if(d.bitly_url){
-          navigator.clipboard.writeText(d.bitly_url).catch(()=>{});
+        if(d.short_url){
+          navigator.clipboard.writeText(d.short_url).catch(()=>{});
           var div=document.createElement('div');
           div.style.cssText='position:fixed;top:20px;right:20px;z-index:99999;background:#FFE400;color:#1C1D1C;padding:14px 20px;border-radius:12px;border:2px solid #1C1D1C;box-shadow:4px 4px 0 #1C1D1C;font-family:sans-serif;font-weight:700;font-size:14px;max-width:320px';
-          div.innerHTML='<div style="margin-bottom:6px">✅ Copied to clipboard!</div><div style="font-size:12px;word-break:break-all">' + d.bitly_url + '</div>';
+          div.innerHTML='<div style="margin-bottom:6px">✅ Copied to clipboard!</div><div style="font-size:12px;word-break:break-all">' + d.short_url + '</div>';
           document.body.appendChild(div);
           setTimeout(()=>div.remove(),4000);
         }else{alert('Error: '+(d.error||'Unknown error'));}
@@ -176,16 +176,16 @@
 
         if (data.error) throw new Error(data.error);
 
-        document.getElementById('result-url').textContent  = data.bitly_url;
+        document.getElementById('result-url').textContent  = data.short_url;
         document.getElementById('utm-preview').textContent = '→ ' + data.utm_url;
         document.getElementById('result').classList.add('show');
 
         // Add to session history
-        history.unshift({ bitly: data.bitly_url, title: title || url.slice(0, 50), date: new Date().toLocaleTimeString() });
+        history.unshift({ bitly: data.short_url, title: title || url.slice(0, 50), date: new Date().toLocaleTimeString() });
         renderHistory();
 
         // Auto-copy
-        navigator.clipboard.writeText(data.bitly_url).catch(() => {});
+        navigator.clipboard.writeText(data.short_url).catch(() => {});
 
       } catch (err) {
         errEl.textContent = err.message;
