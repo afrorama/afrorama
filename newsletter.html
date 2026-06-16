@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newsletter Generator | Afrorama</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #F8F7F3; color: #1C1D1C; min-height: 100vh; padding: 40px 24px; }
+    .container { max-width: 760px; margin: 0 auto; }
+
+    .header { margin-bottom: 32px; }
+    .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.04em; }
+    .logo span { background: #FFE400; padding: 2px 8px; border-radius: 6px; }
+    h1 { font-size: 1.6rem; font-weight: 800; margin-top: 16px; }
+    p.sub { color: #888; font-size: .9rem; margin-top: 6px; }
+
+    .card { background: white; border: 2px solid #1C1D1C; border-radius: 16px; padding: 28px; box-shadow: 4px 4px 0 #1C1D1C; margin-bottom: 24px; }
+    .card h2 { font-size: 1rem; font-weight: 700; margin-bottom: 18px; }
+
+    label { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #888; display: block; margin-bottom: 6px; }
+    input[type="date"], input[type="text"], input[type="number"] {
+      width: 100%; padding: 10px 13px; font-family: inherit; font-size: .9rem;
+      border: 1.5px solid #DDDCDA; border-radius: 8px; outline: none; color: #1C1D1C; background: white;
+    }
+    input:focus { border-color: #1C1D1C; box-shadow: 0 0 0 3px rgba(28,29,28,.06); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 80px; gap: 12px; margin-bottom: 16px; }
+    .field { margin-bottom: 16px; }
+
+    .btn-primary {
+      width: 100%; padding: 13px; font-family: inherit; font-size: .95rem; font-weight: 700;
+      background: #FFE400; color: #1C1D1C; border: 2px solid #1C1D1C; border-radius: 100px;
+      cursor: pointer; box-shadow: 3px 3px 0 #1C1D1C; transition: all .12s;
+    }
+    .btn-primary:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #1C1D1C; }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .btn-dark {
+      padding: 9px 22px; font-family: inherit; font-size: .85rem; font-weight: 700;
+      background: #1C1D1C; color: #FFE400; border: 2px solid #1C1D1C; border-radius: 100px;
+      cursor: pointer; box-shadow: 2px 2px 0 rgba(0,0,0,.25); transition: all .12s;
+    }
+    .btn-dark:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 rgba(0,0,0,.3); }
+    .btn-sm { padding: 5px 14px; font-size: .75rem; }
+
+    /* Sections */
+    .section-block { margin-bottom: 24px; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .section-title { font-size: .9rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+    .section-actions { display: flex; gap: 8px; }
+    .section-count { background: #F0EFEB; border: 1.5px solid #DDDCDA; border-radius: 100px; padding: 2px 10px; font-size: .75rem; font-weight: 700; color: #888; }
+
+    .listing-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 12px; border: 1.5px solid #DDDCDA; border-radius: 10px;
+      margin-bottom: 6px; cursor: pointer; transition: border-color .12s, background .12s;
+    }
+    .listing-item:hover { border-color: #1C1D1C; background: #FAFAF8; }
+    .listing-item.checked { border-color: #1C1D1C; background: #FAFFF0; }
+    .listing-item input[type="checkbox"] { margin-top: 2px; width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; accent-color: #1C1D1C; }
+    .listing-flag { font-size: 1.1rem; flex-shrink: 0; line-height: 1.4; }
+    .listing-text { flex: 1; min-width: 0; }
+    .listing-org { font-size: .78rem; font-weight: 700; color: #888; }
+    .listing-title { font-size: .88rem; font-weight: 600; color: #1C1D1C; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .listing-loc { font-size: .78rem; color: #aaa; margin-top: 1px; }
+
+    .empty-section { color: #aaa; font-size: .85rem; font-style: italic; padding: 10px 0; }
+    #listings-area { display: none; }
+
+    .status { font-size: .85rem; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; }
+    .status.loading { background: #FFF8CC; border: 1.5px solid #FFE400; color: #7a6800; }
+    .status.ok { background: #EDFCE8; border: 1.5px solid #5EC95E; color: #1a5c1a; }
+    .status.err { background: #FDECEA; border: 1.5px solid #E45B5B; color: #7a1a1a; }
+
+    .flag-preview { font-size: 1.4rem; display: flex; align-items: center; justify-content: center; padding: 8px 0 0; }
+
+    textarea#output {
+      width: 100%; height: 320px; font-family: 'Courier New', monospace; font-size: .8rem;
+      line-height: 1.6; border: 1.5px solid #DDDCDA; border-radius: 10px;
+      padding: 14px; resize: vertical; outline: none; color: #1C1D1C; background: #F8F7F3;
+    }
+    textarea#output:focus { border-color: #1C1D1C; }
+    .output-actions { display: flex; gap: 10px; margin-top: 12px; align-items: center; }
+    .copy-hint { font-size: .78rem; color: #888; }
+    #output-area { display: none; }
+    #output-area.show { display: block; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo"><span>afrorama</span></div>
+    <h1>Newsletter Generator</h1>
+    <p class="sub">Fetches this week's listings and formats them ready to paste into LinkedIn.</p>
+  </div>
+
+  <!-- Controls -->
+  <div class="card">
+    <h2>1. Fetch listings</h2>
+    <div class="row">
+      <div>
+        <label>From date</label>
+        <input type="date" id="since-date">
+      </div>
+      <div>
+        <label>To date</label>
+        <input type="date" id="until-date">
+      </div>
+    </div>
+    <div id="fetch-status"></div>
+    <button class="btn-primary" id="btn-fetch">Fetch listings</button>
+  </div>
+
+  <!-- Listings selection -->
+  <div id="listings-area">
+    <div class="card">
+      <h2>2. Choose what to include</h2>
+      <div id="sections-container"></div>
+    </div>
+
+    <!-- Song -->
+    <div class="card">
+      <h2>3. This week's song</h2>
+      <div class="row3">
+        <div>
+          <label>Song title</label>
+          <input type="text" id="song-title" placeholder="Organise">
+        </div>
+        <div>
+          <label>Artist name</label>
+          <input type="text" id="song-artist" placeholder="Asake">
+        </div>
+        <div>
+          <label>ISO2</label>
+          <input type="text" id="song-country-iso" placeholder="NG" maxlength="2" style="text-transform:uppercase">
+        </div>
+      </div>
+      <div class="flag-preview" id="song-flag-preview">🎵</div>
+    </div>
+
+    <!-- Generate -->
+    <button class="btn-primary" id="btn-generate">Generate newsletter text</button>
+  </div>
+
+  <!-- Output -->
+  <div id="output-area" style="margin-top:24px;">
+    <div class="card">
+      <h2>4. Copy and paste</h2>
+      <textarea id="output" readonly></textarea>
+      <div class="output-actions">
+        <button class="btn-dark" id="btn-copy">Copy to clipboard</button>
+        <span class="copy-hint" id="copy-hint"></span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SUPABASE_URL = 'https://vqchwioyhyiuunpyildz.supabase.co';
+const ANON_KEY     = 'sb_publishable_HeGZfQZEDI_IR46a2Ezp-Q_tIUdhF6_';
+const SPOTIFY_URL  = 'https://bit.ly/3ExFDU5';
+
+const SECTIONS = [
+  { key: 'jobs',        label: 'Jobs',                      types: ['jobs'] },
+  { key: 'internship',  label: 'Internship & Volunteering', types: ['internship'] },
+  { key: 'consultancy', label: 'Consultancy & Research',    types: ['consultancy', 'capacity'] },
+];
+
+const COUNTRY_NAMES = {
+  DZ:'Algeria', AO:'Angola', BJ:'Benin', BW:'Botswana', BF:'Burkina Faso',
+  BI:'Burundi', CV:'Cabo Verde', CM:'Cameroon', CF:'Central African Republic',
+  TD:'Chad', KM:'Comoros', CD:'DR Congo', CG:'Republic of Congo',
+  CI:"Côte d'Ivoire", DJ:'Djibouti', EG:'Egypt', GQ:'Equatorial Guinea',
+  ER:'Eritrea', SZ:'Eswatini', ET:'Ethiopia', GA:'Gabon', GM:'Gambia',
+  GH:'Ghana', GN:'Guinea', GW:'Guinea-Bissau', KE:'Kenya', LS:'Lesotho',
+  LR:'Liberia', LY:'Libya', MG:'Madagascar', MW:'Malawi', ML:'Mali',
+  MR:'Mauritania', MU:'Mauritius', MA:'Morocco', MZ:'Mozambique',
+  NA:'Namibia', NE:'Niger', NG:'Nigeria', RW:'Rwanda', ST:'São Tomé & Príncipe',
+  SN:'Senegal', SC:'Seychelles', SL:'Sierra Leone', SO:'Somalia', ZA:'South Africa',
+  SS:'South Sudan', SD:'Sudan', TZ:'Tanzania', TG:'Togo', TN:'Tunisia',
+  UG:'Uganda', ZM:'Zambia', ZW:'Zimbabwe',
+  GB:'United Kingdom', US:'United States', DE:'Germany', FR:'France',
+  BE:'Belgium', NL:'Netherlands', CH:'Switzerland', SE:'Sweden',
+  NO:'Norway', DK:'Denmark', CA:'Canada', AU:'Australia',
+};
+
+function toFlag(iso) {
+  if (!iso) return '🌍';
+  const c = iso.toUpperCase().replace(/[^A-Z]/g, '');
+  if (c.length !== 2) return '🌍';
+  return c.split('').map(ch => String.fromCodePoint(ch.charCodeAt(0) + 127397)).join('');
+}
+
+function locationDisplay(listing) {
+  const loc = (listing.location || '').trim();
+  if (/remote/i.test(loc)) return { flag: '🌍', name: 'Remote' };
+  if (/multiple/i.test(loc)) return { flag: '🌍', name: 'Multiple Locations' };
+  const flag = toFlag(listing.country);
+  const name = COUNTRY_NAMES[listing.country?.toUpperCase()] || loc || listing.country || 'Africa';
+  return { flag, name };
+}
+
+function isoDateString(date) {
+  return date.toISOString().split('T')[0];
+}
+
+// Default range: Mon–Sun of the current week
+function defaultRange() {
+  const today = new Date();
+  const day = today.getDay(); // 0=Sun
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((day + 6) % 7));
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  return { from: isoDateString(monday), to: isoDateString(sunday) };
+}
+
+// ---- Init ----
+const range = defaultRange();
+document.getElementById('since-date').value = range.from;
+document.getElementById('until-date').value  = range.to;
+
+// Song flag preview
+document.getElementById('song-country-iso').addEventListener('input', e => {
+  const val = e.target.value.toUpperCase();
+  document.getElementById('song-flag-preview').textContent = val.length === 2 ? toFlag(val) : '🎵';
+});
+
+// ---- Fetch ----
+let allListings = [];
+
+document.getElementById('btn-fetch').addEventListener('click', async () => {
+  const since = document.getElementById('since-date').value;
+  const until = document.getElementById('until-date').value;
+  if (!since || !until) { setStatus('Please select a date range.', 'err'); return; }
+
+  setStatus('Fetching listings...', 'loading');
+  document.getElementById('btn-fetch').disabled = true;
+
+  try {
+    // Fetch up to 200 listings created in the date range
+    const url = `${SUPABASE_URL}/rest/v1/listings`
+      + `?created_at=gte.${since}T00:00:00Z`
+      + `&created_at=lte.${until}T23:59:59Z`
+      + `&or=(paid_listing.eq.false,payment_confirmed.eq.true)`
+      + `&order=type.asc,created_at.desc`
+      + `&limit=200`
+      + `&select=id,title,organisation,type,location,country,apply_url,deadline`;
+
+    const res = await fetch(url, {
+      headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    allListings = await res.json();
+
+    setStatus(`${allListings.length} listing${allListings.length !== 1 ? 's' : ''} found between ${since} and ${until}.`, 'ok');
+    renderSections(allListings);
+    document.getElementById('listings-area').style.display = 'block';
+  } catch (err) {
+    setStatus('Failed to fetch listings: ' + err.message, 'err');
+  } finally {
+    document.getElementById('btn-fetch').disabled = false;
+  }
+});
+
+function setStatus(msg, type) {
+  const el = document.getElementById('fetch-status');
+  el.className = `status ${type}`;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ---- Render sections ----
+function renderSections(listings) {
+  const container = document.getElementById('sections-container');
+  container.innerHTML = '';
+
+  SECTIONS.forEach(section => {
+    const items = listings.filter(l => section.types.includes(l.type));
+    const block = document.createElement('div');
+    block.className = 'section-block';
+
+    const header = document.createElement('div');
+    header.className = 'section-header';
+    header.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="section-title">${section.label}</span>
+        <span class="section-count">${items.length}</span>
+      </div>
+      <div class="section-actions">
+        <button class="btn-dark btn-sm" onclick="toggleSection('${section.key}', true)">All</button>
+        <button class="btn-dark btn-sm" onclick="toggleSection('${section.key}', false)">None</button>
+      </div>`;
+    block.appendChild(header);
+
+    if (!items.length) {
+      const empty = document.createElement('div');
+      empty.className = 'empty-section';
+      empty.textContent = 'No listings in this category for the selected period.';
+      block.appendChild(empty);
+    } else {
+      items.forEach(listing => {
+        const { flag, name } = locationDisplay(listing);
+        const item = document.createElement('label');
+        item.className = 'listing-item checked';
+        item.dataset.section = section.key;
+        item.dataset.id = listing.id;
+        item.innerHTML = `
+          <input type="checkbox" checked data-id="${listing.id}" data-section="${section.key}">
+          <span class="listing-flag">${flag}</span>
+          <span class="listing-text">
+            <span class="listing-org">${name} &middot; ${listing.organisation}</span>
+            <span class="listing-title">${listing.title}</span>
+          </span>`;
+        item.querySelector('input').addEventListener('change', e => {
+          item.classList.toggle('checked', e.target.checked);
+        });
+        block.appendChild(item);
+      });
+    }
+
+    container.appendChild(block);
+  });
+}
+
+window.toggleSection = function(sectionKey, checked) {
+  document.querySelectorAll(`[data-section="${sectionKey}"]`).forEach(el => {
+    if (el.tagName === 'INPUT') {
+      el.checked = checked;
+      el.closest('.listing-item').classList.toggle('checked', checked);
+    }
+  });
+};
+
+// ---- Generate ----
+document.getElementById('btn-generate').addEventListener('click', () => {
+  const checkedIds = new Set(
+    [...document.querySelectorAll('.listing-item input:checked')].map(el => el.dataset.id)
+  );
+
+  const songTitle   = document.getElementById('song-title').value.trim();
+  const songArtist  = document.getElementById('song-artist').value.trim();
+  const songIso     = document.getElementById('song-country-iso').value.trim().toUpperCase();
+  const songFlag    = songIso.length === 2 ? toFlag(songIso) : '';
+  const songCountry = COUNTRY_NAMES[songIso] || songIso || '';
+
+  let lines = [];
+  lines.push('📢 afrorama provides a weekly digest of Africa-based and African related social impact opportunities.');
+
+  let hasAny = false;
+
+  SECTIONS.forEach(section => {
+    const items = allListings.filter(l =>
+      section.types.includes(l.type) && checkedIds.has(l.id)
+    );
+    if (!items.length) return;
+    hasAny = true;
+
+    lines.push('');
+    lines.push(section.label);
+
+    items.forEach(listing => {
+      const { flag, name } = locationDisplay(listing);
+      const url = listing.apply_url || '';
+      lines.push(`${flag} ${name} | ${listing.organisation} | ${listing.title}: ${url}`);
+    });
+  });
+
+  if (!hasAny) {
+    alert('No listings selected. Please check at least one listing.');
+    return;
+  }
+
+  lines.push('');
+  if (songTitle && songArtist) {
+    const countryPart = songFlag && songCountry ? ` (${songFlag} ${songCountry})` : '';
+    lines.push(`🎶 This week's newsletter was produced while listening to ${songTitle} by ${songArtist}${countryPart}. To listen to our Spotify playlist, visit ${SPOTIFY_URL}`);
+  } else {
+    lines.push(`🎶 To listen to our Spotify playlist, visit ${SPOTIFY_URL}`);
+  }
+
+  const output = lines.join('\n');
+  document.getElementById('output').value = output;
+  document.getElementById('output-area').classList.add('show');
+  document.getElementById('output-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('copy-hint').textContent = '';
+});
+
+// ---- Copy ----
+document.getElementById('btn-copy').addEventListener('click', async () => {
+  const text = document.getElementById('output').value;
+  if (!text) return;
+  try {
+    await navigator.clipboard.writeText(text);
+    document.getElementById('copy-hint').textContent = 'Copied!';
+    setTimeout(() => { document.getElementById('copy-hint').textContent = ''; }, 2500);
+  } catch {
+    document.getElementById('output').select();
+    document.execCommand('copy');
+    document.getElementById('copy-hint').textContent = 'Copied!';
+  }
+});
+</script>
+</body>
+</html>
