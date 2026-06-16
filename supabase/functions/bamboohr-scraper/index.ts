@@ -258,10 +258,9 @@ Deno.serve(async (req) => {
           'tanzania','zambia','mozambique','malawi','zimbabwe','south africa','senegal','cameroon',
           'côte d\'ivoire','ivory coast','burkina faso','mali','niger','chad','sudan','somalia',
           'congo','angola','egypt','morocco','tunisia','botswana','namibia','sierra leone'];
-        const NON_AFRICA_ISO = new Set(['US','GB','CA','AU','DE','FR','NL','BE','CH','SE','NO','DK','IT','ES','AT','IE','JP','CN','SG','AE','IN','BR','NZ','HU','PL','CZ','LU','UA','TR']);
-        if (NON_AFRICA_ISO.has(country)) continue; // explicit non-Africa country — skip
         const titleLower = title.toLowerCase();
         const locationLower = location.toLowerCase();
+        // Include if: African country code, location text mentions Africa, OR title signals Africa
         const mentionsAfrica = AFRICA_MENTIONS.some(c => titleLower.includes(c) || locationLower.includes(c));
         if (!AFRICA_ISO.has(country) && !mentionsAfrica) continue;
 

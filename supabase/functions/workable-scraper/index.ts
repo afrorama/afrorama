@@ -325,14 +325,11 @@ Deno.serve(async (req) => {
         const locCity    = job.location?.city || '';
         const locCountry = job.location?.country || '';
 
-        // Reject jobs with an explicit non-African country code
-        const NON_AFRICA_ISO = new Set(['US','GB','CA','AU','DE','FR','NL','BE','CH','SE','NO','DK','IT','ES','AT','IE','JP','CN','SG','AE','IN','BR','NZ','HU','PL','CZ','LU','UA','TR']);
-        if (locCode && !AFRICA_ISO.has(locCode) && NON_AFRICA_ISO.has(locCode)) continue;
-
+        // Include if: African country code, African location text, OR title signals Africa
+        const titleSignalIso = isAfricanLocation(title, org.country)?.iso || null;
         const iso = AFRICA_ISO.has(locCode) ? locCode
           : isAfricanLocation(locCountry, org.country)?.iso
-          // Only fall back to title if there's genuinely no location info
-          || (!locCode && !locCountry ? isAfricanLocation(title, org.country)?.iso : null)
+          || titleSignalIso
           || null;
         if (!iso) continue;
 

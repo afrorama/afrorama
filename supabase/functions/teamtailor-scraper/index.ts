@@ -337,10 +337,11 @@ Deno.serve(async () => {
           return attrs.department || '';
         })();
 
-        // Filter to African locations — only use title fallback when no location string at all
         const locationByText = isAfricanLocation(locationName, org.country);
-        const location = locationByText || (!locationName ? isAfricanLocation(title, org.country) : null);
-        if (!location) continue;
+        const titleSignal    = isAfricanLocation(title, org.country);
+        // Include if location is African OR title signals Africa (catches non-Africa-based Africa roles)
+        if (!locationByText && !titleSignal) continue;
+        const location = locationByText || titleSignal!;
 
         const jobId  = String(job.id || '').replace(/^.*\/(\d+)[^/]*$/, '$1') || String(job.id || '');
         if (!jobId) continue;

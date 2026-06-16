@@ -340,9 +340,10 @@ Deno.serve(async (req) => {
         const locRaw = job.location?.name || job.offices?.[0]?.name || '';
 
         const locationByText = isAfricanLocation(locRaw, org.country);
-        // Only use title as location fallback when there is no location string at all
-        const location = locationByText || (!locRaw ? isAfricanLocation(title, org.country) : null);
-        if (!location) continue;
+        const titleSignal    = isAfricanLocation(title, org.country);
+        // Include if location is African OR title signals Africa (catches non-Africa-based Africa roles)
+        if (!locationByText && !titleSignal) continue;
+        const location = locationByText || titleSignal!;
 
         // Department from departments array
         const dept   = job.departments?.[0]?.name || '';
