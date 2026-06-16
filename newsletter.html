@@ -411,6 +411,7 @@ function renderSections() {
       msg.textContent = 'No active listings in this category for the selected period.';
       block.appendChild(msg);
     } else {
+      items.sort((a, b) => a.organisation.localeCompare(b.organisation));
       items.forEach(listing => {
         const { flag, name } = locationDisplay(listing);
         const item = document.createElement('label');
