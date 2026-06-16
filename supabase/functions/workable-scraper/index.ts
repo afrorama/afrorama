@@ -156,6 +156,39 @@ function mapSector(dept: string): string {
   return 'Governance & Public Policy';
 }
 
+function mapType(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes('intern') || t.includes('trainee') || t.includes('volunteer')) return 'internship';
+  if (t.includes('fellowship')) return 'capacity';
+  if (t.includes('consultant') || t.includes('consultancy') || t.includes('advisor') || t.includes('adviser') || t.includes('contractor')) return 'consultancy';
+  return 'jobs';
+}
+
+function extractDeadline(text: string): string | null {
+  if (!text) return null;
+  const patterns = [
+    /(?:deadline|closing date|close[sd]? on|applications?\s+close|apply by|submit by|due date|applications?\s+due)[:\s]+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})/i,
+    /(?:deadline|closing date|close[sd]? on|applications?\s+close|apply by|submit by)[:\s]+(\d{1,2}\s+[A-Za-z]+\.?\s+\d{4})/i,
+    /(?:deadline|closing date)[:\s]+(\d{4}-\d{2}-\d{2})/i,
+    /submit.*?by\s+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})/i,
+  ];
+  for (const p of patterns) {
+    const m = p.exec(text);
+    if (m) {
+      const parsed = new Date(m[1].replace(/,/g, '').trim());
+      if (!isNaN(parsed.getTime()) && parsed.getFullYear() >= new Date().getFullYear()) {
+        return parsed.toISOString().split('T')[0];
+      }
+    }
+  }
+  return null;
+}
+
+function buildExcerpt(text: string): string {
+  if (text.length <= 4000) return text;
+  return text.slice(0, 3000) + '\n[...]\n' + text.slice(-1000);
+}
+
 function stripHtml(html: string): string {
   return (html || '')
     .replace(/<\/?(li|p|br|h[1-6]|div)[^>]*>/gi, '\n')
@@ -203,7 +236,7 @@ Task 2 — Extract salary or compensation (be thorough):
 Job: ${title} at ${org}
 
 Description:
-${description.slice(0, 2000)}
+${buildExcerpt(description)}
 
 Return in this exact format:
 BULLETS:
@@ -292,9 +325,14 @@ Deno.serve(async (req) => {
         const locCity    = job.location?.city || '';
         const locCountry = job.location?.country || '';
 
+        // Reject jobs with an explicit non-African country code
+        const NON_AFRICA_ISO = new Set(['US','GB','CA','AU','DE','FR','NL','BE','CH','SE','NO','DK','IT','ES','AT','IE','JP','CN','SG','AE','IN','BR','NZ','HU','PL','CZ','LU','UA','TR']);
+        if (locCode && !AFRICA_ISO.has(locCode) && NON_AFRICA_ISO.has(locCode)) continue;
+
         const iso = AFRICA_ISO.has(locCode) ? locCode
           : isAfricanLocation(locCountry, org.country)?.iso
-          || isAfricanLocation(title, org.country)?.iso
+          // Only fall back to title if there's genuinely no location info
+          || (!locCode && !locCountry ? isAfricanLocation(title, org.country)?.iso : null)
           || null;
         if (!iso) continue;
 
@@ -302,7 +340,6 @@ Deno.serve(async (req) => {
         const sector = mapSector(dept);
         const applyUrl = `https://apply.workable.com/${org.subdomain}/j/${jobId}`;
         const posted   = job.published_on?.slice(0, 10) || new Date().toISOString().split('T')[0];
-        const deadline = new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
 
         // Fetch full description
         let bodyText = '';
@@ -316,13 +353,14 @@ Deno.serve(async (req) => {
           }
         } catch { /* use fallback */ }
 
+        const deadline = extractDeadline(bodyText) || new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
         const { description, salary } = await formatWithClaude(title, org.name, bodyText);
 
         const entry = {
           id:           `wk-${org.subdomain}-${jobId}`,
           title,
           organisation: org.name,
-          type:         'jobs',
+          type:         mapType(title),
           sector,
           location:     locCity || locCountry || iso,
           country:      iso,

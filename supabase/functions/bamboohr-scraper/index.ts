@@ -63,6 +63,39 @@ function mapSector(dept: string): string {
   return 'Governance & Public Policy';
 }
 
+function mapType(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes('intern') || t.includes('trainee') || t.includes('volunteer')) return 'internship';
+  if (t.includes('fellowship')) return 'capacity';
+  if (t.includes('consultant') || t.includes('consultancy') || t.includes('advisor') || t.includes('adviser') || t.includes('contractor')) return 'consultancy';
+  return 'jobs';
+}
+
+function extractDeadline(text: string): string | null {
+  if (!text) return null;
+  const patterns = [
+    /(?:deadline|closing date|close[sd]? on|applications?\s+close|apply by|submit by|due date|applications?\s+due)[:\s]+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})/i,
+    /(?:deadline|closing date|close[sd]? on|applications?\s+close|apply by|submit by)[:\s]+(\d{1,2}\s+[A-Za-z]+\.?\s+\d{4})/i,
+    /(?:deadline|closing date)[:\s]+(\d{4}-\d{2}-\d{2})/i,
+    /submit.*?by\s+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})/i,
+  ];
+  for (const p of patterns) {
+    const m = p.exec(text);
+    if (m) {
+      const parsed = new Date(m[1].replace(/,/g, '').trim());
+      if (!isNaN(parsed.getTime()) && parsed.getFullYear() >= new Date().getFullYear()) {
+        return parsed.toISOString().split('T')[0];
+      }
+    }
+  }
+  return null;
+}
+
+function buildExcerpt(text: string): string {
+  if (text.length <= 4000) return text;
+  return text.slice(0, 3000) + '\n[...]\n' + text.slice(-1000);
+}
+
 async function formatWithClaude(title: string, org: string, description: string): Promise<{ description: string; salary: string }> {
   const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
   if (!apiKey || !description || description.length < 80) {
@@ -89,7 +122,7 @@ Task 2 — Extract salary or compensation (be thorough):
 Job: ${title} at ${org}
 
 Description:
-${description.slice(0, 2000)}
+${buildExcerpt(description)}
 
 Return in this exact format:
 BULLETS:
@@ -220,26 +253,28 @@ Deno.serve(async (req) => {
         const rawIso = String(countryRaw).trim();
         const country = (rawIso.length === 2 ? rawIso.toUpperCase() : org.country);
 
-        // Keep if: African country OR title/location mentions Africa or an African country
+        // Keep if: African country OR (no country info AND title/location mentions Africa)
         const AFRICA_MENTIONS = ['africa','kenya','nigeria','ghana','ethiopia','uganda','rwanda',
           'tanzania','zambia','mozambique','malawi','zimbabwe','south africa','senegal','cameroon',
           'côte d\'ivoire','ivory coast','burkina faso','mali','niger','chad','sudan','somalia',
           'congo','angola','egypt','morocco','tunisia','botswana','namibia','sierra leone'];
+        const NON_AFRICA_ISO = new Set(['US','GB','CA','AU','DE','FR','NL','BE','CH','SE','NO','DK','IT','ES','AT','IE','JP','CN','SG','AE','IN','BR','NZ','HU','PL','CZ','LU','UA','TR']);
+        if (NON_AFRICA_ISO.has(country)) continue; // explicit non-Africa country — skip
         const titleLower = title.toLowerCase();
         const locationLower = location.toLowerCase();
         const mentionsAfrica = AFRICA_MENTIONS.some(c => titleLower.includes(c) || locationLower.includes(c));
         if (!AFRICA_ISO.has(country) && !mentionsAfrica) continue;
 
-        const rawDesc              = stripHtml(job.description || job.jobDescription || '');
+        const rawDesc = stripHtml(job.description || job.jobDescription || '');
+        const deadline = extractDeadline(rawDesc) || new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
         const { description, salary } = await formatWithClaude(title, org.name, rawDesc);
-        const deadline    = new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
-        const posted      = job.datePosted?.slice(0, 10) || new Date().toISOString().split('T')[0];
+        const posted   = job.datePosted?.slice(0, 10) || new Date().toISOString().split('T')[0];
 
         const entry = {
           id:           `bhr-${org.subdomain}-${jobId}`,
           title,
           organisation: org.name,
-          type:         'jobs',
+          type:         mapType(title),
           sector,
           location,
           country,

@@ -177,6 +177,39 @@ function mapSector(dept: string): string {
   return 'Governance & Public Policy';
 }
 
+function mapType(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes('intern') || t.includes('trainee') || t.includes('volunteer')) return 'internship';
+  if (t.includes('fellowship')) return 'capacity';
+  if (t.includes('consultant') || t.includes('consultancy') || t.includes('advisor') || t.includes('adviser') || t.includes('contractor')) return 'consultancy';
+  return 'jobs';
+}
+
+function extractDeadline(text: string): string | null {
+  if (!text) return null;
+  const patterns = [
+    /(?:deadline|closing date|close[sd]? on|applications?\s+close|apply by|submit by|due date|applications?\s+due)[:\s]+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})/i,
+    /(?:deadline|closing date|close[sd]? on|applications?\s+close|apply by|submit by)[:\s]+(\d{1,2}\s+[A-Za-z]+\.?\s+\d{4})/i,
+    /(?:deadline|closing date)[:\s]+(\d{4}-\d{2}-\d{2})/i,
+    /submit.*?by\s+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})/i,
+  ];
+  for (const p of patterns) {
+    const m = p.exec(text);
+    if (m) {
+      const parsed = new Date(m[1].replace(/,/g, '').trim());
+      if (!isNaN(parsed.getTime()) && parsed.getFullYear() >= new Date().getFullYear()) {
+        return parsed.toISOString().split('T')[0];
+      }
+    }
+  }
+  return null;
+}
+
+function buildExcerpt(text: string): string {
+  if (text.length <= 4000) return text;
+  return text.slice(0, 3000) + '\n[...]\n' + text.slice(-1000);
+}
+
 function stripHtml(html: string): string {
   return (html || '')
     .replace(/<\/?(li|p|br|h[1-6]|div)[^>]*>/gi, '\n')
@@ -224,7 +257,7 @@ Task 2 — Extract salary or compensation (be thorough):
 Job: ${title} at ${org}
 
 Description:
-${description.slice(0, 2000)}
+${buildExcerpt(description)}
 
 Return in this exact format:
 BULLETS:
@@ -306,8 +339,9 @@ Deno.serve(async (req) => {
         // Greenhouse location: { name: "Nairobi, Kenya" } — a single string
         const locRaw = job.location?.name || job.offices?.[0]?.name || '';
 
-        const location = isAfricanLocation(locRaw, org.country)
-          || isAfricanLocation(title, org.country);
+        const locationByText = isAfricanLocation(locRaw, org.country);
+        // Only use title as location fallback when there is no location string at all
+        const location = locationByText || (!locRaw ? isAfricanLocation(title, org.country) : null);
         if (!location) continue;
 
         // Department from departments array
@@ -316,16 +350,16 @@ Deno.serve(async (req) => {
 
         const applyUrl = job.absolute_url || `https://boards.greenhouse.io/${org.token}/jobs/${jobId}`;
         const posted   = job.updated_at?.slice(0, 10) || new Date().toISOString().split('T')[0];
-        const deadline = new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
 
         const bodyText = stripHtml(job.content || '');
+        const deadline = extractDeadline(bodyText) || new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
         const { description, salary } = await formatWithClaude(title, org.name, bodyText);
 
         const entry = {
           id:           `gh-${org.token}-${jobId}`,
           title,
           organisation: org.name,
-          type:         'jobs',
+          type:         mapType(title),
           sector,
           location:     locRaw || location.name,
           country:      location.iso,
