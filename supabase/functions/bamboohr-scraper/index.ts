@@ -249,9 +249,28 @@ Deno.serve(async (req) => {
         const countryRaw = typeof locRaw === 'object' ? (locRaw.country || org.country || 'ZA') : (org.country || 'ZA');
         const location   = job.isRemote ? 'Remote' : (city || countryRaw);
 
-        // Resolve ISO2 — use first 2 chars only if it looks like an ISO code, otherwise use org.country
+        // Resolve ISO2: explicit code → name lookup → org fallback
+        const COUNTRY_NAME_ISO: Record<string, string> = {
+          'philippines':'PH','thailand':'TH','vietnam':'VN','indonesia':'ID','malaysia':'MY',
+          'india':'IN','nepal':'NP','bangladesh':'BD','pakistan':'PK','myanmar':'MM',
+          'cambodia':'KH','laos':'LA','sri lanka':'LK','china':'CN','japan':'JP',
+          'singapore':'SG','united states':'US','usa':'US','united kingdom':'GB','uk':'GB',
+          'canada':'CA','australia':'AU','new zealand':'NZ','germany':'DE','france':'FR',
+          'netherlands':'NL','belgium':'BE','switzerland':'CH','sweden':'SE','norway':'NO',
+          'denmark':'DK','italy':'IT','spain':'ES','austria':'AT','ireland':'IE',
+          'brazil':'BR','colombia':'CO','mexico':'MX','argentina':'AR','chile':'CL',
+          'peru':'PE','ecuador':'EC','hungary':'HU','poland':'PL','czechia':'CZ',
+          'czech republic':'CZ','luxembourg':'LU','ukraine':'UA','turkey':'TR',
+          'jordan':'JO','lebanon':'LB','armenia':'AM','georgia':'GE','moldova':'MD',
+          'haiti':'HT','dominican republic':'DO','guatemala':'GT','honduras':'HN',
+          'el salvador':'SV','nicaragua':'NI','costa rica':'CR','panama':'PA',
+        };
         const rawIso = String(countryRaw).trim();
-        const country = (rawIso.length === 2 ? rawIso.toUpperCase() : org.country);
+        const resolvedIso = rawIso.length === 2
+          ? rawIso.toUpperCase()
+          : COUNTRY_NAME_ISO[rawIso.toLowerCase()] || null;
+        // Only fall back to org.country when the location is genuinely unknown (not a named non-Africa country)
+        const country = resolvedIso ?? org.country;
 
         // Keep if: African country OR (no country info AND title/location mentions Africa)
         const AFRICA_MENTIONS = ['africa','kenya','nigeria','ghana','ethiopia','uganda','rwanda',
