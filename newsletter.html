@@ -469,12 +469,47 @@ window.toggleSection = function(key, checked) {
 };
 
 // ── Generate ──
-document.getElementById('btn-generate').addEventListener('click', () => {
+// Cache listing id → tracked afrorama.org/opportunity/N URL so re-generates don't duplicate links
+const trackedLinkCache = {};
+
+document.getElementById('btn-generate').addEventListener('click', async () => {
   const checkedIds = new Set(
     [...document.querySelectorAll('.listing-item input:checked')].map(el => el.dataset.id)
   );
   if (!checkedIds.size) { alert('No listings selected.'); return; }
 
+  // Collect all selected listings in section order
+  const selected = [];
+  SECTIONS.forEach(s => {
+    (sectionListings[s.key] || []).forEach(l => {
+      if (checkedIds.has(l.id)) selected.push(l);
+    });
+  });
+
+  // Create tracked links in parallel (skips cache hits)
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+  btn.textContent = `Creating ${selected.length} tracked links…`;
+
+  await Promise.all(selected.map(async l => {
+    if (trackedLinkCache[l.id]) return; // already created
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/link-tracker`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ANON_KEY}` },
+        body: JSON.stringify({ url: l.apply_url, title: l.title }),
+      });
+      const data = res.ok ? await res.json() : null;
+      trackedLinkCache[l.id] = data?.short_url || l.apply_url;
+    } catch {
+      trackedLinkCache[l.id] = l.apply_url; // fallback to direct URL on network error
+    }
+  }));
+
+  btn.disabled = false;
+  btn.textContent = 'Generate newsletter text';
+
+  // Build newsletter text
   const songTitle   = document.getElementById('song-title').value.trim();
   const songArtist  = document.getElementById('song-artist').value.trim();
   const songIso     = document.getElementById('song-iso').value.trim().toUpperCase();
@@ -487,15 +522,15 @@ document.getElementById('btn-generate').addEventListener('click', () => {
 
   let hasContent = false;
   SECTIONS.forEach(section => {
-    const allInSection = sectionListings[section.key] || [];
-    const items = allInSection.filter(l => checkedIds.has(l.id));
+    const items = (sectionListings[section.key] || []).filter(l => checkedIds.has(l.id));
     if (!items.length) return;
     hasContent = true;
     lines.push('');
     lines.push(section.label);
     items.forEach(l => {
       const { flag, name } = locationDisplay(l);
-      lines.push(`${flag} ${name} | ${l.organisation} | ${l.title}: ${l.apply_url}`);
+      const url = trackedLinkCache[l.id] || l.apply_url;
+      lines.push(`${flag} ${name} | ${l.organisation} | ${l.title}: ${url}`);
     });
   });
 
