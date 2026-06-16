@@ -68,6 +68,15 @@
     .link-date { font-size: .72rem; color: #888; }
     .error { color: #c0392b; font-size: .85rem; margin-top: 8px; display: none; }
     .error.show { display: block; }
+    .stats-btn { background: none; border: 1.5px solid #DDDCDA; border-radius: 6px; padding: 4px 10px; font-size: .75rem; font-weight: 700; cursor: pointer; color: #888; box-shadow: none; width: auto; }
+    .stats-btn:hover { border-color: #1C1D1C; color: #1C1D1C; transform: none; box-shadow: none; }
+    .stats-panel { background: #F8F7F3; border: 1.5px solid #DDDCDA; border-radius: 8px; padding: 12px 16px; margin-top: 6px; display: none; }
+    .stats-panel.show { display: block; }
+    .stats-header { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: #888; margin-bottom: 8px; }
+    .stats-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: .83rem; border-bottom: 1px solid #DDDCDA; }
+    .stats-row:last-child { border-bottom: none; }
+    .stats-flag { margin-right: 6px; }
+    .stats-count { font-weight: 700; background: #FFE400; padding: 1px 7px; border-radius: 4px; font-size: .78rem; }
   </style>
 </head>
 <body>
@@ -181,7 +190,7 @@
         document.getElementById('result').classList.add('show');
 
         // Add to session history
-        history.unshift({ bitly: data.short_url, title: title || url.slice(0, 50), date: new Date().toLocaleTimeString() });
+        history.unshift({ id: data.id, bitly: data.short_url, title: title || url.slice(0, 50), date: new Date().toLocaleTimeString() });
         renderHistory();
 
         // Auto-copy
@@ -205,16 +214,58 @@
       });
     }
 
+    const COUNTRY_NAMES = {"AF":"Afghanistan","AL":"Albania","DZ":"Algeria","AO":"Angola","AR":"Argentina","AU":"Australia","AT":"Austria","BE":"Belgium","BJ":"Benin","BO":"Bolivia","BW":"Botswana","BR":"Brazil","BF":"Burkina Faso","BI":"Burundi","CM":"Cameroon","CA":"Canada","CV":"Cape Verde","CF":"Central African Republic","TD":"Chad","CL":"Chile","CN":"China","CO":"Colombia","KM":"Comoros","CG":"Congo","CD":"Congo (DR)","CI":"Côte d'Ivoire","HR":"Croatia","CY":"Cyprus","CZ":"Czech Republic","DK":"Denmark","DJ":"Djibouti","EG":"Egypt","ET":"Ethiopia","FI":"Finland","FR":"France","GA":"Gabon","GM":"Gambia","DE":"Germany","GH":"Ghana","GR":"Greece","GN":"Guinea","GW":"Guinea-Bissau","HU":"Hungary","IN":"India","ID":"Indonesia","IE":"Ireland","IL":"Israel","IT":"Italy","JP":"Japan","JO":"Jordan","KE":"Kenya","LS":"Lesotho","LR":"Liberia","LY":"Libya","MG":"Madagascar","MW":"Malawi","ML":"Mali","MR":"Mauritania","MU":"Mauritius","MA":"Morocco","MZ":"Mozambique","NA":"Namibia","NL":"Netherlands","NZ":"New Zealand","NE":"Niger","NG":"Nigeria","NO":"Norway","PK":"Pakistan","PH":"Philippines","PL":"Poland","PT":"Portugal","RW":"Rwanda","SN":"Senegal","SL":"Sierra Leone","ZA":"South Africa","SS":"South Sudan","ES":"Spain","SD":"Sudan","SE":"Sweden","CH":"Switzerland","TZ":"Tanzania","TH":"Thailand","TG":"Togo","TN":"Tunisia","TR":"Turkey","UG":"Uganda","UA":"Ukraine","AE":"United Arab Emirates","GB":"United Kingdom","US":"United States","ZM":"Zambia","ZW":"Zimbabwe"};
+    const COUNTRY_FLAGS = {"AF":"🇦🇫","AL":"🇦🇱","DZ":"🇩🇿","AO":"🇦🇴","AR":"🇦🇷","AU":"🇦🇺","AT":"🇦🇹","BE":"🇧🇪","BJ":"🇧🇯","BO":"🇧🇴","BW":"🇧🇼","BR":"🇧🇷","BF":"🇧🇫","BI":"🇧🇮","CM":"🇨🇲","CA":"🇨🇦","CV":"🇨🇻","CF":"🇨🇫","TD":"🇹🇩","CL":"🇨🇱","CN":"🇨🇳","CO":"🇨🇴","KM":"🇰🇲","CG":"🇨🇬","CD":"🇨🇩","CI":"🇨🇮","HR":"🇭🇷","CY":"🇨🇾","CZ":"🇨🇿","DK":"🇩🇰","DJ":"🇩🇯","EG":"🇪🇬","ET":"🇪🇹","FI":"🇫🇮","FR":"🇫🇷","GA":"🇬🇦","GM":"🇬🇲","DE":"🇩🇪","GH":"🇬🇭","GR":"🇬🇷","GN":"🇬🇳","GW":"🇬🇼","HU":"🇭🇺","IN":"🇮🇳","ID":"🇮🇩","IE":"🇮🇪","IL":"🇮🇱","IT":"🇮🇹","JP":"🇯🇵","JO":"🇯🇴","KE":"🇰🇪","LS":"🇱🇸","LR":"🇱🇷","LY":"🇱🇾","MG":"🇲🇬","MW":"🇲🇼","ML":"🇲🇱","MR":"🇲🇷","MU":"🇲🇺","MA":"🇲🇦","MZ":"🇲🇿","NA":"🇳🇦","NL":"🇳🇱","NZ":"🇳🇿","NE":"🇳🇪","NG":"🇳🇬","NO":"🇳🇴","PK":"🇵🇰","PH":"🇵🇭","PL":"🇵🇱","PT":"🇵🇹","RW":"🇷🇼","SN":"🇸🇳","SL":"🇸🇱","ZA":"🇿🇦","SS":"🇸🇸","ES":"🇪🇸","SD":"🇸🇩","SE":"🇸🇪","CH":"🇨🇭","TZ":"🇹🇿","TH":"🇹🇭","TG":"🇹🇬","TN":"🇹🇳","TR":"🇹🇷","UG":"🇺🇬","UA":"🇺🇦","AE":"🇦🇪","GB":"🇬🇧","US":"🇺🇸","ZM":"🇿🇲","ZW":"🇿🇼"};
+
+    const SUPABASE_URL  = 'https://vqchwioyhyiuunpyildz.supabase.co';
+
+    async function loadStats(linkId, panelEl, btnEl) {
+      if (panelEl.classList.contains('show')) {
+        panelEl.classList.remove('show');
+        btnEl.textContent = '📊 Stats';
+        return;
+      }
+      btnEl.textContent = 'Loading…';
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/click_events?link_id=eq.${linkId}&select=country`,
+        { headers: { 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` } }
+      );
+      const rows = await res.json();
+      const counts = {};
+      rows.forEach(r => { const c = r.country || 'Unknown'; counts[c] = (counts[c] || 0) + 1; });
+      const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+      const total = rows.length;
+      if (!sorted.length) {
+        panelEl.innerHTML = `<div class="stats-header">No clicks yet</div>`;
+      } else {
+        panelEl.innerHTML = `<div class="stats-header">${total} click${total !== 1 ? 's' : ''} by country</div>` +
+          sorted.map(([c, n]) =>
+            `<div class="stats-row">
+              <span><span class="stats-flag">${COUNTRY_FLAGS[c] || '🌍'}</span>${COUNTRY_NAMES[c] || c}</span>
+              <span class="stats-count">${n}</span>
+            </div>`
+          ).join('');
+      }
+      panelEl.classList.add('show');
+      btnEl.textContent = '📊 Hide';
+    }
+
     function renderHistory() {
       if (!history.length) return;
       document.getElementById('history').style.display = 'block';
-      document.getElementById('history-list').innerHTML = history.map(h => `
-        <div class="link-row">
-          <div>
-            <div class="link-title">${h.title}</div>
-            <div class="link-date">${h.date}</div>
+      document.getElementById('history-list').innerHTML = history.map((h, i) => `
+        <div>
+          <div class="link-row">
+            <div>
+              <div class="link-title">${h.title}</div>
+              <div class="link-date">${h.date}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <a class="link-bitly" href="${h.bitly}" target="_blank">${h.bitly}</a>
+              ${h.id ? `<button class="stats-btn" onclick="loadStats(${h.id}, document.getElementById('stats-${i}'), this)">📊 Stats</button>` : ''}
+            </div>
           </div>
-          <a class="link-bitly" href="${h.bitly}" target="_blank">${h.bitly}</a>
+          <div class="stats-panel" id="stats-${i}"></div>
         </div>`).join('');
     }
 
