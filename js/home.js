@@ -11,7 +11,8 @@
       const cutoff   = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const { data } = await sb.from('listings').select('*')
         .or(`deadline.gte.${today},deadline.is.null`)
-        .not('bitly_url', 'is', null)
+        .or('paid_listing.eq.false,payment_confirmed.eq.true')
+        .neq('source', 'BambooHR')
         .order('created_at', { ascending: false });
       if (data?.length) {
         const live       = data.filter(j => j.deadline || new Date(j.created_at) >= new Date(cutoff));

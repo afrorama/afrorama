@@ -327,10 +327,8 @@
         const specific = boostKey && boostTips[boostKey];
         return { label: c.name, text: specific || c.low };
       }),
-      { label: 'Course', text: null },
-    ].slice(0, 4).map(r => r.label === 'Course'
-      ? `<div class="rec-item rec-item-course"><span>Ready to put this into action? Take our free course <a href="courses.html" style="color:var(--orange);font-weight:700;">"Craft an Impactful CV"</a>, built specifically for Africa's social impact sector.</span></div>`
-      : `<div class="rec-item"><span class="rec-label">${esc(r.label)}</span><span>${esc(r.text)}</span></div>`
+    ].slice(0, 3).map(r =>
+      `<div class="rec-item"><span class="rec-label">${esc(r.label)}</span><span>${esc(r.text)}</span></div>`
     ).join('');
 
     // Re-upload logic
