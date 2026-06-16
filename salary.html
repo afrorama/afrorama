@@ -459,14 +459,22 @@
   // ── Hero stats — fully dynamic from the actual dataset ───────
   function computeHeroStats() {
     const all = allData;
+    const entriesEl = document.getElementById('stat-entries');
+    const yearsEl   = document.getElementById('stat-years');
+    const orgsEl    = document.getElementById('stat-orgs');
+
+    if (!all.length) {
+      if (entriesEl) entriesEl.textContent = '0';
+      if (yearsEl)   yearsEl.textContent   = '0';
+      if (orgsEl)    orgsEl.textContent    = '0';
+      return;
+    }
+
     const minYear  = Math.min(...all.map(r => r.year || 2024));
     const maxYear  = Math.max(...all.map(r => r.year || 2024));
     const orgs     = new Set(all.map(r => r.company)).size;
     const yearsSpan = maxYear - minYear + 1;
 
-    const entriesEl = document.getElementById('stat-entries');
-    const yearsEl   = document.getElementById('stat-years');
-    const orgsEl    = document.getElementById('stat-orgs');
     if (entriesEl) entriesEl.textContent = all.length + '+';
     if (yearsEl)   yearsEl.textContent   = yearsSpan;
     if (orgsEl)    orgsEl.textContent    = orgs + '+';
@@ -528,7 +536,11 @@
 
     const container = document.getElementById('salary-results');
     if (!grouped.length) {
-      container.innerHTML = `<div class="no-results-msg"><div style="font-size:36px;margin-bottom:12px;">🔍</div><h4>No results</h4><p>Try adjusting your search or filters.</p></div>`;
+      if (!allData.length) {
+        container.innerHTML = `<div class="no-results-msg"><div style="font-size:36px;margin-bottom:12px;">📊</div><h4>No salary data yet</h4><p>Be one of the first to contribute once submissions open. Check back soon.</p></div>`;
+      } else {
+        container.innerHTML = `<div class="no-results-msg"><div style="font-size:36px;margin-bottom:12px;">🔍</div><h4>No results</h4><p>Try adjusting your search or filters.</p></div>`;
+      }
       return;
     }
 
