@@ -196,7 +196,7 @@
     // Known orgs — skip network lookup entirely
     const knownDomain = ORG_DOMAIN_MAP[orgName];
     if (knownDomain) {
-      const url = `https://logo.clearbit.com/${knownDomain}`;
+      const url = `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${knownDomain}&size=256`;
       logoCache.set(orgName, url);
       return url;
     }
@@ -206,7 +206,7 @@
       const data   = await res.json();
       const domain = data?.[0]?.domain;
       if (!domain) { logoCache.set(orgName, null); return null; }
-      const url = `https://logo.clearbit.com/${domain}`;
+      const url = `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${domain}&size=256`;
       logoCache.set(orgName, url);
       return url;
     } catch {
