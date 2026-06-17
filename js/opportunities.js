@@ -661,6 +661,10 @@
     buildLeafletMap();
     updateTypeCounts();
 
+    // Pre-filter for country landing pages (e.g. jobs-kenya.html has data-country="KE")
+    const prefilterCountry = document.body.dataset.country;
+    if (prefilterCountry) activeCountry = prefilterCountry;
+
     // Set header count now that allJobs is loaded
     const headerCount = document.getElementById('opp-header-count');
     if (headerCount) headerCount.textContent = allJobs.length;
