@@ -43,17 +43,170 @@
     return name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
   }
 
-  /* ---- Logo fetching via Clearbit autocomplete ---- */
+  /* ---- Logo fetching — manual domain map + Clearbit fallback ---- */
+  const ORG_DOMAIN_MAP = {
+    // Greenhouse orgs
+    'Human Rights Watch':                       'hrw.org',
+    'Wikimedia Foundation':                     'wikimedia.org',
+    'One Earth Future':                         'oneearthfuture.org',
+    'GiveDirectly':                             'givedirectly.org',
+    'Girl Effect':                              'girleffect.org',
+    'Acumen':                                   'acumen.org',
+    'Global Energy Alliance for People and Planet': 'energyalliance.org',
+    'The Economist Group':                      'economist.com',
+    'African Leadership University':            'alueducation.com',
+    'Imagine Worldwide':                        'imagineworldwide.org',
+    'Semafor':                                  'semafor.com',
+    'Instiglio':                                'instiglio.org',
+    'Educate!':                                 'educate.org',
+    'One Acre Fund Zambia':                     'oneacrefund.org',
+    'One Acre Fund Kenya':                      'oneacrefund.org',
+    'One Acre Fund Malawi':                     'oneacrefund.org',
+    'One Acre Fund Uganda':                     'oneacrefund.org',
+    'The New York Times':                       'nytimes.com',
+    'Tilting Futures':                          'tiltingfutures.org',
+    'Delivery Associates':                      'deliveryassociates.com',
+    'Mastercard Foundation':                    'mastercardfdn.org',
+    '350.org':                                  '350.org',
+    'Global Citizen Year':                      'globalcitizenyear.org',
+    '60 Decibels':                              '60decibels.com',
+    'Financial Times':                          'ft.com',
+    'Room to Read':                             'roomtoread.org',
+    'Partners in Health':                       'pih.org',
+    'Innovations for Poverty Action':           'poverty-action.org',
+    'Clinton Health Access Initiative':         'clintonhealthaccess.org',
+    'VillageReach':                             'villagereach.org',
+    'Center for Global Development':            'cgdev.org',
+    'Palladium':                                'thepalladiumgroup.com',
+    'Pact':                                     'pactworld.org',
+    'Wildlife Conservation Society':            'wcs.org',
+    'Pathfinder International':                 'pathfinder.org',
+    'Living Goods':                             'livinggoods.org',
+    'IDinsight':                                'idinsight.org',
+    'Remitly':                                  'remitly.com',
+    'Terraformation':                           'terraformation.com',
+    'Stanford Social Innovation Review':        'ssir.org',
+    'Population Reference Bureau':              'prb.org',
+    'Teach For All':                            'teachforall.org',
+    'J-PAL':                                    'povertyactionlab.org',
+    '3ie':                                      '3ieimpact.org',
+    'GiveWell':                                 'givewell.org',
+    'Open Philanthropy':                        'openphilanthropy.org',
+    'Convergence Blended Finance':              'convergencefinance.org',
+    'Global Development Incubator':             'globaldevincubator.org',
+    'Catholic Relief Services':                 'crs.org',
+    'FHI 360':                                  'fhi360.org',
+    'United Purpose':                           'united-purpose.org',
+    'Nutrition International':                  'nutritionintl.org',
+    'International Planned Parenthood Federation': 'ippf.org',
+    'World Food Programme USA':                 'wfpusa.org',
+    'The Nature Conservancy':                   'nature.org',
+    'Conservation International':               'conservation.org',
+    'WWF':                                      'wwf.org',
+    'International Rescue Committee':           'rescue.org',
+    'World Vision':                             'worldvision.org',
+    // Workable orgs
+    'Evidence Action':                          'evidenceaction.org',
+    "Children's Investment Fund Foundation":    'ciff.org',
+    'Inkomoko':                                 'inkomoko.com',
+    'Partech Partners':                         'partechpartners.com',
+    'Trócaire':                                 'trocaire.org',
+    'Handicap International':                   'hi.org',
+    'WorldFish':                                'worldfishcenter.org',
+    'Action Against Hunger':                    'actionagainsthunger.org',
+    'WaterAid':                                 'wateraid.org',
+    'Médecins du Monde':                        'medecinsdumonde.net',
+    'ThinkWell':                                'thinkwell.global',
+    'ICARDA':                                   'icarda.org',
+    'Street Child':                             'street-child.co.uk',
+    'OpenFn':                                   'openfn.org',
+    'iDE Global':                               'ideglobal.org',
+    'Zinc Network':                             'zincnetwork.com',
+    'WaterEquity':                              'waterequity.org',
+    'ClimateWorks Foundation':                  'climateworks.org',
+    'International Water Management Institute': 'iwmi.cgiar.org',
+    'Rising Academies':                         'rising-academies.org',
+    'Centre for Information Resilience':        'info-res.org',
+    'The HALO Trust':                           'halotrust.org',
+    'Control Risks':                            'controlrisks.com',
+    'BRAC International':                       'brac.net',
+    'Abt Associates':                           'abtglobal.com',
+    'Concern Worldwide':                        'concern.net',
+    'Population Services International':        'psi.org',
+    'Tearfund':                                 'tearfund.org',
+    'International Alert':                      'international-alert.org',
+    'Norwegian Refugee Council':                'nrc.no',
+    'Oxfam GB':                                 'oxfam.org.uk',
+    'Africa Soil Information Service':          'africasoils.net',
+    'Kenya Climate Innovation Centre':          'kenyacic.org',
+    'Komaza':                                   'komaza.com',
+    'SunCulture':                               'sunculture.com',
+    'Twiga Foods':                              'twigafoods.com',
+    'Asante Africa Foundation':                 'asanteafrica.org',
+    'Sightsavers':                              'sightsavers.org',
+    'Helen Keller International':               'hki.org',
+    'Medair':                                   'medair.org',
+    'GOAL':                                     'goalglobal.org',
+    'Lutheran World Federation':                'lutheranworld.org',
+    'Stockholm Environment Institute':          'sei.org',
+    'IIED':                                     'iied.org',
+    'Tetra Tech':                               'tetratech.com',
+    // TeamTailor orgs
+    'Bamboo':                                   'bamboofinance.com',
+    'Katapult':                                 'katapultfuture.com',
+    'CDP Worldwide':                            'cdp.net',
+    'BirdLife International':                   'birdlife.org',
+    // Common additional orgs
+    'UNHCR':                                    'unhcr.org',
+    'UNICEF':                                   'unicef.org',
+    'UNDP':                                     'undp.org',
+    'UN Women':                                 'unwomen.org',
+    'IOM':                                      'iom.int',
+    'WHO':                                      'who.int',
+    'FAO':                                      'fao.org',
+    'IFRC':                                     'ifrc.org',
+    'Red Cross':                                'redcross.org',
+    'Save the Children':                        'savethechildren.org',
+    'Plan International':                       'plan-international.org',
+    'MSF':                                      'msf.org',
+    'Médecins Sans Frontières':                 'msf.org',
+    'Mercy Corps':                              'mercycorps.org',
+    'IRC':                                      'rescue.org',
+    'CARE International':                       'care-international.org',
+    'World Bank':                               'worldbank.org',
+    'African Development Bank':                 'afdb.org',
+    'Tony Elumelu Foundation':                  'tonyelumelufoundation.org',
+    'Ashoka':                                   'ashoka.org',
+    'Aga Khan Foundation':                      'akdn.org',
+    'Oxfam':                                    'oxfam.org',
+    'ActionAid':                                'actionaid.org',
+    'USAID':                                    'usaid.gov',
+    'DAI':                                      'dai.com',
+    'Chemonics':                                'chemonics.com',
+    'RTI International':                        'rti.org',
+    'Management Systems International':         'msiworldwide.com',
+    'International Development Law Organization': 'idlo.int',
+    'Aga Khan Development Network':             'akdn.org',
+  };
+
   const logoCache = new Map();
 
   async function fetchOrgLogo(orgName) {
     if (logoCache.has(orgName)) return logoCache.get(orgName);
+    // Known orgs — skip network lookup entirely
+    const knownDomain = ORG_DOMAIN_MAP[orgName];
+    if (knownDomain) {
+      const url = `https://logo.clearbit.com/${knownDomain}`;
+      logoCache.set(orgName, url);
+      return url;
+    }
+    // Unknown orgs — try Clearbit autocomplete
     try {
       const res    = await fetch(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(orgName)}`);
       const data   = await res.json();
       const domain = data?.[0]?.domain;
       if (!domain) { logoCache.set(orgName, null); return null; }
-      const url = `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${domain}&size=128`;
+      const url = `https://logo.clearbit.com/${domain}`;
       logoCache.set(orgName, url);
       return url;
     } catch {
