@@ -213,7 +213,7 @@
     }
 
     const FUNCTION_URL = 'https://vqchwioyhyiuunpyildz.supabase.co/functions/v1/cv-analyser';
-    const ANON_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxY2h3aW95aHlpdXVucHlpbGR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3MTUzODgsImV4cCI6MjA2MjI5MTM4OH0.bkdBaSJhpECCPpuJ4KVeGbEKb5bnYE_VXHiL_y_RFUI';
+    const ANON_KEY     = 'sb_publishable_HeGZfQZEDI_IR46a2Ezp-Q_tIUdhF6_';
 
     const res  = await fetch(FUNCTION_URL, {
       method:  'POST',
