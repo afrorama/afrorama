@@ -98,7 +98,12 @@ function buildExcerpt(text: string): string {
 
 async function formatWithClaude(title: string, org: string, description: string): Promise<{ description: string; salary: string }> {
   const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
-  if (!apiKey || !description || description.length < 80) {
+  if (!apiKey) {
+    console.error('[formatWithClaude] ANTHROPIC_API_KEY is not set — falling back');
+    return { description: fallbackDesc(description, org), salary: 'See listing' };
+  }
+  if (!description || description.length < 80) {
+    console.error(`[formatWithClaude] description too short (${description?.length ?? 0} chars) — falling back`);
     return { description: fallbackDesc(description, org), salary: 'See listing' };
   }
 
@@ -147,7 +152,11 @@ SALARY: [salary or none]`;
         messages:   [{ role: 'user', content: prompt }],
       }),
     });
-    if (!res.ok) return { description: fallbackDesc(description, org), salary: 'See listing' };
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      console.error(`[formatWithClaude] Anthropic API returned ${res.status}: ${errBody.slice(0, 300)}`);
+      return { description: fallbackDesc(description, org), salary: 'See listing' };
+    }
 
     const data   = await res.json() as { content: { text: string }[] };
     const raw    = data.content?.[0]?.text?.trim() || '';
@@ -161,7 +170,8 @@ SALARY: [salary or none]`;
     const salary  = salaryRaw.toLowerCase() === 'none' ? 'See listing' : salaryRaw;
 
     return { description: bullets + DISCLAIMER, salary };
-  } catch {
+  } catch (err) {
+    console.error(`[formatWithClaude] Exception calling Anthropic API: ${err instanceof Error ? err.message : String(err)}`);
     return { description: fallbackDesc(description, org), salary: 'See listing' };
   }
 }
@@ -284,7 +294,7 @@ Deno.serve(async (req) => {
         if (!AFRICA_ISO.has(country) && !mentionsAfrica) continue;
 
         const rawDesc = stripHtml(job.description || job.jobDescription || '');
-        const deadline = extractDeadline(rawDesc) || new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
+        const deadline = extractDeadline(rawDesc);
         const { description, salary } = await formatWithClaude(title, org.name, rawDesc);
         const posted   = job.datePosted?.slice(0, 10) || new Date().toISOString().split('T')[0];
 

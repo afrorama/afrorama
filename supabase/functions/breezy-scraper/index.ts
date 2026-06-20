@@ -233,7 +233,7 @@ Deno.serve(async (req) => {
           const result = await supabase.from('listings').upsert({
             id: `bz-${org.subdomain}-${jobId}`, title, organisation: org.name, type: 'jobs',
             sector: mapSector(dept), location: location || iso, country: iso,
-            deadline: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+            deadline: null,
             posted, salary, description, apply_url: applyUrl,
             experience: job.experience?.name || null, org_domain: `${org.subdomain}.breezy.hr`,
             source: 'Breezy', views: 0, apply_clicks: 0, paid_listing: false,

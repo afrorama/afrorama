@@ -346,7 +346,7 @@ Deno.serve(async () => {
         const jobId  = String(job.id || '').replace(/^.*\/(\d+)[^/]*$/, '$1') || String(job.id || '');
         if (!jobId) continue;
 
-        const deadline = extractDeadline(bodyText) || new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
+        const deadline = extractDeadline(bodyText);
         const posted   = (attrs.date_published || attrs.created_at || '').slice(0, 10)
           || new Date().toISOString().split('T')[0];
 

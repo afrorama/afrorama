@@ -211,7 +211,7 @@ Deno.serve(async (req) => {
           const result = await supabase.from('listings').upsert({
             id: `sr-${org.id}-${jobId}`, title, organisation: org.name, type: 'jobs',
             sector: mapSector(dept), location: loc.city || org.country, country: loc.iso,
-            deadline: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+            deadline: null,
             posted, salary, description, apply_url: applyUrl,
             experience: expLevel, org_domain: `${org.id}.smartrecruiters.com`,
             source: 'SmartRecruiters', views: 0, apply_clicks: 0, paid_listing: false,

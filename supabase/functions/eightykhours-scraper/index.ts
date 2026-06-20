@@ -197,7 +197,7 @@ Deno.serve(async () => {
 
         const deadline = job.closes_at
           ? new Date(job.closes_at * 1000).toISOString().split('T')[0]
-          : new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
+          : null;
         const posted = job.posted_at
           ? new Date(job.posted_at * 1000).toISOString().split('T')[0]
           : new Date().toISOString().split('T')[0];

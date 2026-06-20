@@ -143,7 +143,7 @@ Deno.serve(async () => {
         const dept     = offer.department || offer.category_code || '';
         const applyUrl = offer.careers_apply_url || offer.careers_url || `https://${org.subdomain}.recruitee.com/o/${offer.slug}`;
         const posted   = offer.published_at?.slice(0, 10) || new Date().toISOString().split('T')[0];
-        const deadline = offer.close_at?.slice(0, 10) || new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
+        const deadline = offer.close_at?.slice(0, 10) || null;
         const bodyText = stripHtml(offer.description || '');
         const { description, salary } = await formatWithClaude(title, org.name, bodyText);
 
@@ -193,7 +193,7 @@ Deno.serve(async () => {
         const result = await supabase.from('listings').upsert({
           id: `pp-${org.subdomain}-${jobId}`, title, organisation: org.name, type: 'jobs',
           sector: mapSector(job.department || ''), location: locRaw || iso,
-          country: iso, deadline: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+          country: iso, deadline: null,
           posted: job.published_at?.slice(0, 10) || new Date().toISOString().split('T')[0],
           salary, description, apply_url: applyUrl,
           experience: null, org_domain: `${org.subdomain}.pinpointhq.com`,

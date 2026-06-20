@@ -352,10 +352,12 @@ function getJobCountByCountry() {
 }
 
 function formatDate(str) {
+  if (!str) return 'Rolling basis';
   return new Date(str).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 function daysUntil(str) {
+  if (!str) return Infinity;
   return Math.ceil((new Date(str) - new Date()) / 86400000);
 }
 

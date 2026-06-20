@@ -281,7 +281,7 @@ Deno.serve(async () => {
         const deadlineRaw = item.expectedEndDate || item.endDate;
         const deadline    = deadlineRaw
           ? new Date(deadlineRaw).toISOString().split('T')[0]
-          : new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
+          : null;
 
         const postedRaw = item.publishDate || item.startDate;
         const posted    = postedRaw

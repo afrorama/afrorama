@@ -226,7 +226,7 @@ Deno.serve(async () => {
     const deadlineRaw = (f.date as any)?.deadline;
     const deadline    = deadlineRaw
       ? new Date(deadlineRaw).toISOString().split('T')[0]
-      : new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
+      : null;
 
     // Extract direct employer URL from how_to_apply-html (preferred)
     // Falls back to ReliefWeb listing URL if no external link found

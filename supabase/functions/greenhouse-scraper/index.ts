@@ -353,7 +353,7 @@ Deno.serve(async (req) => {
         const posted   = job.updated_at?.slice(0, 10) || new Date().toISOString().split('T')[0];
 
         const bodyText = stripHtml(job.content || '');
-        const deadline = extractDeadline(bodyText) || new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
+        const deadline = extractDeadline(bodyText);
         const { description, salary } = await formatWithClaude(title, org.name, bodyText);
 
         const entry = {

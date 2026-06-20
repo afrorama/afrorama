@@ -392,7 +392,7 @@
     }
     jobs.sort((a, b) => {
       if (state.sort === 'newest')   return new Date(b.posted) - new Date(a.posted);
-      if (state.sort === 'deadline') return new Date(a.deadline) - new Date(b.deadline);
+      if (state.sort === 'deadline') return (a.deadline ? new Date(a.deadline) : Infinity) - (b.deadline ? new Date(b.deadline) : Infinity);
       if (state.sort === 'title')    return a.title.localeCompare(b.title);
       return 0;
     });
