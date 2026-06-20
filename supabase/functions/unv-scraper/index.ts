@@ -93,6 +93,28 @@ function enumLabel(field: any): string {
   return field.label || field.shortDescription || field.name || '';
 }
 
+/**
+ * UNV's search API has no free-text description field at all — build a real,
+ * specific summary from the structured fields it does provide, rather than
+ * passing an empty string (which would otherwise always trigger the generic
+ * boilerplate fallback in formatWithClaude).
+ */
+function buildStructuredSummary(item: any, org: string, city: string, category: string): string {
+  const expertiseAreas = (item.expertiseAreas || []).map((e: any) => enumLabel(e)).filter(Boolean).join(', ');
+  const workArrangement   = enumLabel(item.workArrangement);
+  const assignmentDuration = enumLabel(item.assignmentDuration);
+  const volunteerType      = enumLabel(item.volunteerType);
+  const durationMonths     = item.duration ? Math.round(item.duration / 30) : null;
+
+  const parts: string[] = [];
+  parts.push(`${org} is recruiting a UN Volunteer in ${category || 'a specialist'} role, based in ${city || 'the field'}.`);
+  if (expertiseAreas) parts.push(`Areas of expertise: ${expertiseAreas}.`);
+  if (workArrangement) parts.push(`Work arrangement: ${workArrangement}.`);
+  if (assignmentDuration) parts.push(`Assignment type: ${assignmentDuration}${durationMonths ? ` (approx. ${durationMonths} months)` : ''}.`);
+  if (volunteerType) parts.push(`Volunteer category: ${volunteerType}.`);
+  return parts.join(' ');
+}
+
 const SECTOR_MAP: Record<string, string> = {
   'health':                  'Health',
   'education':               'Education',
@@ -147,7 +169,12 @@ function fallbackDesc(bodyText: string): string {
 
 async function formatWithClaude(title: string, org: string, description: string): Promise<{ description: string; salary: string }> {
   const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
-  if (!apiKey || !description || description.length < 80) {
+  if (!apiKey) {
+    console.error('[unv-scraper formatWithClaude] ANTHROPIC_API_KEY is not set — falling back');
+    return { description: fallbackDesc(description), salary: 'Volunteer role' };
+  }
+  if (!description || description.length < 80) {
+    console.error(`[unv-scraper formatWithClaude] description too short (${description?.length ?? 0} chars) — falling back`);
     return { description: fallbackDesc(description), salary: 'Volunteer role' };
   }
 
@@ -193,7 +220,11 @@ SALARY: [allowance or Volunteer role]`;
         messages: [{ role: 'user', content: prompt }],
       }),
     });
-    if (!res.ok) return { description: fallbackDesc(description), salary: 'Volunteer role' };
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      console.error(`[unv-scraper formatWithClaude] Anthropic API returned ${res.status}: ${errBody.slice(0, 300)}`);
+      return { description: fallbackDesc(description), salary: 'Volunteer role' };
+    }
 
     const data        = await res.json() as { content: { text: string }[] };
     const raw         = data.content?.[0]?.text?.trim() || '';
@@ -204,7 +235,8 @@ SALARY: [allowance or Volunteer role]`;
     const salaryRaw = salaryMatch?.[1]?.trim() || 'Volunteer role';
 
     return { description: bullets + DISCLAIMER, salary: salaryRaw };
-  } catch {
+  } catch (err) {
+    console.error(`[unv-scraper formatWithClaude] Exception calling Anthropic API: ${err instanceof Error ? err.message : String(err)}`);
     return { description: fallbackDesc(description), salary: 'Volunteer role' };
   }
 }
@@ -278,7 +310,9 @@ Deno.serve(async () => {
         const category = enumLabel(item.categoryName);
         const sector   = mapSector(category);
 
-        const deadlineRaw = item.expectedEndDate || item.endDate;
+        // UNV's search API has no expectedEndDate/endDate — sourcingEndDate
+        // (the date UNV stops accepting candidates) is the real deadline signal.
+        const deadlineRaw = item.sourcingEndDate;
         const deadline    = deadlineRaw
           ? new Date(deadlineRaw).toISOString().split('T')[0]
           : null;
@@ -289,7 +323,10 @@ Deno.serve(async () => {
           : new Date().toISOString().split('T')[0];
 
         const applyUrl   = `https://app.unv.org/opportunities/${id}`;
-        const rawDesc    = stripHtml(item.taskDescription || item.description || '');
+        // No free-text description field exists in this API at all — build
+        // a real structured summary from the fields that are available.
+        const rawDesc    = stripHtml(item.taskDescription || item.description || '')
+          || buildStructuredSummary(item, org, city, category);
         const experience = item.minimumAge ? `${item.minimumAge}+ years old` : null;
 
         const { description, salary } = await formatWithClaude(title, org, rawDesc);

@@ -293,9 +293,29 @@ Deno.serve(async (req) => {
         const mentionsAfrica = AFRICA_MENTIONS.some(c => titleLower.includes(c) || locationLower.includes(c));
         if (!AFRICA_ISO.has(country) && !mentionsAfrica) continue;
 
-        const rawDesc = stripHtml(job.description || job.jobDescription || '');
+        // The /careers/list endpoint never includes the full description —
+        // it only lives on the per-job /careers/{id}/detail endpoint.
+        let detailDesc = '';
+        let compensation: string | null = null;
+        try {
+          const detailRes = await fetch(`https://${org.subdomain}.bamboohr.com/careers/${jobId}/detail`, {
+            headers: { 'Accept': 'application/json', 'User-Agent': 'Afrorama/1.0' },
+          });
+          if (detailRes.ok) {
+            const detailJson: any = await detailRes.json();
+            detailDesc = detailJson?.result?.jobOpening?.description || '';
+            compensation = detailJson?.result?.jobOpening?.compensation || null;
+          } else {
+            console.error(`[bamboohr-scraper] ${org.name} job ${jobId}: detail HTTP ${detailRes.status}`);
+          }
+        } catch (err) {
+          console.error(`[bamboohr-scraper] ${org.name} job ${jobId}: detail fetch failed — ${err instanceof Error ? err.message : String(err)}`);
+        }
+
+        const rawDesc = stripHtml(detailDesc || job.description || job.jobDescription || '');
         const deadline = extractDeadline(rawDesc);
-        const { description, salary } = await formatWithClaude(title, org.name, rawDesc);
+        const { description, salary: extractedSalary } = await formatWithClaude(title, org.name, rawDesc);
+        const salary   = compensation || extractedSalary;
         const posted   = job.datePosted?.slice(0, 10) || new Date().toISOString().split('T')[0];
 
         const entry = {
