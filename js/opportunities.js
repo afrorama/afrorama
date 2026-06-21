@@ -384,7 +384,7 @@
   /* ================================================================
      FILTERING  — triggers map marker update on every change
   ================================================================= */
-  const state = { types: new Set(), regions: new Set(), query: '', sort: 'newest' };
+  const state = { types: new Set(), regions: new Set(), query: '', sort: 'newest', remoteOnly: false };
 
   function applyFilters() {
     let jobs = [...allJobs];
@@ -395,6 +395,7 @@
       const ids = new Set(AFRICAN_COUNTRIES.filter(c => state.regions.has(c.region)).map(c => c.id));
       jobs = jobs.filter(j => ids.has(j.country));
     }
+    if (state.remoteOnly) jobs = jobs.filter(j => (j.location || '').toLowerCase().includes('remote'));
     if (state.query) {
       const q = state.query.toLowerCase();
       jobs = jobs.filter(j =>
@@ -405,6 +406,8 @@
       );
     }
     jobs.sort((a, b) => {
+      // Featured listings always pin to the top, regardless of sort order
+      if (!!b.paid_listing !== !!a.paid_listing) return b.paid_listing ? 1 : -1;
       if (state.sort === 'newest')   return new Date(b.posted) - new Date(a.posted);
       if (state.sort === 'deadline') return (a.deadline ? new Date(a.deadline) : Infinity) - (b.deadline ? new Date(b.deadline) : Infinity);
       if (state.sort === 'title')    return a.title.localeCompare(b.title);
@@ -547,6 +550,7 @@
       const c = AFRICAN_COUNTRIES.find(c => c.id === activeCountry);
       if (c) tags.push({ label: '📍 ' + c.name, remove: () => { activeCountry = null; document.getElementById('map-reset-btn').style.display = 'none'; applyFilters(); } });
     }
+    if (state.remoteOnly) tags.push({ label: '🏠 Remote only', remove: () => { state.remoteOnly = false; document.getElementById('filter-remote-only').checked = false; applyFilters(); } });
     if (state.query) tags.push({ label: `"${state.query}"`, remove: () => { state.query = ''; document.getElementById('search-filter').value = ''; applyFilters(); } });
     if (tags.length === 0) { bar.innerHTML = ''; return; }
     bar.innerHTML = '<span class="active-filters-label">Filters:</span>' + tags.map((tag, i) =>
@@ -707,6 +711,12 @@
         cb.checked ? state.regions.add(cb.dataset.filterRegion) : state.regions.delete(cb.dataset.filterRegion);
         applyFilters();
       });
+    });
+
+    // Remote-only filter
+    document.getElementById('filter-remote-only')?.addEventListener('change', e => {
+      state.remoteOnly = e.target.checked;
+      applyFilters();
     });
 
     // Clear buttons
