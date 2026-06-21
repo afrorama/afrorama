@@ -80,14 +80,19 @@ function mapType(title: string, employmentStatusLabel?: string | null): string {
  */
 function extractDeadline(text: string): string | null {
   if (!text) return null;
+  // Strip ordinal suffixes (10th, 1st, 2nd, 3rd) so "10th June 2026" parses as "10 June 2026"
+  const clean = text.replace(/\b(\d{1,2})(st|nd|rd|th)\b/gi, '$1');
   const patterns = [
     /(?:deadline|closing date|close[sd]? on|applications?\s+close|apply by|submit by|due date|applications?\s+due)[:\s]+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})/i,
     /(?:deadline|closing date|close[sd]? on|applications?\s+close|apply by|submit by)[:\s]+(\d{1,2}\s+[A-Za-z]+\.?\s+\d{4})/i,
     /(?:deadline|closing date)[:\s]+(\d{4}-\d{2}-\d{2})/i,
     /submit.*?by\s+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})/i,
+    // Catches general "...upload your application... by 10 June 2026" phrasing
+    /\bby\s+(\d{1,2}\s+[A-Za-z]+\.?\s+\d{4})\b/i,
+    /\bby\s+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})\b/i,
   ];
   for (const p of patterns) {
-    const m = p.exec(text);
+    const m = p.exec(clean);
     if (m) {
       const parsed = new Date(m[1].replace(/,/g, '').trim());
       if (!isNaN(parsed.getTime())) {
@@ -312,6 +317,22 @@ Deno.serve(async (req) => {
           'jordan':'JO','lebanon':'LB','armenia':'AM','georgia':'GE','moldova':'MD',
           'haiti':'HT','dominican republic':'DO','guatemala':'GT','honduras':'HN',
           'el salvador':'SV','nicaragua':'NI','costa rica':'CR','panama':'PA',
+          // African country names — BambooHR's atsLocation.country sometimes
+          // returns the full name rather than an ISO2 code
+          'algeria':'DZ','angola':'AO','benin':'BJ','botswana':'BW','burkina faso':'BF',
+          'burundi':'BI','cameroon':'CM','cape verde':'CV','cabo verde':'CV',
+          'central african republic':'CF','chad':'TD','comoros':'KM',
+          'republic of congo':'CG','congo':'CG','democratic republic of the congo':'CD',
+          'dr congo':'CD','djibouti':'DJ','egypt':'EG','equatorial guinea':'GQ',
+          'eritrea':'ER','eswatini':'SZ','swaziland':'SZ','ethiopia':'ET','gabon':'GA',
+          'gambia':'GM','ghana':'GH','guinea':'GN','guinea-bissau':'GW','kenya':'KE',
+          'lesotho':'LS','liberia':'LR','libya':'LY','madagascar':'MG','malawi':'MW',
+          'mali':'ML','mauritania':'MR','mauritius':'MU','morocco':'MA','mozambique':'MZ',
+          'namibia':'NA','niger':'NE','nigeria':'NG','rwanda':'RW',
+          'são tomé and príncipe':'ST','sao tome and principe':'ST','senegal':'SN',
+          'sierra leone':'SL','somalia':'SO','south africa':'ZA','south sudan':'SS',
+          'sudan':'SD','tanzania':'TZ','togo':'TG','tunisia':'TN','uganda':'UG',
+          'zambia':'ZM','zimbabwe':'ZW',
         };
         const rawIso = String(countryRaw).trim();
         const resolvedIso = rawIso.length === 2

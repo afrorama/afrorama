@@ -647,6 +647,35 @@
       applyBtn.onclick = () => { trackApplyClick(id); };
     }
 
+    // Report issue button — flags broken link / expired deadline / wrong details
+    const reportBtn = document.getElementById('modal-report-btn');
+    if (reportBtn) {
+      reportBtn.onclick = async () => {
+        const reason = prompt('What\'s wrong with this listing? (e.g. "link broken", "deadline already passed", "wrong location")', 'Deadline already passed or link broken');
+        if (reason === null) return; // user cancelled
+        reportBtn.disabled = true;
+        reportBtn.textContent = 'Reporting…';
+        try {
+          await fetch('https://vqchwioyhyiuunpyildz.supabase.co/functions/v1/report-listing', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              listingId:    job.id,
+              title:        job.title,
+              organisation: job.organisation,
+              applyUrl:     job.apply_url,
+              reason,
+            }),
+          });
+          reportBtn.innerHTML = '✓ Reported — thank you';
+        } catch (err) {
+          console.error('[opportunities] report-listing failed:', err);
+          reportBtn.textContent = 'Report issue';
+          reportBtn.disabled = false;
+        }
+      };
+    }
+
     document.getElementById('modal-backdrop').classList.add('open');
     document.body.style.overflow = 'hidden';
     // Update URL so this job is shareable/bookmarkable
