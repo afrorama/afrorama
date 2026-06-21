@@ -160,6 +160,28 @@
       };
       const contactEmail = document.getElementById('field-contact-email')?.value.trim() || '';
 
+      // Format the user's raw description/requirements into 5 AI-generated
+      // bullet points, matching the style of scraped listings. Falls back
+      // to the raw text untouched if formatting fails for any reason.
+      try {
+        const fmtRes = await fetch('https://vqchwioyhyiuunpyildz.supabase.co/functions/v1/format-listing', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title:        jobData.title,
+            organisation: jobData.organisation,
+            description:  jobData.description,
+            requirements: jobData.requirements,
+          }),
+        });
+        if (fmtRes.ok) {
+          const { description: formatted } = await fmtRes.json();
+          if (formatted) jobData.description = formatted;
+        }
+      } catch (err) {
+        console.warn('[post] format-listing call failed, using raw description:', err);
+      }
+
       const Supa = window.AfroramaSupabase;
       if (!Supa || Supa.isDemoMode()) {
         addJob(jobData);

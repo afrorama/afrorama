@@ -275,6 +275,7 @@ a  { color: inherit; text-decoration: none; }
 .badge-internship  { background: rgba(38,189,226,.14); color: #005270; border: 1px solid rgba(38,189,226,.35); }  /* SDG  6 · teal */
 .badge-consultancy { background: rgba(253,105,37,.12); color: #8a3400; border: 1px solid rgba(253,105,37,.3); }   /* SDG  9 · orange */
 .badge-capacity    { background: rgba(63,126,68,.12);  color: #275a2a; border: 1px solid rgba(63,126,68,.3); }    /* SDG 13 · green */
+.badge-featured    { background: var(--yellow); color: var(--dark); border: 1px solid var(--dark); font-weight: 800; }
 
 /* ===== FORM INPUTS ===== */
 .form-group { display: flex; flex-direction: column; gap: 6px; }
