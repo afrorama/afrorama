@@ -11,6 +11,20 @@
   let currentUser     = null;
 
   /* ---- Supabase listings loader (falls back to static data.js) ---- */
+  /** Collapse listings that share the same title+organisation (same role
+   *  re-posted under a new source ID), keeping only the most recent one. */
+  function dedupeListings(jobs) {
+    const seen = new Map();
+    for (const j of jobs) {
+      const key      = `${(j.title || '').trim().toLowerCase()}|${(j.organisation || '').trim().toLowerCase()}`;
+      const existing = seen.get(key);
+      if (!existing || new Date(j.created_at) > new Date(existing.created_at)) {
+        seen.set(key, j);
+      }
+    }
+    return [...seen.values()];
+  }
+
   async function loadListings() {
     const Supa = window.AfroramaSupabase;
     if (Supa && !Supa.isDemoMode()) {
@@ -20,13 +34,13 @@
       const { data }    = await sb.from('listings').select('*')
         .or(`deadline.gte.${today},deadline.is.null`)
         .or('paid_listing.eq.false,payment_confirmed.eq.true')
-        .neq('source', 'BambooHR')
         .order('created_at', { ascending: false });
       if (data?.length) {
-        const live = data.filter(j => j.deadline || new Date(j.created_at) >= new Date(cutoff));
-        const dbIds      = new Set(live.map(j => j.id));
+        const live    = data.filter(j => j.deadline || new Date(j.created_at) >= new Date(cutoff));
+        const deduped = dedupeListings(live);
+        const dbIds      = new Set(deduped.map(j => j.id));
         const staticOnly = getAllJobs().filter(j => !dbIds.has(j.id));
-        return [...live, ...staticOnly];
+        return [...deduped, ...staticOnly];
       }
     }
     return getAllJobs();

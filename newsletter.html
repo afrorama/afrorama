@@ -356,7 +356,18 @@ document.getElementById('btn-fetch').addEventListener('click', async () => {
       headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` }
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const all = await res.json();
+    const rawAll = await res.json();
+
+    // Collapse listings that share the same title+organisation (same role
+    // re-posted under a new source ID). Results are already newest-first,
+    // so the first occurrence of each key is the one to keep.
+    const seenKeys = new Set();
+    const all = rawAll.filter(l => {
+      const key = `${(l.title || '').trim().toLowerCase()}|${(l.organisation || '').trim().toLowerCase()}`;
+      if (seenKeys.has(key)) return false;
+      seenKeys.add(key);
+      return true;
+    });
 
     // Apply diversity per section
     sectionListings = {};
