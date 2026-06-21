@@ -63,14 +63,21 @@ function mapSector(dept: string): string {
   return 'Governance & Public Policy';
 }
 
-function mapType(title: string): string {
+function mapType(title: string, employmentStatusLabel?: string | null): string {
   const t = title.toLowerCase();
-  if (t.includes('intern') || t.includes('trainee') || t.includes('volunteer')) return 'internship';
+  const status = (employmentStatusLabel || '').toLowerCase();
+  if (t.includes('intern') || t.includes('trainee') || t.includes('volunteer') || status.includes('volunteer')) return 'internship';
   if (t.includes('fellowship')) return 'capacity';
   if (t.includes('consultant') || t.includes('consultancy') || t.includes('advisor') || t.includes('adviser') || t.includes('contractor')) return 'consultancy';
   return 'jobs';
 }
 
+/**
+ * Returns a parsed deadline date if one is found in the text, regardless of
+ * whether it's in the past — the caller decides what to do with an expired
+ * date (skip the listing entirely, since the org never closed it in their
+ * own system even though the application window has clearly passed).
+ */
 function extractDeadline(text: string): string | null {
   if (!text) return null;
   const patterns = [
@@ -83,7 +90,7 @@ function extractDeadline(text: string): string | null {
     const m = p.exec(text);
     if (m) {
       const parsed = new Date(m[1].replace(/,/g, '').trim());
-      if (!isNaN(parsed.getTime()) && parsed.getFullYear() >= new Date().getFullYear()) {
+      if (!isNaN(parsed.getTime())) {
         return parsed.toISOString().split('T')[0];
       }
     }
@@ -262,6 +269,7 @@ Deno.serve(async (req) => {
         let compensation: string | null = null;
         let detailLoc: any = null;
         let detailAtsLoc: any = null;
+        let detailEmploymentStatus: string | null = null;
         try {
           const detailRes = await fetch(`https://${org.subdomain}.bamboohr.com/careers/${jobId}/detail`, {
             headers: { 'Accept': 'application/json', 'User-Agent': 'Afrorama/1.0' },
@@ -273,6 +281,7 @@ Deno.serve(async (req) => {
             compensation  = jobOpening?.compensation || null;
             detailLoc     = jobOpening?.location || null;
             detailAtsLoc  = jobOpening?.atsLocation || null;
+            detailEmploymentStatus = jobOpening?.employmentStatusLabel || null;
           } else {
             console.error(`[bamboohr-scraper] ${org.name} job ${jobId}: detail HTTP ${detailRes.status}`);
           }
@@ -324,6 +333,14 @@ Deno.serve(async (req) => {
 
         const rawDesc = stripHtml(detailDesc || job.description || job.jobDescription || '');
         const deadline = extractDeadline(rawDesc);
+        // A deadline found in the text that's already in the past means this
+        // posting is stale — the org's own ATS still shows it as "Open" even
+        // though the application window closed, sometimes years ago.
+        if (deadline && new Date(deadline) < new Date()) {
+          console.log(`[bamboohr-scraper] ${org.name} job ${jobId}: skipping expired posting (closed ${deadline})`);
+          continue;
+        }
+        const employmentStatusLabel = detailEmploymentStatus || job.employmentStatusLabel || null;
         const { description, salary: extractedSalary } = await formatWithClaude(title, org.name, rawDesc);
         const salary   = compensation || extractedSalary;
         const posted   = job.datePosted?.slice(0, 10) || new Date().toISOString().split('T')[0];
@@ -332,7 +349,7 @@ Deno.serve(async (req) => {
           id:           `bhr-${org.subdomain}-${jobId}`,
           title,
           organisation: org.name,
-          type:         mapType(title),
+          type:         mapType(title, employmentStatusLabel),
           sector,
           location,
           country,
