@@ -254,9 +254,38 @@ Deno.serve(async (req) => {
         const applyUrl   = `https://${org.subdomain}.bamboohr.com/careers/${jobId}`;
         const experience = job.minimumExperience?.label || job.minimumExperience || job.employmentStatusLabel || null;
 
-        const locRaw     = job.location || job.atsLocation || {};
-        const city       = typeof locRaw === 'string' ? locRaw : (locRaw.city || '');
-        const countryRaw = typeof locRaw === 'object' ? (locRaw.country || org.country || 'ZA') : (org.country || 'ZA');
+        // The /careers/list endpoint's atsLocation is always empty and its
+        // `location` is often empty too — the real city/state/country usually
+        // only lives on the per-job /careers/{id}/detail endpoint, fetched here
+        // BEFORE location/country resolution so filtering uses real data.
+        let detailDesc = '';
+        let compensation: string | null = null;
+        let detailLoc: any = null;
+        let detailAtsLoc: any = null;
+        try {
+          const detailRes = await fetch(`https://${org.subdomain}.bamboohr.com/careers/${jobId}/detail`, {
+            headers: { 'Accept': 'application/json', 'User-Agent': 'Afrorama/1.0' },
+          });
+          if (detailRes.ok) {
+            const detailJson: any = await detailRes.json();
+            const jobOpening = detailJson?.result?.jobOpening;
+            detailDesc    = jobOpening?.description || '';
+            compensation  = jobOpening?.compensation || null;
+            detailLoc     = jobOpening?.location || null;
+            detailAtsLoc  = jobOpening?.atsLocation || null;
+          } else {
+            console.error(`[bamboohr-scraper] ${org.name} job ${jobId}: detail HTTP ${detailRes.status}`);
+          }
+        } catch (err) {
+          console.error(`[bamboohr-scraper] ${org.name} job ${jobId}: detail fetch failed — ${err instanceof Error ? err.message : String(err)}`);
+        }
+
+        // Prefer detail-page location data (real) over list-page data (often
+        // empty), and within each prefer `location` over `atsLocation`.
+        const loc1 = detailLoc || job.location || {};
+        const loc2 = detailAtsLoc || job.atsLocation || {};
+        const city       = loc1.city || loc2.city || '';
+        const countryRaw = loc1.country || loc1.addressCountry || loc2.country || org.country || 'ZA';
         const location   = job.isRemote ? 'Remote' : (city || countryRaw);
 
         // Resolve ISO2: explicit code → name lookup → org fallback
@@ -292,25 +321,6 @@ Deno.serve(async (req) => {
         // Include if: African country code, location text mentions Africa, OR title signals Africa
         const mentionsAfrica = AFRICA_MENTIONS.some(c => titleLower.includes(c) || locationLower.includes(c));
         if (!AFRICA_ISO.has(country) && !mentionsAfrica) continue;
-
-        // The /careers/list endpoint never includes the full description —
-        // it only lives on the per-job /careers/{id}/detail endpoint.
-        let detailDesc = '';
-        let compensation: string | null = null;
-        try {
-          const detailRes = await fetch(`https://${org.subdomain}.bamboohr.com/careers/${jobId}/detail`, {
-            headers: { 'Accept': 'application/json', 'User-Agent': 'Afrorama/1.0' },
-          });
-          if (detailRes.ok) {
-            const detailJson: any = await detailRes.json();
-            detailDesc = detailJson?.result?.jobOpening?.description || '';
-            compensation = detailJson?.result?.jobOpening?.compensation || null;
-          } else {
-            console.error(`[bamboohr-scraper] ${org.name} job ${jobId}: detail HTTP ${detailRes.status}`);
-          }
-        } catch (err) {
-          console.error(`[bamboohr-scraper] ${org.name} job ${jobId}: detail fetch failed — ${err instanceof Error ? err.message : String(err)}`);
-        }
 
         const rawDesc = stripHtml(detailDesc || job.description || job.jobDescription || '');
         const deadline = extractDeadline(rawDesc);
