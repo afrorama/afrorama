@@ -41,7 +41,7 @@ async function sendEmail(to: string, subject: string, html: string) {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: FROM_EMAIL, to, subject, html }),
+    body: JSON.stringify({ from: FROM_EMAIL, to, bcc: FROM_EMAIL, subject, html }),
   });
   if (!res.ok) {
     console.error('[listing-expiry-notify] Email send failed:', await res.text());

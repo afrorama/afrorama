@@ -43,6 +43,7 @@
  */
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { trySubmitSalary } from '../_shared/currency.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -282,7 +283,13 @@ Deno.serve(async () => {
       .upsert(entry, { onConflict: 'id', ignoreDuplicates: false });
 
     if (error) { console.error('[reliefweb-scraper] Upsert error:', error.message); totalSkipped++; }
-    else totalImported++;
+    else {
+      totalImported++;
+      await trySubmitSalary(supabase, {
+        company: org, position: f.title || 'Untitled', salaryText: salary,
+        experienceText: experience, sector, country: iso,
+      });
+    }
   }
 
   console.log(`[reliefweb-scraper] Done. Imported: ${totalImported}, Skipped: ${totalSkipped}`);

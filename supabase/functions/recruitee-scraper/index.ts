@@ -4,6 +4,7 @@
  */
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { trySubmitSalary } from '../_shared/currency.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -166,6 +167,12 @@ Deno.serve(async () => {
 
         if (result?.error) { console.error(`[recruitee-scraper] Upsert error: ${result.error.message}`); totalSkipped++; }
         else totalImported++;
+
+        await trySubmitSalary(supabase, {
+          company: org.name, position: title, salaryText: salary,
+          experienceText: offer.experience_code || null, sector: mapSector(dept), country: iso,
+        });
+
         await new Promise(r => setTimeout(r, 150));
       }
     } catch (err) { console.warn(`[recruitee-scraper] ${org.name} failed:`, (err as Error).message); }
@@ -211,6 +218,12 @@ Deno.serve(async () => {
 
         if (result?.error) { console.error(`[recruitee-scraper] Upsert error: ${result.error.message}`); totalSkipped++; }
         else totalImported++;
+
+        await trySubmitSalary(supabase, {
+          company: org.name, position: title, salaryText: salary,
+          experienceText: null, sector: mapSector(job.department || ''), country: iso,
+        });
+
         await new Promise(r => setTimeout(r, 150));
       }
     } catch (err) { console.warn(`[recruitee-scraper] Pinpoint ${org.name} failed:`, (err as Error).message); }

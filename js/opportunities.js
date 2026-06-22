@@ -650,6 +650,10 @@
     // Report issue button — flags broken link / expired deadline / wrong details
     const reportBtn = document.getElementById('modal-report-btn');
     if (reportBtn) {
+      // Reset state each time a (possibly different) listing's modal opens —
+      // this button is a single reused DOM element, not recreated per job.
+      reportBtn.disabled = false;
+      reportBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Report issue';
       reportBtn.onclick = async () => {
         const reason = prompt('What\'s wrong with this listing? (e.g. "link broken", "deadline already passed", "wrong location")', 'Deadline already passed or link broken');
         if (reason === null) return; // user cancelled

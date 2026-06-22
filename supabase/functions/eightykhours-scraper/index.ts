@@ -10,6 +10,7 @@
  */
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { trySubmitSalary } from '../_shared/currency.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -235,6 +236,11 @@ Deno.serve(async () => {
 
         if (result?.error) { console.error(`[80khours-scraper] Upsert: ${result.error.message}`); totalSkipped++; }
         else totalImported++;
+
+        await trySubmitSalary(supabase, {
+          company: org, position: title, salaryText: job.salary || salary,
+          experienceText: (job.tags_exp_required || []).join(', ') || null, sector, country: iso,
+        });
 
         await new Promise(r => setTimeout(r, 150));
       }
