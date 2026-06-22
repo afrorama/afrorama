@@ -318,6 +318,10 @@ Deno.serve(async () => {
         const deadline    = deadlineRaw
           ? new Date(deadlineRaw).toISOString().split('T')[0]
           : null;
+        if (deadline && new Date(deadline) < new Date()) {
+          console.log(`[unv-scraper] ${org} job ${id}: skipping expired posting (closed ${deadline})`);
+          continue;
+        }
 
         const postedRaw = item.publishDate || item.startDate;
         const posted    = postedRaw

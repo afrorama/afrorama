@@ -149,6 +149,10 @@ Deno.serve(async () => {
         const applyUrl = offer.careers_apply_url || offer.careers_url || `https://${org.subdomain}.recruitee.com/o/${offer.slug}`;
         const posted   = offer.published_at?.slice(0, 10) || new Date().toISOString().split('T')[0];
         const deadline = offer.close_at?.slice(0, 10) || null;
+        if (deadline && new Date(deadline) < new Date()) {
+          console.log(`[recruitee-scraper] ${org.name} job ${jobId}: skipping expired posting (closed ${deadline})`);
+          continue;
+        }
         const bodyText = stripHtml(offer.description || '');
         const { description, salary } = await formatWithClaude(title, org.name, bodyText);
 

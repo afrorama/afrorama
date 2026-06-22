@@ -166,17 +166,22 @@ function mapType(title: string): string {
 
 function extractDeadline(text: string): string | null {
   if (!text) return null;
+  // Strip ordinal suffixes (10th, 1st, 2nd, 3rd) so "10th June 2026" parses as "10 June 2026"
+  const clean = text.replace(/\b(\d{1,2})(st|nd|rd|th)\b/gi, '$1');
   const patterns = [
     /(?:deadline|closing date|close[sd]? on|applications?\s+close|apply by|submit by|due date|applications?\s+due)[:\s]+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})/i,
     /(?:deadline|closing date|close[sd]? on|applications?\s+close|apply by|submit by)[:\s]+(\d{1,2}\s+[A-Za-z]+\.?\s+\d{4})/i,
     /(?:deadline|closing date)[:\s]+(\d{4}-\d{2}-\d{2})/i,
     /submit.*?by\s+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})/i,
+    // Catches general "...upload your application... by 10 June 2026" phrasing
+    /\bby\s+(\d{1,2}\s+[A-Za-z]+\.?\s+\d{4})\b/i,
+    /\bby\s+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})\b/i,
   ];
   for (const p of patterns) {
-    const m = p.exec(text);
+    const m = p.exec(clean);
     if (m) {
       const parsed = new Date(m[1].replace(/,/g, '').trim());
-      if (!isNaN(parsed.getTime()) && parsed.getFullYear() >= new Date().getFullYear()) {
+      if (!isNaN(parsed.getTime())) {
         return parsed.toISOString().split('T')[0];
       }
     }
@@ -353,6 +358,12 @@ Deno.serve(async (req) => {
         } catch { /* use fallback */ }
 
         const deadline = extractDeadline(bodyText);
+        // A deadline found in the text that's already in the past means this
+        // posting is stale — skip it rather than showing it as still open.
+        if (deadline && new Date(deadline) < new Date()) {
+          console.log(`[workable-scraper] ${org.name} job ${jobId}: skipping expired posting (closed ${deadline})`);
+          continue;
+        }
         const { description, salary } = await formatWithClaude(title, org.name, bodyText);
 
         const entry = {
