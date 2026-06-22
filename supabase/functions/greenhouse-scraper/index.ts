@@ -218,17 +218,19 @@ function stripHtml(html: string): string {
     .replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 }
 
+// Uses real lines from the actual posting rather than fabricated, generic
+// "responsibilities" — when AI summarisation isn't available, it's more
+// honest to show less than to invent content that didn't come from the org.
 function fallbackDesc(bodyText: string, org: string): string {
-  const firstLine = (bodyText || '').split('\n').map(l => l.trim()).find(l => l.length > 30) || '';
-  const first = firstLine.replace(/^[-•*–·]\s*/, '').trim();
-  const bullet1 = first ? `• ${first.charAt(0).toUpperCase() + first.slice(1)}` : `• Deliver impactful work as part of the ${org} team`;
-  return [
-    bullet1,
-    '• Manage tasks with a focus on measurable impact and accountability',
-    '• Develop strategies and solutions within your area of expertise',
-    '• Collaborate with colleagues and partners to achieve shared goals',
-    '• Drive outcomes that create lasting social impact across the region',
-  ].join('\n') + DISCLAIMER;
+  const lines = (bodyText || '')
+    .split('\n')
+    .map(l => l.trim().replace(/^[-•*–·]\s*/, ''))
+    .filter(l => l.length > 30)
+    .slice(0, 3);
+  if (lines.length === 0) {
+    return `${org} has posted this opportunity, but the description could not be automatically summarised. Please view the original posting for full details.${DISCLAIMER}`;
+  }
+  return lines.map(l => `• ${l.charAt(0).toUpperCase() + l.slice(1)}`).join('\n') + DISCLAIMER;
 }
 
 async function formatWithClaude(title: string, org: string, description: string): Promise<{ description: string; salary: string }> {

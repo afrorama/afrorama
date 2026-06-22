@@ -154,28 +154,30 @@ function stripHtml(html: string): string {
     .replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 }
 
-function fallbackDesc(bodyText: string): string {
-  const firstLine = (bodyText || '').split('\n').map(l => l.trim()).find(l => l.length > 30) || '';
-  const first = firstLine.replace(/^[-•*–·]\s*/, '').trim();
-  const bullet1 = first ? `• ${first.charAt(0).toUpperCase() + first.slice(1)}` : '• Deliver on key responsibilities as outlined in the full posting';
-  return [
-    bullet1,
-    '• Manage tasks with a focus on measurable impact and accountability',
-    '• Develop strategies and solutions within your area of expertise',
-    '• Collaborate with colleagues and partners to achieve shared goals',
-    '• Drive outcomes that create lasting social impact across the region',
-  ].join('\n') + DISCLAIMER;
+// Uses real lines from the actual posting rather than fabricated, generic
+// "responsibilities" — when AI summarisation isn't available, it's more
+// honest to show less than to invent content that didn't come from the org.
+function fallbackDesc(bodyText: string, org?: string): string {
+  const lines = (bodyText || '')
+    .split('\n')
+    .map(l => l.trim().replace(/^[-•*–·]\s*/, ''))
+    .filter(l => l.length > 30)
+    .slice(0, 3);
+  if (lines.length === 0) {
+    return `${org || 'This organisation'} has posted this opportunity, but the description could not be automatically summarised. Please view the original posting for full details.${DISCLAIMER}`;
+  }
+  return lines.map(l => `• ${l.charAt(0).toUpperCase() + l.slice(1)}`).join('\n') + DISCLAIMER;
 }
 
 async function formatWithClaude(title: string, org: string, description: string): Promise<{ description: string; salary: string }> {
   const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
   if (!apiKey) {
     console.error('[unv-scraper formatWithClaude] ANTHROPIC_API_KEY is not set — falling back');
-    return { description: fallbackDesc(description), salary: 'Volunteer role' };
+    return { description: fallbackDesc(description, org), salary: 'Volunteer role' };
   }
   if (!description || description.length < 80) {
     console.error(`[unv-scraper formatWithClaude] description too short (${description?.length ?? 0} chars) — falling back`);
-    return { description: fallbackDesc(description), salary: 'Volunteer role' };
+    return { description: fallbackDesc(description, org), salary: 'Volunteer role' };
   }
 
   const prompt = `You are writing a job summary for Afrorama, Africa's social impact job board. Format the volunteer role description below in British English.
@@ -223,7 +225,7 @@ SALARY: [allowance or Volunteer role]`;
     if (!res.ok) {
       const errBody = await res.text().catch(() => '');
       console.error(`[unv-scraper formatWithClaude] Anthropic API returned ${res.status}: ${errBody.slice(0, 300)}`);
-      return { description: fallbackDesc(description), salary: 'Volunteer role' };
+      return { description: fallbackDesc(description, org), salary: 'Volunteer role' };
     }
 
     const data        = await res.json() as { content: { text: string }[] };
@@ -231,13 +233,13 @@ SALARY: [allowance or Volunteer role]`;
     const bulletMatch = raw.match(/BULLETS:\s*([\s\S]*?)(?=SALARY:|$)/i);
     const salaryMatch = raw.match(/SALARY:\s*(.+)/i);
 
-    const bullets   = bulletMatch?.[1]?.trim() || fallbackDesc(description);
+    const bullets   = bulletMatch?.[1]?.trim() || fallbackDesc(description, org);
     const salaryRaw = salaryMatch?.[1]?.trim() || 'Volunteer role';
 
     return { description: bullets + DISCLAIMER, salary: salaryRaw };
   } catch (err) {
     console.error(`[unv-scraper formatWithClaude] Exception calling Anthropic API: ${err instanceof Error ? err.message : String(err)}`);
-    return { description: fallbackDesc(description), salary: 'Volunteer role' };
+    return { description: fallbackDesc(description, org), salary: 'Volunteer role' };
   }
 }
 

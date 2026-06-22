@@ -92,27 +92,25 @@ const COUNTRY_ISO: Record<string, string> = {
 ================================================================= */
 const DISCLAIMER = '\n\n─────────────────────────────────────\nThis summary is automatically generated for quick reference. For the complete and authoritative job description, please view the original posting.';
 
-function fallbackDesc(bodyText: string): string {
-  const firstLine = bodyText.split('\n').map(l => l.trim()).find(l => l.length > 30) || '';
-  const first = firstLine
-    .replace(/^[-•*–·]\s*/, '')
-    .replace(/^(this (role|position|job)\s*(is\s*)?)/i, '')
-    .replace(/^(the (role|position|job) is )/i, '')
-    .trim();
-  const bullet1 = first ? `• ${first.charAt(0).toUpperCase() + first.slice(1)}` : '• Deliver on key responsibilities as outlined in the full job posting';
-  return [
-    bullet1,
-    '• Manage tasks with a focus on measurable impact and accountability',
-    '• Develop strategies and solutions within your area of expertise',
-    '• Collaborate with colleagues and partners to achieve shared goals',
-    '• Drive outcomes that create lasting social impact across the region',
-  ].join('\n') + DISCLAIMER;
+// Uses real lines from the actual posting rather than fabricated, generic
+// "responsibilities" — when AI summarisation isn't available, it's more
+// honest to show less than to invent content that didn't come from the org.
+function fallbackDesc(bodyText: string, org?: string): string {
+  const lines = (bodyText || '')
+    .split('\n')
+    .map(l => l.trim().replace(/^[-•*–·]\s*/, ''))
+    .filter(l => l.length > 30)
+    .slice(0, 3);
+  if (lines.length === 0) {
+    return `${org || 'This organisation'} has posted this opportunity, but the description could not be automatically summarised. Please view the original posting for full details.${DISCLAIMER}`;
+  }
+  return lines.map(l => `• ${l.charAt(0).toUpperCase() + l.slice(1)}`).join('\n') + DISCLAIMER;
 }
 
 async function formatDescription(bodyText: string, title: string, org: string): Promise<{ description: string; salary: string }> {
   const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
   if (!apiKey || !bodyText || bodyText.length < 80) {
-    return { description: fallbackDesc(bodyText), salary: 'See listing' };
+    return { description: fallbackDesc(bodyText, org), salary: 'See listing' };
   }
 
   const prompt = `You are writing a job summary for Afrorama, Africa's social impact job board. Format the job description below in British English.
@@ -160,21 +158,21 @@ SALARY: [salary or none]`;
         messages:   [{ role: 'user', content: prompt }],
       }),
     });
-    if (!res.ok) { console.error('[formatter] Anthropic error:', res.status); return { description: fallbackDesc(bodyText), salary: 'See listing' }; }
+    if (!res.ok) { console.error('[formatter] Anthropic error:', res.status); return { description: fallbackDesc(bodyText, org), salary: 'See listing' }; }
 
     const data       = await res.json() as { content: { text: string }[] };
     const raw        = data.content?.[0]?.text?.trim() || '';
     const bulletMatch = raw.match(/BULLETS:\s*([\s\S]*?)(?=SALARY:|$)/i);
     const salaryMatch = raw.match(/SALARY:\s*(.+)/i);
 
-    const bullets   = bulletMatch?.[1]?.trim() || fallbackDesc(bodyText);
+    const bullets   = bulletMatch?.[1]?.trim() || fallbackDesc(bodyText, org);
     const salaryRaw = salaryMatch?.[1]?.trim() || 'none';
     const salary    = salaryRaw.toLowerCase() === 'none' ? 'See listing' : salaryRaw;
 
     return { description: bullets + DISCLAIMER, salary };
   } catch (err) {
     console.error('[formatter] Failed:', (err as Error).message);
-    return { description: fallbackDesc(bodyText), salary: 'See listing' };
+    return { description: fallbackDesc(bodyText, org), salary: 'See listing' };
   }
 }
 
