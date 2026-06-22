@@ -200,6 +200,7 @@
         payment_confirmed: false,
         views:             0,
         apply_clicks:      0,
+        contact_email:     contactEmail,
       });
 
       if (error) {
