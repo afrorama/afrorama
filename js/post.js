@@ -182,16 +182,21 @@
 
       const sb = Supa.getSupabase();
       const id = 'post-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
-      const { error } = await sb.from('listings').insert({
-        id,
-        ...jobData,
-        posted:            new Date().toISOString().split('T')[0],
-        source:            'Direct',
-        paid_listing:      true,
-        payment_confirmed: false,
-        views:             0,
-        apply_clicks:      0,
-        contact_email:     contactEmail,
+      const { error } = await sb.rpc('submit_listing', {
+        p_id:            id,
+        p_title:         jobData.title,
+        p_organisation:  jobData.organisation,
+        p_type:          jobData.type,
+        p_sector:        jobData.sector,
+        p_location:      jobData.location,
+        p_country:       jobData.country,
+        p_deadline:      jobData.deadline,
+        p_salary:        jobData.salary,
+        p_apply_url:     jobData.apply_url,
+        p_description:   jobData.description,
+        p_requirements:  jobData.requirements,
+        p_contact_email: contactEmail,
+        p_paid_listing:  true,
       });
 
       if (error) {
