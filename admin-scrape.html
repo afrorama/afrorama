@@ -48,6 +48,7 @@
       </div>
       <button class="btn btn-primary" id="btn-scrape" style="margin-top:10px;">Scrape &amp; format with Claude</button>
       <div class="status-msg" id="scrape-status"></div>
+      <p style="font-size:.8rem;margin-top:14px;color:var(--gray-dark);">Some sites (LinkedIn, sites behind a login, PDFs) can't be scraped automatically. <a href="#" id="btn-skip-scrape" style="text-decoration:underline;">Skip this step and fill in the form manually instead →</a></p>
     </div>
 
     <div class="admin-card" id="review-card" style="display:none;">
@@ -208,6 +209,15 @@
     } finally {
       document.getElementById('btn-scrape').disabled = false;
     }
+  });
+
+  document.getElementById('btn-skip-scrape').addEventListener('click', (e) => {
+    e.preventDefault();
+    const url = document.getElementById('scrape-url').value.trim();
+    if (url) document.getElementById('f-apply').value = url;
+    document.getElementById('review-card').style.display = 'block';
+    document.getElementById('review-card').scrollIntoView({ behavior: 'smooth' });
+    scrapeStatus.textContent = '';
   });
 
   const publishStatus = document.getElementById('publish-status');
