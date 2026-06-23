@@ -190,12 +190,14 @@ Deno.serve(async (req) => {
 
           const title    = job.name || job.title || 'Untitled';
           const dept     = job.department?.label || job.function?.label || '';
-          const applyUrl = job.ref || `https://jobs.smartrecruiters.com/${org.id}/${jobId}`;
           const posted   = job.releasedDate?.slice(0, 10) || new Date().toISOString().split('T')[0];
           const expLevel = job.experienceLevel?.label || null;
 
-          // Fetch full description
+          // Fetch full description — also the only reliable source of the
+          // real public application page. job.ref from the list endpoint
+          // is the API's own self-link, not a page a human can apply on.
           let bodyText = '';
+          let applyUrl = `https://jobs.smartrecruiters.com/${org.id}/${jobId}`;
           try {
             const dr = await fetch(
               `https://api.smartrecruiters.com/v1/companies/${org.id}/postings/${jobId}`,
@@ -207,6 +209,7 @@ Deno.serve(async (req) => {
                 detail?.jobAd?.sections?.jobDescription?.text ||
                 detail?.sections?.jobDescription?.text || '',
               );
+              if (detail?.postingUrl) applyUrl = detail.postingUrl;
             }
           } catch { /* fallback */ }
 
