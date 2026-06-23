@@ -132,6 +132,7 @@
   const ADMIN_PASSWORD = 'ETaylor@2026!';
   const ADMIN_KEY = 'afrorama_admin_scrape_session';
   const FN_BASE = 'https://vqchwioyhyiuunpyildz.supabase.co/functions/v1';
+  const ANON_KEY = 'sb_publishable_HeGZfQZEDI_IR46a2Ezp-Q_tIUdhF6_';
 
   const { SECTORS, AFRICAN_COUNTRIES } = window.AfroramaData;
 
@@ -180,11 +181,11 @@
     try {
       const res = await fetch(`${FN_BASE}/scrape-url`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` },
         body: JSON.stringify({ url }),
       });
       const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error || 'Scrape failed.');
+      if (!res.ok || data.error) throw new Error(data.error || data.message || 'Scrape failed.');
 
       const d = data.draft;
       document.getElementById('f-title').value    = d.title || '';
@@ -240,7 +241,7 @@
     try {
       const res = await fetch(`${FN_BASE}/publish-admin-listing`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` },
         body: JSON.stringify({
           title, organisation: org,
           type:        document.getElementById('f-type').value,
@@ -258,7 +259,7 @@
         }),
       });
       const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error || 'Publish failed.');
+      if (!res.ok || data.error) throw new Error(data.error || data.message || 'Publish failed.');
 
       publishStatus.textContent = `Published — listing id ${data.id}. Live on opportunities.html now.`;
       publishStatus.className = 'status-msg success';
