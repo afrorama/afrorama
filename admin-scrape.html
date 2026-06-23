@@ -95,6 +95,10 @@
           <input class="form-input" id="f-apply" type="url">
         </div>
         <div class="form-group s2">
+          <label for="f-how-to-apply">How to apply (optional — for non-standard cases, e.g. "Email your CV to x@y.org" or "Comment on the LinkedIn post")</label>
+          <input class="form-input" id="f-how-to-apply" type="text" placeholder="Leave blank if Apply URL leads straight to an application form">
+        </div>
+        <div class="form-group s2">
           <label for="f-desc">Description</label>
           <textarea class="form-textarea" id="f-desc" rows="4"></textarea>
         </div>
@@ -124,7 +128,7 @@
 <script src="js/supabase.js"></script>
 <script>
 (function () {
-  const ADMIN_PASSWORD = 'afrorama2026';
+  const ADMIN_PASSWORD = 'ETaylor@2026!';
   const ADMIN_KEY = 'afrorama_admin_scrape_session';
   const FN_BASE = 'https://vqchwioyhyiuunpyildz.supabase.co/functions/v1';
 
@@ -239,6 +243,7 @@
           description: document.getElementById('f-desc').value.trim(),
           requirements: document.getElementById('f-req').value.trim(),
           contact_email: document.getElementById('f-contact').value.trim() || null,
+          how_to_apply: document.getElementById('f-how-to-apply').value.trim() || null,
           paid_listing: document.getElementById('f-paid').checked,
         }),
       });

@@ -24,10 +24,15 @@ const supabase = createClient(
 
 const DISCLAIMER = '\n\n─────────────────────────────────────\nThis summary is automatically generated for quick reference. For the complete and authoritative job description, please view the original posting.';
 
-async function formatDescription(title: string, org: string, description: string, requirements: string): Promise<string> {
+async function formatDescription(title: string, org: string, description: string, requirements: string, howToApply: string): Promise<string> {
   const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
   const combined = `${description}\n\n${requirements}`.trim();
-  if (!apiKey || combined.length < 30) return combined || 'No description provided.';
+  const applyLine = howToApply ? `\n• How to apply: ${howToApply}` : '';
+
+  if (!apiKey || combined.length < 30) {
+    const base = combined || 'No description provided.';
+    return howToApply ? `${base}\n\nHow to apply: ${howToApply}` : base;
+  }
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -39,12 +44,12 @@ async function formatDescription(title: string, org: string, description: string
         messages: [{ role: 'user', content: `Format this job posting for Afrorama, Africa's social impact job board, in British English. Write exactly 5 bullet points: bullet 1 from the role overview, bullets 2-5 starting with a strong imperative verb, concise and action-oriented.\n\nJob: ${title} at ${org}\n\nDescription: ${description}\n\nRequirements: ${requirements}\n\nReturn only the 5 bullets, one per line, each starting with "• ".` }],
       }),
     });
-    if (!res.ok) return combined;
+    if (!res.ok) return combined + applyLine;
     const data = await res.json() as { content: { text: string }[] };
     const bullets = data.content?.[0]?.text?.trim();
-    return bullets ? bullets + DISCLAIMER : combined;
+    return bullets ? bullets + applyLine + DISCLAIMER : combined + applyLine;
   } catch {
-    return combined;
+    return combined + applyLine;
   }
 }
 
@@ -53,14 +58,14 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const {
       title, organisation, type, sector, location, country, deadline,
-      salary, apply_url, description, requirements, paid_listing, contact_email,
+      salary, apply_url, description, requirements, paid_listing, contact_email, how_to_apply,
     } = body;
 
     if (!title || !organisation || !apply_url || !country) {
       return Response.json({ error: 'Missing required fields.' }, { status: 400 });
     }
 
-    const formattedDescription = await formatDescription(title, organisation, description || '', requirements || '');
+    const formattedDescription = await formatDescription(title, organisation, description || '', requirements || '', how_to_apply || '');
     const id = 'admin-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
 
     const { error } = await supabase.from('listings').insert({
