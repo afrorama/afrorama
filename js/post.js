@@ -42,15 +42,6 @@
     dlField.min = tomorrow.toISOString().split('T')[0];
   }
 
-  /* ---- Standardize to 2 sentences ---- */
-  function standardize(text) {
-    if (!text || !text.trim()) return text;
-    const cleaned = text.trim().replace(/\s+/g, ' ');
-    const sentences = cleaned.match(/[^.!?]+[.!?]+(?:\s|$)/g) || [cleaned];
-    const two = sentences.slice(0, 2).map(s => s.trim()).join(' ').trim();
-    return two || cleaned;
-  }
-
   /* ---- Step navigation ---- */
   let currentStep = 1;
 

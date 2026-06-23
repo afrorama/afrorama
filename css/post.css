@@ -153,8 +153,8 @@
 }
 .type-option-label:hover { border-color: var(--dark); }
 .type-option-icon { font-size: 18px; margin-bottom: 2px; }
-.type-option-name { font-size: .85rem; font-weight: 700; color: var(--dark); }
-.type-option-desc { font-size: .72rem; color: var(--gray-dark); line-height: 1.4; }
+.type-option-name { font-size: 1.15rem; font-weight: 700; color: var(--dark); letter-spacing: .03em; }
+.type-option-desc { font-size: .8rem; color: var(--gray-dark); line-height: 1.4; }
 
 /* --- Payment step --- */
 .payment-summary {
