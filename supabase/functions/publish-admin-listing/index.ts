@@ -22,6 +22,12 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
 );
 
+const CORS = {
+  'Access-Control-Allow-Origin':  '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
 const DISCLAIMER = '\n\n─────────────────────────────────────\nThis summary is automatically generated for quick reference. For the complete and authoritative job description, please view the original posting.';
 
 async function formatDescription(title: string, org: string, description: string, requirements: string, howToApply: string): Promise<string> {
@@ -54,6 +60,9 @@ async function formatDescription(title: string, org: string, description: string
 }
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response(null, { headers: CORS });
+  if (req.method !== 'POST') return Response.json({ error: 'POST only' }, { status: 405, headers: CORS });
+
   try {
     const body = await req.json();
     const {
@@ -62,7 +71,7 @@ Deno.serve(async (req) => {
     } = body;
 
     if (!title || !organisation || !apply_url || !country) {
-      return Response.json({ error: 'Missing required fields.' }, { status: 400 });
+      return Response.json({ error: 'Missing required fields.' }, { status: 400, headers: CORS });
     }
 
     const formattedDescription = await formatDescription(title, organisation, description || '', requirements || '', how_to_apply || '');
@@ -86,7 +95,7 @@ Deno.serve(async (req) => {
 
     if (error) {
       console.error('[publish-admin-listing] Insert failed:', error.message);
-      return Response.json({ error: error.message }, { status: 500 });
+      return Response.json({ error: error.message }, { status: 500, headers: CORS });
     }
 
     // Feed Salary Intelligence when a real number is present.
@@ -105,10 +114,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    return Response.json({ id });
+    return Response.json({ id }, { headers: CORS });
 
   } catch (err) {
     console.error('[publish-admin-listing] Error:', (err as Error).message);
-    return Response.json({ error: (err as Error).message }, { status: 500 });
+    return Response.json({ error: (err as Error).message }, { status: 500, headers: CORS });
   }
 });

@@ -11,6 +11,12 @@
  * Deploy: supabase functions deploy scrape-url
  */
 
+const CORS = {
+  'Access-Control-Allow-Origin':  '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
 const SECTORS = [
   'Agriculture & Food Security', 'Climate & Environment', 'Education',
   'Finance & Economics', 'Gender & Social Inclusion', 'Governance & Public Policy',
@@ -30,24 +36,27 @@ function stripHtml(html: string): string {
 }
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response(null, { headers: CORS });
+  if (req.method !== 'POST') return Response.json({ error: 'POST only' }, { status: 405, headers: CORS });
+
   try {
     const { url } = await req.json();
     if (!url || typeof url !== 'string') {
-      return Response.json({ error: 'A url is required.' }, { status: 400 });
+      return Response.json({ error: 'A url is required.' }, { status: 400, headers: CORS });
     }
 
     const pageRes = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AfroramaBot/1.0)' },
     });
     if (!pageRes.ok) {
-      return Response.json({ error: `Could not fetch URL (status ${pageRes.status}).` }, { status: 400 });
+      return Response.json({ error: `Could not fetch URL (status ${pageRes.status}). LinkedIn and some sites block automated requests — try pasting the text directly instead.` }, { status: 400, headers: CORS });
     }
     const html = await pageRes.text();
     const bodyText = stripHtml(html).slice(0, 9000);
 
     const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
     if (!apiKey) {
-      return Response.json({ error: 'ANTHROPIC_API_KEY not configured.' }, { status: 500 });
+      return Response.json({ error: 'ANTHROPIC_API_KEY not configured.' }, { status: 500, headers: CORS });
     }
 
     const prompt = `You are extracting structured job-posting data for Afrorama, Africa's social impact job board. Read the page text below (scraped from ${url}) and extract the role details.
@@ -83,21 +92,21 @@ ${bodyText}`;
     });
 
     if (!aiRes.ok) {
-      return Response.json({ error: `Claude request failed: ${await aiRes.text()}` }, { status: 502 });
+      return Response.json({ error: `Claude request failed: ${await aiRes.text()}` }, { status: 502, headers: CORS });
     }
 
     const aiData = await aiRes.json() as { content: { text: string }[] };
     const raw = aiData.content?.[0]?.text?.trim() || '';
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      return Response.json({ error: 'Could not parse a structured listing from this page.' }, { status: 422 });
+      return Response.json({ error: 'Could not parse a structured listing from this page.' }, { status: 422, headers: CORS });
     }
 
     const draft = JSON.parse(jsonMatch[0]);
-    return Response.json({ draft });
+    return Response.json({ draft }, { headers: CORS });
 
   } catch (err) {
     console.error('[scrape-url] Error:', (err as Error).message);
-    return Response.json({ error: (err as Error).message }, { status: 500 });
+    return Response.json({ error: (err as Error).message }, { status: 500, headers: CORS });
   }
 });
