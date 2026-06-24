@@ -51,12 +51,21 @@ const supabase = createClient(
 );
 
 // African countries to focus on (ISO codes mapped to ReliefWeb country names)
+// Full set of African countries as ReliefWeb's own taxonomy names them
+// (confirmed against the /v2/countries reference endpoint — a few differ
+// from common usage, e.g. "United Republic of Tanzania", "Congo" for
+// Congo-Brazzaville vs "Democratic Republic of the Congo" for DRC).
 const AFRICA_COUNTRIES = [
-  'Kenya', 'South Africa', 'Nigeria', 'Senegal', 'Ethiopia',
-  'Ghana', 'Tanzania', 'Uganda', 'Rwanda', 'Zambia',
-  'Mozambique', 'Malawi', 'Zimbabwe', 'Botswana', 'Namibia',
-  'Cameroon', 'Côte d\'Ivoire', 'Burkina Faso', 'Mali', 'Niger',
-  'Chad', 'Sudan', 'South Sudan', 'Somalia', 'Democratic Republic of the Congo',
+  'Algeria', 'Angola', 'Benin', 'Botswana', 'Burkina Faso', 'Burundi',
+  'Cabo Verde', 'Cameroon', 'Central African Republic', 'Chad', 'Comoros',
+  'Congo', 'Democratic Republic of the Congo', "Côte d'Ivoire", 'Djibouti',
+  'Egypt', 'Equatorial Guinea', 'Eritrea', 'Eswatini', 'Ethiopia', 'Gabon',
+  'Gambia', 'Ghana', 'Guinea', 'Guinea-Bissau', 'Kenya', 'Lesotho', 'Liberia',
+  'Libya', 'Madagascar', 'Malawi', 'Mali', 'Mauritania', 'Mauritius',
+  'Morocco', 'Mozambique', 'Namibia', 'Niger', 'Nigeria', 'Rwanda',
+  'Sao Tome and Principe', 'Senegal', 'Sierra Leone', 'Somalia',
+  'South Africa', 'South Sudan', 'Sudan', 'Togo', 'Tunisia', 'Uganda',
+  'United Republic of Tanzania', 'Zambia', 'Zimbabwe',
 ];
 
 // Map ReliefWeb categories to Afrorama sectors
@@ -183,11 +192,19 @@ Deno.serve(async () => {
   // GET request — ReliefWeb expects literal PHP-style brackets in the URL.
   // URLSearchParams would encode them, so build the query string manually.
   // Limit to 50 so full body text doesn't overflow the edge function response buffer.
+  //
+  // Previously this fetched the 50 most recent jobs GLOBALLY with no
+  // country filter, then discarded everything non-African client-side —
+  // most runs only kept a handful of the 50. Filtering by country server-
+  // side means all (up to) 50 results are already Africa-relevant.
   const FIELDS = ['title', 'body', 'date', 'source', 'country', 'career_categories', 'url_alias', 'experience', 'how_to_apply-html'];
   const queryParts = [
     'appname=afrorama-scraper-TB8NxEbw9yeWCmx',
     'limit=50',
     'sort[]=date.created:desc',
+    'filter[field]=country',
+    ...AFRICA_COUNTRIES.map(c => `filter[value][]=${encodeURIComponent(c)}`),
+    'filter[operator]=OR',
     ...FIELDS.map(f => `fields[include][]=${f}`),
   ];
   const rwUrl = `https://api.reliefweb.int/v2/jobs?${queryParts.join('&')}`;
