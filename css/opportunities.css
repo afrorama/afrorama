@@ -57,7 +57,6 @@
   background: var(--white);
   border: 2px solid var(--dark);
   border-radius: var(--radius-lg);
-  overflow: hidden;
   box-shadow: 3px 3px 0 var(--dark);
 }
 .filter-card-head {
