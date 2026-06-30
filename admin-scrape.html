@@ -136,12 +136,78 @@
 
   const { SECTORS, AFRICAN_COUNTRIES } = window.AfroramaData;
 
+  // Non-African countries, grouped by continent — for HQ-based or
+  // international postings (e.g. AFD/Expertise France roles based in
+  // Paris) that the African-only automated scrapers filter out.
+  const WORLD_COUNTRIES_BY_CONTINENT = {
+    'Europe': [
+      {id:'AL',name:'Albania'},{id:'AD',name:'Andorra'},{id:'AT',name:'Austria'},{id:'BY',name:'Belarus'},
+      {id:'BE',name:'Belgium'},{id:'BA',name:'Bosnia & Herzegovina'},{id:'BG',name:'Bulgaria'},{id:'HR',name:'Croatia'},
+      {id:'CY',name:'Cyprus'},{id:'CZ',name:'Czechia'},{id:'DK',name:'Denmark'},{id:'EE',name:'Estonia'},
+      {id:'FI',name:'Finland'},{id:'FR',name:'France'},{id:'DE',name:'Germany'},{id:'GR',name:'Greece'},
+      {id:'HU',name:'Hungary'},{id:'IS',name:'Iceland'},{id:'IE',name:'Ireland'},{id:'IT',name:'Italy'},
+      {id:'XK',name:'Kosovo'},{id:'LV',name:'Latvia'},{id:'LI',name:'Liechtenstein'},{id:'LT',name:'Lithuania'},
+      {id:'LU',name:'Luxembourg'},{id:'MT',name:'Malta'},{id:'MD',name:'Moldova'},{id:'MC',name:'Monaco'},
+      {id:'ME',name:'Montenegro'},{id:'NL',name:'Netherlands'},{id:'MK',name:'North Macedonia'},{id:'NO',name:'Norway'},
+      {id:'PL',name:'Poland'},{id:'PT',name:'Portugal'},{id:'RO',name:'Romania'},{id:'RU',name:'Russia'},
+      {id:'SM',name:'San Marino'},{id:'RS',name:'Serbia'},{id:'SK',name:'Slovakia'},{id:'SI',name:'Slovenia'},
+      {id:'ES',name:'Spain'},{id:'SE',name:'Sweden'},{id:'CH',name:'Switzerland'},{id:'UA',name:'Ukraine'},
+      {id:'GB',name:'United Kingdom'},{id:'VA',name:'Vatican City'},
+    ],
+    'Asia': [
+      {id:'AF',name:'Afghanistan'},{id:'AM',name:'Armenia'},{id:'AZ',name:'Azerbaijan'},{id:'BH',name:'Bahrain'},
+      {id:'BD',name:'Bangladesh'},{id:'BT',name:'Bhutan'},{id:'BN',name:'Brunei'},{id:'KH',name:'Cambodia'},
+      {id:'CN',name:'China'},{id:'GE',name:'Georgia'},{id:'IN',name:'India'},{id:'ID',name:'Indonesia'},
+      {id:'IR',name:'Iran'},{id:'IQ',name:'Iraq'},{id:'IL',name:'Israel'},{id:'JP',name:'Japan'},
+      {id:'JO',name:'Jordan'},{id:'KZ',name:'Kazakhstan'},{id:'KW',name:'Kuwait'},{id:'KG',name:'Kyrgyzstan'},
+      {id:'LA',name:'Laos'},{id:'LB',name:'Lebanon'},{id:'MY',name:'Malaysia'},{id:'MV',name:'Maldives'},
+      {id:'MN',name:'Mongolia'},{id:'MM',name:'Myanmar'},{id:'NP',name:'Nepal'},{id:'KP',name:'North Korea'},
+      {id:'OM',name:'Oman'},{id:'PK',name:'Pakistan'},{id:'PS',name:'Palestine'},{id:'PH',name:'Philippines'},
+      {id:'QA',name:'Qatar'},{id:'SA',name:'Saudi Arabia'},{id:'SG',name:'Singapore'},{id:'KR',name:'South Korea'},
+      {id:'LK',name:'Sri Lanka'},{id:'SY',name:'Syria'},{id:'TW',name:'Taiwan'},{id:'TJ',name:'Tajikistan'},
+      {id:'TH',name:'Thailand'},{id:'TL',name:'Timor-Leste'},{id:'TR',name:'Türkiye'},{id:'TM',name:'Turkmenistan'},
+      {id:'AE',name:'United Arab Emirates'},{id:'UZ',name:'Uzbekistan'},{id:'VN',name:'Vietnam'},{id:'YE',name:'Yemen'},
+    ],
+    'North America': [
+      {id:'AG',name:'Antigua & Barbuda'},{id:'BS',name:'Bahamas'},{id:'BB',name:'Barbados'},{id:'BZ',name:'Belize'},
+      {id:'CA',name:'Canada'},{id:'CR',name:'Costa Rica'},{id:'CU',name:'Cuba'},{id:'DM',name:'Dominica'},
+      {id:'DO',name:'Dominican Republic'},{id:'SV',name:'El Salvador'},{id:'GD',name:'Grenada'},{id:'GT',name:'Guatemala'},
+      {id:'HT',name:'Haiti'},{id:'HN',name:'Honduras'},{id:'JM',name:'Jamaica'},{id:'MX',name:'Mexico'},
+      {id:'NI',name:'Nicaragua'},{id:'PA',name:'Panama'},{id:'KN',name:'Saint Kitts & Nevis'},{id:'LC',name:'Saint Lucia'},
+      {id:'VC',name:'Saint Vincent & the Grenadines'},{id:'TT',name:'Trinidad & Tobago'},{id:'US',name:'United States'},
+    ],
+    'South America': [
+      {id:'AR',name:'Argentina'},{id:'BO',name:'Bolivia'},{id:'BR',name:'Brazil'},{id:'CL',name:'Chile'},
+      {id:'CO',name:'Colombia'},{id:'EC',name:'Ecuador'},{id:'GY',name:'Guyana'},{id:'PY',name:'Paraguay'},
+      {id:'PE',name:'Peru'},{id:'SR',name:'Suriname'},{id:'UY',name:'Uruguay'},{id:'VE',name:'Venezuela'},
+    ],
+    'Oceania': [
+      {id:'AU',name:'Australia'},{id:'FJ',name:'Fiji'},{id:'KI',name:'Kiribati'},{id:'MH',name:'Marshall Islands'},
+      {id:'FM',name:'Micronesia'},{id:'NR',name:'Nauru'},{id:'NZ',name:'New Zealand'},{id:'PW',name:'Palau'},
+      {id:'PG',name:'Papua New Guinea'},{id:'WS',name:'Samoa'},{id:'SB',name:'Solomon Islands'},{id:'TO',name:'Tonga'},
+      {id:'TV',name:'Tuvalu'},{id:'VU',name:'Vanuatu'},
+    ],
+  };
+
   function populateSelects() {
     const sectorSel = document.getElementById('f-sector');
     SECTORS.forEach(s => sectorSel.insertAdjacentHTML('beforeend', `<option value="${s}">${s}</option>`));
+
     const countrySel = document.getElementById('f-country');
+    const africaGroup = document.createElement('optgroup');
+    africaGroup.label = 'Africa';
     AFRICAN_COUNTRIES.slice().sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
-      countrySel.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.name}</option>`);
+      africaGroup.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.name}</option>`);
+    });
+    countrySel.appendChild(africaGroup);
+
+    Object.entries(WORLD_COUNTRIES_BY_CONTINENT).forEach(([continent, countries]) => {
+      const group = document.createElement('optgroup');
+      group.label = continent;
+      countries.slice().sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
+        group.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.name}</option>`);
+      });
+      countrySel.appendChild(group);
     });
   }
 
@@ -163,9 +229,10 @@
   function matchCountry(nameGuess) {
     if (!nameGuess) return '';
     const lower = nameGuess.toLowerCase();
-    const exact = AFRICAN_COUNTRIES.find(c => c.name.toLowerCase() === lower);
+    const allCountries = [...AFRICAN_COUNTRIES, ...Object.values(WORLD_COUNTRIES_BY_CONTINENT).flat()];
+    const exact = allCountries.find(c => c.name.toLowerCase() === lower);
     if (exact) return exact.id;
-    const partial = AFRICAN_COUNTRIES.find(c => lower.includes(c.name.toLowerCase()) || c.name.toLowerCase().includes(lower));
+    const partial = allCountries.find(c => lower.includes(c.name.toLowerCase()) || c.name.toLowerCase().includes(lower));
     return partial ? partial.id : '';
   }
 
