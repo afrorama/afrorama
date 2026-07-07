@@ -168,7 +168,10 @@
   <!-- Step 2: Listings -->
   <div id="listings-area">
     <div class="card">
-      <h2>2. Review &amp; adjust</h2>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <h2 style="margin-bottom:0;">2. Review &amp; adjust</h2>
+        <button class="btn-dark" id="btn-shuffle">&#x1F500; Reshuffle</button>
+      </div>
 
       <div class="summary-row">
         <span>Selected: <strong id="selected-count">0</strong> opportunities</span>
@@ -229,6 +232,24 @@ const SUPABASE_URL = 'https://vqchwioyhyiuunpyildz.supabase.co';
 const ANON_KEY     = 'sb_publishable_HeGZfQZEDI_IR46a2Ezp-Q_tIUdhF6_';
 const SPOTIFY_URL  = 'https://bit.ly/3ExFDU5';
 
+const SONG_LIST = [
+  { title: 'She Did It Again', artist: 'Tyla',                    iso: 'ZA' },
+  { title: 'Water',            artist: 'Tyla',                    iso: 'ZA' },
+  { title: 'Calm Down',        artist: 'Rema',                    iso: 'NG' },
+  { title: 'Last Last',        artist: 'Burna Boy',               iso: 'NG' },
+  { title: 'Essence',          artist: 'Wizkid ft. Tems',         iso: 'NG' },
+  { title: 'Rush',             artist: 'Ayra Starr',              iso: 'NG' },
+  { title: 'Unavailable',      artist: 'Davido',                  iso: 'NG' },
+  { title: 'Mnike',            artist: 'Tyler ICU & Tumelo.za',   iso: 'ZA' },
+  { title: 'People',           artist: 'Libianca',                iso: 'CM' },
+  { title: 'Ku Lo Sa',         artist: 'Oxlade',                  iso: 'NG' },
+  { title: 'Terminator',       artist: 'Asake',                   iso: 'NG' },
+  { title: 'Soso',             artist: 'Omah Lay',                iso: 'NG' },
+  { title: 'Commas',           artist: 'Gyakie',                  iso: 'GH' },
+  { title: 'Need to Know',     artist: 'Fireboy DML',             iso: 'NG' },
+  { title: 'Egwu',             artist: 'Ckay',                    iso: 'NG' },
+];
+
 const SECTIONS = [
   { key: 'jobs',        label: 'Jobs',                       types: ['jobs'],                    target: 12 },
   { key: 'internship',  label: 'Internships & Volunteering', types: ['internship'],               target: 5  },
@@ -282,6 +303,14 @@ function defaultRange() {
   return { from: isoDate(mon), to: isoDate(sun) };
 }
 
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 // Diversity algorithm: cap at maxPerCountry per country, fill remaining with overflow
 function diversify(listings, targetCount, maxPerCountry = 2) {
   const countryCount = {};
@@ -331,6 +360,7 @@ function updateSongPreview() {
 
 // ── Fetch ──
 let sectionListings = {}; // key → filtered listings
+let fullPools = {};       // key → unfiltered pool (for reshuffle)
 
 document.getElementById('btn-fetch').addEventListener('click', async () => {
   const since = document.getElementById('since-date').value;
@@ -371,10 +401,12 @@ document.getElementById('btn-fetch').addEventListener('click', async () => {
 
     // Apply diversity per section
     sectionListings = {};
+    fullPools = {};
     let totalPool = 0;
     SECTIONS.forEach(s => {
       const pool = all.filter(l => s.types.includes(l.type));
-      sectionListings[s.key] = diversify(pool, s.target, 2);
+      fullPools[s.key] = pool;
+      sectionListings[s.key] = diversify(shuffle([...pool]), s.target, 2);
       totalPool += pool.length;
     });
 
@@ -487,6 +519,26 @@ window.toggleSection = function(key, checked) {
   });
   updateSelectedCount();
 };
+
+// ── Reshuffle ──
+function shuffleAll() {
+  SECTIONS.forEach(s => {
+    sectionListings[s.key] = diversify(shuffle([...fullPools[s.key]]), s.target, 2);
+  });
+  renderSections();
+  renderDiversityBar();
+  updateSelectedCount();
+
+  const current = document.getElementById('song-title').value.trim();
+  const candidates = SONG_LIST.filter(s => s.title !== current);
+  const song = candidates[Math.floor(Math.random() * candidates.length)] || SONG_LIST[0];
+  document.getElementById('song-title').value = song.title;
+  document.getElementById('song-artist').value = song.artist;
+  document.getElementById('song-iso').value = song.iso;
+  updateSongPreview();
+}
+
+document.getElementById('btn-shuffle').addEventListener('click', shuffleAll);
 
 // ── Generate ──
 document.getElementById('btn-generate').addEventListener('click', () => {
