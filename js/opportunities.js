@@ -411,9 +411,55 @@
   }
 
   /* ================================================================
-     CLICK TRACKING — apply button clicks stored locally + Supabase
+     VIEW & CLICK TRACKING — stored locally + Supabase
   ================================================================= */
   const TRACK_KEY = 'afrorama_opp_tracking';
+
+  function trackView(jobId) {
+    const t = JSON.parse(localStorage.getItem(TRACK_KEY) || '{}');
+    if (!t[jobId]) t[jobId] = { views: 0, clicks: 0 };
+    const alreadySeen = t[jobId].views > 0;
+    t[jobId].views++;
+    localStorage.setItem(TRACK_KEY, JSON.stringify(t));
+
+    const Supa = window.AfroramaSupabase;
+    if (Supa && !Supa.isDemoMode()) {
+      const sb   = Supa.getSupabase();
+      const user = window.AfroramaAuth?.getCurrentUser?.();
+
+      sb.rpc('increment_views', { listing_id: jobId }).catch(() => {
+        sb.from('listings').select('views').eq('id', jobId).single()
+          .then(({ data }) => {
+            if (data) sb.from('listings').update({ views: (data.views || 0) + 1 }).eq('id', jobId);
+          });
+      });
+
+      if (!alreadySeen) {
+        const params   = new URLSearchParams(location.search);
+        const referrer = document.referrer ? (new URL(document.referrer).hostname) : 'direct';
+        sb.from('view_events').insert({
+          listing_id: jobId,
+          user_id:    user?.id || null,
+          source:     params.get('utm_source') || referrer,
+          medium:     params.get('utm_medium') || null,
+          device:     /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+          timezone:   Intl.DateTimeFormat().resolvedOptions().timeZone || null,
+        }).catch(() => {});
+      }
+
+      if (typeof gtag === 'function') {
+        const job = allJobs.find(j => j.id === jobId);
+        gtag('event', 'view_listing', {
+          listing_id:   jobId,
+          listing_title: job?.title,
+          organisation:  job?.organisation,
+          listing_type:  job?.type,
+          country:       job?.country,
+        });
+      }
+    }
+  }
+
   function trackApplyClick(jobId) {
     // Save locally (deduplication guard)
     const t = JSON.parse(localStorage.getItem(TRACK_KEY) || '{}');
@@ -635,6 +681,7 @@
   function openModal(id) {
     const job = allJobs.find(j => j.id === id);
     if (!job) return;
+    trackView(id);
     const t       = TYPES[job.type];
     const country = AFRICAN_COUNTRIES.find(c => c.id === job.country);
     const days    = daysUntil(job.deadline);
