@@ -140,8 +140,11 @@ def scrape_page(page):
     has_next = bool(soup.find('a', string=re.compile(r'Next', re.I)))
     return listings, has_next
 
-def already_exists(listing_id):
-    url = f'{SUPABASE_URL}/rest/v1/listings?id=eq.{quote(listing_id)}&select=id&limit=1'
+def already_exists(title, organisation):
+    url = (f'{SUPABASE_URL}/rest/v1/listings'
+           f'?title=eq.{quote(title)}'
+           f'&organisation=eq.{quote(organisation)}'
+           f'&select=id&limit=1')
     r = requests.get(url, headers={'apikey': ANON_KEY, 'Authorization': f'Bearer {ANON_KEY}'})
     return bool(r.json())
 
@@ -181,7 +184,7 @@ def main():
         if not l['title'] or not l['organisation']:
             skipped += 1
             continue
-        if already_exists(l['id']):
+        if already_exists(l['title'], l['organisation']):
             print(f'  SKIP  {l["organisation"]} | {l["title"]}')
             skipped += 1
         else:
