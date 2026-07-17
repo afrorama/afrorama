@@ -138,11 +138,11 @@
     if (!el) return;
 
     const MARKETS = [
-      { id: 'ZA', name: 'South Africa', flag: '🇿🇦', lat: -28.5, lon: 25.5, href: 'opportunities.html?country=ZA' },
-      { id: 'KE', name: 'Kenya',        flag: '🇰🇪', lat:  0.2,  lon: 37.8, href: 'opportunities.html?country=KE' },
-      { id: 'SN', name: 'Senegal',      flag: '🇸🇳', lat: 14.5,  lon:-14.5, href: 'opportunities.html?country=SN' },
-      { id: 'NG', name: 'Nigeria',      flag: '🇳🇬', lat:  9.0,  lon:  8.0, href: 'opportunities.html?country=NG' },
-      { id: 'remote', name: 'Remote / Pan-African', flag: '🌍', href: 'opportunities.html?q=remote' },
+      { id: 'ZA', name: 'South Africa', lat: -28.5, lon: 25.5, href: 'opportunities.html?country=ZA' },
+      { id: 'KE', name: 'Kenya',        lat:  0.2,  lon: 37.8, href: 'opportunities.html?country=KE' },
+      { id: 'SN', name: 'Senegal',      lat: 14.5,  lon:-14.5, href: 'opportunities.html?country=SN' },
+      { id: 'NG', name: 'Nigeria',      lat:  9.0,  lon:  8.0, href: 'opportunities.html?country=NG' },
+      { id: 'remote', name: 'Remote / Pan-African', href: 'opportunities.html?q=remote' },
     ].map(m => ({
       ...m,
       count: m.id === 'remote' ? remoteCount : (countByCountry[m.id] || 0),
@@ -154,7 +154,7 @@
       <div class="market-stat" role="button" tabindex="0" data-href="${m.href}"
            aria-label="${m.name}: ${m.count} opportunit${m.count === 1 ? 'y' : 'ies'}">
         <div class="market-stat-top">
-          <span class="market-stat-name">${m.flag} ${m.name}</span>
+          <span class="market-stat-name">${m.id === 'remote' ? '🌍' : `<img src="https://flagcdn.com/20x15/${m.id.toLowerCase()}.png" width="20" height="15" alt="${m.name}" style="vertical-align:middle;margin-right:4px;border-radius:2px;">`}${m.name}</span>
           <span class="market-stat-count">${m.count}</span>
         </div>
         <div class="market-stat-bar">
