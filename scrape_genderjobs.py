@@ -145,8 +145,9 @@ def already_exists(title, organisation):
            f'?title=eq.{quote(title)}'
            f'&organisation=eq.{quote(organisation)}'
            f'&select=id&limit=1')
-    r = requests.get(url, headers={'apikey': ANON_KEY, 'Authorization': f'Bearer {ANON_KEY}'})
-    return bool(r.json())
+    r = requests.get(url, headers={'apikey': SERVICE_KEY, 'Authorization': f'Bearer {SERVICE_KEY}'})
+    data = r.json()
+    return isinstance(data, list) and len(data) > 0
 
 def insert(listing):
     r = requests.post(
