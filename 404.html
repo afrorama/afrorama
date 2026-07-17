@@ -1,71 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2VQCQTDVQG"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag("js", new Date());
-    gtag("config", "G-2VQCQTDVQG");
+    gtag('js', new Date());
+    gtag('config', 'G-2VQCQTDVQG');
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Page not found | Afrorama</title>
   <meta name="robots" content="noindex">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/main.css">
   <style>
+    body { background: #F6F5F2; margin: 0; }
     .nf-wrap {
-      min-height: calc(100vh - var(--nav-h));
-      display: flex; align-items: center; justify-content: center;
-      padding: 48px 24px; background: #F6F5F2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
     }
     .nf-card {
-      background: var(--white); border: 2.5px solid var(--dark);
-      border-radius: var(--radius-xl); max-width: 460px; width: 100%;
-      box-shadow: 6px 6px 0 var(--dark); overflow: hidden; text-align: center;
+      background: #fff;
+      border: 2.5px solid #1a1a1a;
+      border-radius: 20px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 5px 5px 0 #1a1a1a;
+      overflow: hidden;
+      text-align: center;
     }
-    .nf-card-head { background: var(--dark); padding: 36px 28px; border-bottom: 2px solid var(--dark); }
-    .nf-card-head .nf-num {
+    .nf-head {
+      background: #1a1a1a;
+      padding: 40px 28px 32px;
+    }
+    .nf-sun {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      display: block;
+    }
+    .nf-num {
       font-family: 'Bebas Neue', Impact, sans-serif;
-      font-size: 4.5rem; letter-spacing: .06em; line-height: 1;
-      color: var(--yellow); text-shadow: 3px 3px 0 rgba(0,0,0,.3);
+      font-size: 5rem;
+      letter-spacing: .06em;
+      line-height: 1;
+      color: #FFE400;
     }
-    .nf-card-head h1 {
+    .nf-subtitle {
       font-family: 'Bebas Neue', Impact, sans-serif;
-      font-size: 1.6rem; letter-spacing: .04em; text-transform: uppercase;
-      color: var(--white); margin-top: 6px;
+      font-size: 1.4rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      margin-top: 4px;
     }
-    .nf-card-body { padding: 28px; }
-    .nf-card-body p { color: var(--gray-dark); margin-bottom: 22px; line-height: 1.65; }
+    .nf-body {
+      padding: 30px 28px 32px;
+    }
+    .nf-body p {
+      color: #555;
+      font-family: Inter, sans-serif;
+      font-size: .95rem;
+      line-height: 1.65;
+      margin: 0 0 24px;
+    }
+    .nf-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .nf-btn {
+      display: block;
+      padding: 13px 20px;
+      border-radius: 100px;
+      font-family: Inter, sans-serif;
+      font-size: .9rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: 2px solid #1a1a1a;
+      transition: opacity .15s;
+    }
+    .nf-btn:hover { opacity: .8; }
+    .nf-btn-primary { background: #FFE400; color: #1a1a1a; }
+    .nf-btn-outline { background: transparent; color: #1a1a1a; }
+    .nf-brand {
+      margin-top: 28px;
+      font-family: Inter, sans-serif;
+      font-size: .78rem;
+      color: #aaa;
+    }
+    .nf-brand a {
+      color: #888;
+      text-decoration: none;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
-<nav class="nav" id="main-nav">
-  <div class="nav-inner">
-    <a class="nav-logo" href="index.html">
-      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
-      <span class="nav-logo-text">afrorama</span>
-    </a>
-  </div>
-</nav>
 <div class="nf-wrap">
   <div class="nf-card">
-    <div class="nf-card-head">
+    <div class="nf-head">
+      <svg class="nf-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <defs>
+          <clipPath id="c">
+            <path d="M 0 67 A 50 50 0 0 1 100 67 L 100 100 L 0 100 Z"/>
+          </clipPath>
+          <path id="ray" d="M -4.5 -28 L 4.5 -28 L 6 -45 L -6 -45 Z"/>
+        </defs>
+        <g clip-path="url(#c)" fill="#FFE400">
+          <use href="#ray" transform="translate(50,67) rotate(-80)"/>
+          <use href="#ray" transform="translate(50,67) rotate(-64)"/>
+          <use href="#ray" transform="translate(50,67) rotate(-48)"/>
+          <use href="#ray" transform="translate(50,67) rotate(-32)"/>
+          <use href="#ray" transform="translate(50,67) rotate(-16)"/>
+          <use href="#ray" transform="translate(50,67) rotate(0)"/>
+          <use href="#ray" transform="translate(50,67) rotate(16)"/>
+          <use href="#ray" transform="translate(50,67) rotate(32)"/>
+          <use href="#ray" transform="translate(50,67) rotate(48)"/>
+          <use href="#ray" transform="translate(50,67) rotate(64)"/>
+          <use href="#ray" transform="translate(50,67) rotate(80)"/>
+          <path d="M 34 67 A 16 16 0 0 1 66 67 Z"/>
+        </g>
+        <path d="M 3 67 A 47 47 0 0 1 97 67" fill="none" stroke="#FFE400" stroke-width="6" stroke-linecap="butt"/>
+      </svg>
       <div class="nf-num">404</div>
-      <h1>Page not found</h1>
+      <div class="nf-subtitle">Page not found</div>
     </div>
-    <div class="nf-card-body">
-      <p>The page you're looking for doesn't exist or may have moved. Let's get you back on track.</p>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <a href="opportunities.html" class="btn btn-primary"  style="justify-content:center;">Browse opportunities</a>
-        <a href="cv-analyser.html"   class="btn btn-yellow"   style="justify-content:center;">No Wahala CV Booster</a>
-        <a href="index.html"         class="btn btn-outline"  style="justify-content:center;">Go home</a>
+    <div class="nf-body">
+      <p>The page you're looking for doesn't exist or may have moved. Head back and find your next opportunity.</p>
+      <div class="nf-actions">
+        <a href="/opportunities.html" class="nf-btn nf-btn-primary">Browse opportunities</a>
+        <a href="/" class="nf-btn nf-btn-outline">Go home</a>
       </div>
+      <p class="nf-brand">
+        <a href="/">afrorama</a> — Africa's social impact job board
+      </p>
     </div>
   </div>
 </div>
-<script src="js/main.js"></script>
 </body>
 </html>

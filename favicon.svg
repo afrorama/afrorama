@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" fill="#FFE400" rx="18"/>
+  <defs>
+    <clipPath id="c">
+      <path d="M 0 67 A 50 50 0 0 1 100 67 L 100 100 L 0 100 Z"/>
+    </clipPath>
+    <!-- Single ray: trapezoid from inner r=28 to outer r=45, slight taper -->
+    <path id="ray" d="M -4.5 -28 L 4.5 -28 L 6 -45 L -6 -45 Z"/>
+  </defs>
+
+  <g clip-path="url(#c)" fill="#1a1a1a">
+    <!-- 11 rays at 16° intervals centred on vertical -->
+    <use href="#ray" transform="translate(50,67) rotate(-80)"/>
+    <use href="#ray" transform="translate(50,67) rotate(-64)"/>
+    <use href="#ray" transform="translate(50,67) rotate(-48)"/>
+    <use href="#ray" transform="translate(50,67) rotate(-32)"/>
+    <use href="#ray" transform="translate(50,67) rotate(-16)"/>
+    <use href="#ray" transform="translate(50,67) rotate(0)"/>
+    <use href="#ray" transform="translate(50,67) rotate(16)"/>
+    <use href="#ray" transform="translate(50,67) rotate(32)"/>
+    <use href="#ray" transform="translate(50,67) rotate(48)"/>
+    <use href="#ray" transform="translate(50,67) rotate(64)"/>
+    <use href="#ray" transform="translate(50,67) rotate(80)"/>
+    <!-- Inner dome -->
+    <path d="M 34 67 A 16 16 0 0 1 66 67 Z"/>
+  </g>
+
+  <!-- Outer arc rim on top -->
+  <path d="M 3 67 A 47 47 0 0 1 97 67" fill="none" stroke="#1a1a1a" stroke-width="6" stroke-linecap="butt"/>
+</svg>
