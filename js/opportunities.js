@@ -87,12 +87,20 @@
       const sb          = Supa.getSupabase();
       const today       = new Date().toISOString().split('T')[0];
       const cutoff      = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-      const { data }    = await sb.from('listings').select('*')
-        .or(`deadline.gte.${today},deadline.is.null`)
-        .or('paid_listing.eq.false,payment_confirmed.eq.true')
-        .order('created_at', { ascending: false })
-        .limit(5000);
-      if (data?.length) {
+      let allData = [], from = 0, pageSize = 1000;
+      while (true) {
+        const { data: page } = await sb.from('listings').select('*')
+          .or(`deadline.gte.${today},deadline.is.null`)
+          .or('paid_listing.eq.false,payment_confirmed.eq.true')
+          .order('created_at', { ascending: false })
+          .range(from, from + pageSize - 1);
+        if (!page?.length) break;
+        allData = allData.concat(page);
+        if (page.length < pageSize) break;
+        from += pageSize;
+      }
+      const data = allData;
+      if (data.length) {
         const live    = data.filter(j => j.deadline || new Date(j.created_at) >= new Date(cutoff));
         const deduped = dedupeListings(live);
         const dbIds      = new Set(deduped.map(j => j.id));
