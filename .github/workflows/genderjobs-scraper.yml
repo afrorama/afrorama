@@ -1,0 +1,25 @@
+name: GenderJobs Scraper
+
+on:
+  schedule:
+    - cron: '0 7 * * *'   # 7am UTC daily
+  workflow_dispatch:        # allows manual trigger from GitHub Actions tab
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run GenderJobs scraper
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scrape_genderjobs.py
