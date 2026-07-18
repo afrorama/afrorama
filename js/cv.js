@@ -406,5 +406,30 @@
     localStorage.setItem('afrorama_cv_reupload_used', 'true');
   });
 
+  /* ── Paywall: $3 one-time rescore ── */
+  document.getElementById('btn-pay-boost')?.addEventListener('click', async () => {
+    const btn = document.getElementById('btn-pay-boost');
+    btn.textContent = 'Redirecting…';
+    btn.disabled = true;
+    const user = window.AfroramaAuth ? await window.AfroramaAuth.getUser().catch(() => null) : null;
+    await window.AfroramaStripe.pay('cv_boost', {
+      userId:    user?.id,
+      userEmail: user?.email,
+      onError:   (err) => { btn.textContent = 'Pay $3 →'; btn.disabled = false; alert('Payment error: ' + err.message); },
+    });
+  });
+
+  /* ── Paywall: $6/month membership ── */
+  document.getElementById('btn-pay-member')?.addEventListener('click', async () => {
+    const btn = document.getElementById('btn-pay-member');
+    btn.textContent = 'Redirecting…';
+    btn.disabled = true;
+    const user = window.AfroramaAuth ? await window.AfroramaAuth.getUser().catch(() => null) : null;
+    await window.AfroramaStripe.pay('membership', {
+      userId:    user?.id,
+      userEmail: user?.email,
+      onError:   (err) => { btn.textContent = 'Join for $9/mo →'; btn.disabled = false; alert('Payment error: ' + err.message); },
+    });
+  });
 
 })();

@@ -25,7 +25,7 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
 
 // ── Paste your Stripe Price IDs here ──────────────────────────────
 const PRICE_IDS: Record<string, string> = {
-  membership:   'price_YOUR_MEMBERSHIP_PRICE_ID',   // not launching yet
+  membership:   'price_1TuUbqDSZgGHFDqFxWmgEvYt',    // Afrorama Membership — $9/month
   cv_boost:     'price_1TigwyDSZgGHFDqF5qDqOnyM',   // No Wahala CV Boost — $3
   office_hours: 'price_1TigzPDSZgGHFDqFTxYo93oK',   // Office Hours — $49
   job_listing:  'price_1TigyKDSZgGHFDqFLs3p1B5l',   // Job listing — $29

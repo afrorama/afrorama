@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2VQCQTDVQG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-2VQCQTDVQG');
+  </script>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Alerts | Afrorama</title>
+  <meta name="description" content="Get social impact job alerts for Africa straight to your inbox. Filter by sector, region, and type — free.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://afrorama.org/job-alerts.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    /* ── Page layout ── */
+    .alerts-hero {
+      background: #1a1a1a;
+      padding: 64px 24px 56px;
+      text-align: center;
+    }
+    .alerts-hero-eyebrow {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #FFE400;
+      margin-bottom: 14px;
+    }
+    .alerts-hero h1 {
+      font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
+      font-size: clamp(2.4rem, 7vw, 4.2rem);
+      font-weight: 400;
+      letter-spacing: .03em;
+      color: #fff;
+      line-height: 1.05;
+      max-width: 640px;
+      margin: 0 auto 18px;
+    }
+    .alerts-hero h1 span { color: #FFE400; }
+    .alerts-hero p {
+      font-size: .95rem;
+      color: rgba(255,255,255,.55);
+      max-width: 400px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── Form section ── */
+    .alerts-section {
+      background: #F6F5F2;
+      padding: 48px 24px 72px;
+    }
+    .alerts-card {
+      background: #fff;
+      border: 2.5px solid #1a1a1a;
+      border-radius: 20px;
+      max-width: 620px;
+      margin: 0 auto;
+      box-shadow: 6px 6px 0 #1a1a1a;
+      overflow: hidden;
+    }
+
+    /* ── Card sections ── */
+    .form-block {
+      padding: 24px 28px;
+      border-bottom: 2px solid #F6F5F2;
+    }
+    .form-block:last-of-type { border-bottom: none; }
+    .form-block-title {
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 14px;
+    }
+
+    /* ── Pill checkboxes ── */
+    .pill-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill-grid.cols-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+    @media (max-width: 500px) { .pill-grid.cols-2 { grid-template-columns: 1fr; } }
+
+    .pill-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: .83rem;
+      font-weight: 600;
+      color: #444;
+      transition: border-color .12s, background .12s, color .12s;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .pill-label input[type=checkbox] { display: none; }
+    .pill-label:hover { border-color: #1a1a1a; }
+    .pill-label.checked {
+      background: #1a1a1a;
+      border-color: #1a1a1a;
+      color: #FFE400;
+    }
+
+    /* region pills with icon */
+    .pill-label .pill-icon { font-size: .9rem; }
+
+    /* ── Frequency toggle ── */
+    .freq-toggle {
+      display: flex;
+      gap: 10px;
+    }
+    .freq-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 4px;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color .12s, background .12s;
+      user-select: none;
+    }
+    .freq-label input[type=radio] { display: none; }
+    .freq-label:hover { border-color: #1a1a1a; }
+    .freq-label.checked {
+      background: #FFE400;
+      border-color: #1a1a1a;
+    }
+    .freq-label .freq-name {
+      font-size: .88rem;
+      font-weight: 800;
+      color: #1a1a1a;
+    }
+    .freq-label .freq-hint {
+      font-size: .72rem;
+      color: #666;
+    }
+    .freq-label.checked .freq-hint { color: #555; }
+
+    /* ── Email / name inputs ── */
+    .input-group { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+    .input-group input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: .9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .12s;
+      box-sizing: border-box;
+    }
+    .input-group input:focus { border-color: #1a1a1a; }
+    .input-group input.error { border-color: #E5243B; }
+
+    .btn-subscribe {
+      width: 100%;
+      margin-top: 4px;
+      padding: 14px;
+      background: #FFE400;
+      color: #1a1a1a;
+      font-weight: 800;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 2.5px solid #1a1a1a;
+      border-radius: 100px;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 #1a1a1a;
+      transition: transform .1s, box-shadow .1s;
+    }
+    .btn-subscribe:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #1a1a1a; }
+    .btn-subscribe:active { transform: translate(1px,1px); box-shadow: 2px 2px 0 #1a1a1a; }
+    .btn-subscribe:disabled { opacity: .6; pointer-events: none; }
+
+    /* ── Fine print ── */
+    .form-fine { font-size: .72rem; color: #aaa; text-align: center; margin-top: 12px; line-height: 1.5; }
+
+    /* ── Success / error states ── */
+    .form-msg {
+      display: none;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: .87rem;
+      font-weight: 600;
+      margin-top: 12px;
+      text-align: center;
+    }
+    .form-msg.success { background: #e8f7f0; color: #1a7a4a; border: 1.5px solid #c0e8d0; display: block; }
+    .form-msg.error   { background: #fef2f2; color: #c0392b; border: 1.5px solid #f5c6c6; display: block; }
+
+    /* ── Unsubscribe confirmation page ── */
+    .unsub-wrap {
+      display: none;
+      min-height: calc(100vh - 64px);
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      background: #F6F5F2;
+    }
+    .unsub-wrap.visible { display: flex; }
+    .unsub-card {
+      background: #fff;
+      border: 2.5px solid #1a1a1a;
+      border-radius: 20px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 6px 6px 0 #1a1a1a;
+      padding: 36px 28px;
+      text-align: center;
+    }
+    .unsub-card h2 {
+      font-family: 'Bebas Neue', Impact, sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: .04em;
+      color: #1a1a1a;
+      margin-bottom: 10px;
+    }
+    .unsub-card p { font-size: .9rem; color: #666; line-height: 1.6; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="main-nav" role="navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+      <span class="nav-logo-text">afrorama</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="opportunities.html">Opportunities</a></li>
+      <li><a href="cv-analyser.html">No Wahala CV</a></li>
+      <li><a href="salary.html">Salary</a></li>
+    </ul>
+    <div class="nav-cta-group"></div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu">
+  <a href="opportunities.html">Opportunities</a>
+  <a href="cv-analyser.html">No Wahala CV Booster</a>
+  <a href="salary.html">Salary</a>
+</div>
+
+<!-- ── UNSUBSCRIBE VIEW (shown when ?unsubscribe= is in URL) ── -->
+<div class="unsub-wrap" id="unsub-view">
+  <div class="unsub-card">
+    <h2 id="unsub-heading">Unsubscribing…</h2>
+    <p id="unsub-msg">Please wait.</p>
+    <a href="/" class="btn btn-outline" style="display:inline-block;">Back to Afrorama</a>
+  </div>
+</div>
+
+<!-- ── MAIN SIGN-UP VIEW ── -->
+<div id="subscribe-view">
+
+<section class="alerts-hero">
+  <div class="alerts-hero-eyebrow">Free job alerts</div>
+  <h1>Africa's social impact jobs <span>to your inbox</span></h1>
+  <p>New opportunities filtered to match what you're looking for. No spam, unsubscribe anytime.</p>
+</section>
+
+<section class="alerts-section">
+  <div class="alerts-card">
+
+    <!-- TYPES -->
+    <div class="form-block">
+      <div class="form-block-title">What are you looking for?</div>
+      <div class="pill-grid" id="type-pills">
+        <label class="pill-label checked" data-type="jobs">
+          <input type="checkbox" value="jobs" checked>
+          <span class="pill-icon">💼</span> Jobs
+        </label>
+        <label class="pill-label checked" data-type="internship">
+          <input type="checkbox" value="internship" checked>
+          <span class="pill-icon">🌱</span> Internships
+        </label>
+        <label class="pill-label checked" data-type="consultancy">
+          <input type="checkbox" value="consultancy" checked>
+          <span class="pill-icon">🔬</span> Consultancies
+        </label>
+        <label class="pill-label checked" data-type="capacity">
+          <input type="checkbox" value="capacity" checked>
+          <span class="pill-icon">🚀</span> Capacity Building
+        </label>
+      </div>
+    </div>
+
+    <!-- REGIONS -->
+    <div class="form-block">
+      <div class="form-block-title">Where in Africa?</div>
+      <div class="pill-grid" id="region-pills">
+        <label class="pill-label" data-region="all">
+          <input type="checkbox" value="all">
+          🌍 All of Africa
+        </label>
+        <label class="pill-label" data-region="East Africa">
+          <input type="checkbox" value="East Africa">
+          East Africa
+        </label>
+        <label class="pill-label" data-region="West Africa">
+          <input type="checkbox" value="West Africa">
+          West Africa
+        </label>
+        <label class="pill-label" data-region="Southern Africa">
+          <input type="checkbox" value="Southern Africa">
+          Southern Africa
+        </label>
+        <label class="pill-label" data-region="North Africa">
+          <input type="checkbox" value="North Africa">
+          North Africa
+        </label>
+        <label class="pill-label" data-region="Central Africa">
+          <input type="checkbox" value="Central Africa">
+          Central Africa
+        </label>
+      </div>
+    </div>
+
+    <!-- SECTORS -->
+    <div class="form-block">
+      <div class="form-block-title">Which sectors? <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.68rem;color:#bbb;">(leave blank for all)</span></div>
+      <div class="pill-grid cols-2" id="sector-pills">
+        <label class="pill-label" data-sector="Agriculture &amp; Food Security">
+          <input type="checkbox" value="Agriculture &amp; Food Security">Agriculture &amp; Food Security
+        </label>
+        <label class="pill-label" data-sector="Climate &amp; Environment">
+          <input type="checkbox" value="Climate &amp; Environment">Climate &amp; Environment
+        </label>
+        <label class="pill-label" data-sector="Education">
+          <input type="checkbox" value="Education">Education
+        </label>
+        <label class="pill-label" data-sector="Finance &amp; Economics">
+          <input type="checkbox" value="Finance &amp; Economics">Finance &amp; Economics
+        </label>
+        <label class="pill-label" data-sector="Gender &amp; Social Inclusion">
+          <input type="checkbox" value="Gender &amp; Social Inclusion">Gender &amp; Social Inclusion
+        </label>
+        <label class="pill-label" data-sector="Governance &amp; Public Policy">
+          <input type="checkbox" value="Governance &amp; Public Policy">Governance &amp; Public Policy
+        </label>
+        <label class="pill-label" data-sector="Health">
+          <input type="checkbox" value="Health">Health
+        </label>
+        <label class="pill-label" data-sector="Human Rights">
+          <input type="checkbox" value="Human Rights">Human Rights
+        </label>
+        <label class="pill-label" data-sector="Infrastructure &amp; Urban Development">
+          <input type="checkbox" value="Infrastructure &amp; Urban Development">Infrastructure &amp; Urban Development
+        </label>
+        <label class="pill-label" data-sector="Innovation &amp; Technology">
+          <input type="checkbox" value="Innovation &amp; Technology">Innovation &amp; Technology
+        </label>
+        <label class="pill-label" data-sector="Peacebuilding">
+          <input type="checkbox" value="Peacebuilding">Peacebuilding
+        </label>
+        <label class="pill-label" data-sector="Private Sector Development">
+          <input type="checkbox" value="Private Sector Development">Private Sector Development
+        </label>
+        <label class="pill-label" data-sector="Youth &amp; Employment">
+          <input type="checkbox" value="Youth &amp; Employment">Youth &amp; Employment
+        </label>
+      </div>
+    </div>
+
+    <!-- FREQUENCY -->
+    <div class="form-block">
+      <div class="form-block-title">How often?</div>
+      <div class="freq-toggle">
+        <label class="freq-label" id="freq-weekly-label">
+          <input type="radio" name="frequency" value="weekly" checked id="freq-weekly">
+          <span class="freq-name">Weekly</span>
+          <span class="freq-hint">Every Monday morning</span>
+        </label>
+        <label class="freq-label" id="freq-daily-label">
+          <input type="radio" name="frequency" value="daily" id="freq-daily">
+          <span class="freq-name">Daily</span>
+          <span class="freq-hint">Every morning with new listings</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- EMAIL + SUBMIT -->
+    <div class="form-block" style="border-bottom:none;">
+      <div class="form-block-title">Your email</div>
+      <div class="input-group">
+        <input type="email" id="alert-email" placeholder="your@email.com" autocomplete="email" required>
+        <input type="text"  id="alert-name"  placeholder="First name (optional)" autocomplete="given-name">
+        <button class="btn-subscribe" id="btn-subscribe">Get job alerts →</button>
+      </div>
+      <div class="form-msg" id="form-msg"></div>
+      <p class="form-fine">Free. No spam. Unsubscribe anytime.</p>
+    </div>
+
+  </div>
+</section>
+
+</div><!-- end #subscribe-view -->
+
+<script src="js/supabase.js"></script>
+<script src="js/main.js"></script>
+<script>
+(function () {
+  const SUPABASE_URL  = 'https://vqchwioyhyiuunpyildz.supabase.co';
+  const ANON_KEY      = 'sb_publishable_HeGZfQZEDI_IR46a2Ezp-Q_tIUdhF6_';
+
+  /* ── Unsubscribe flow ── */
+  const params     = new URLSearchParams(location.search);
+  const unsubToken = params.get('unsubscribe');
+  if (unsubToken) {
+    document.getElementById('subscribe-view').style.display = 'none';
+    document.getElementById('unsub-view').classList.add('visible');
+
+    (async () => {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/unsubscribe_job_alerts`, {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'apikey':        ANON_KEY,
+          'Authorization': 'Bearer ' + ANON_KEY,
+        },
+        body: JSON.stringify({ token: unsubToken }),
+      });
+      const heading = document.getElementById('unsub-heading');
+      const msg     = document.getElementById('unsub-msg');
+      if (res.ok) {
+        heading.textContent = 'Unsubscribed.';
+        msg.textContent     = 'You\'ve been removed from Afrorama job alerts. We\'re sorry to see you go — good luck with your job search!';
+      } else {
+        heading.textContent = 'Link expired';
+        msg.textContent     = 'This unsubscribe link is invalid or already used. If you\'re still receiving emails, contact hello@afrorama.org.';
+      }
+    })();
+    return;
+  }
+
+  /* ── Pill toggle logic ── */
+  function initPills(containerId) {
+    document.querySelectorAll(`#${containerId} .pill-label`).forEach(label => {
+      label.addEventListener('click', () => {
+        const cb = label.querySelector('input[type=checkbox]');
+        cb.checked = !cb.checked;
+        label.classList.toggle('checked', cb.checked);
+
+        // "All of Africa" is exclusive — checking it unchecks all others
+        if (containerId === 'region-pills' && label.dataset.region === 'all' && cb.checked) {
+          document.querySelectorAll('#region-pills .pill-label:not([data-region="all"])').forEach(l => {
+            l.querySelector('input').checked = false;
+            l.classList.remove('checked');
+          });
+        }
+        // Checking a specific region unchecks "All of Africa"
+        if (containerId === 'region-pills' && label.dataset.region !== 'all' && cb.checked) {
+          const allLabel = document.querySelector('#region-pills [data-region="all"]');
+          if (allLabel) {
+            allLabel.querySelector('input').checked = false;
+            allLabel.classList.remove('checked');
+          }
+        }
+      });
+    });
+  }
+
+  initPills('type-pills');
+  initPills('region-pills');
+  initPills('sector-pills');
+
+  /* ── Frequency toggle ── */
+  document.getElementById('freq-weekly').closest('label').classList.add('checked');
+  document.querySelectorAll('input[name=frequency]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      document.querySelectorAll('.freq-label').forEach(l => l.classList.remove('checked'));
+      radio.closest('.freq-label').classList.add('checked');
+    });
+  });
+
+  /* ── Collect form values ── */
+  function getChecked(containerId, attr) {
+    return [...document.querySelectorAll(`#${containerId} .pill-label.checked input`)]
+      .map(cb => cb.value)
+      .filter(v => v !== 'all');
+  }
+
+  /* ── Submit ── */
+  document.getElementById('btn-subscribe').addEventListener('click', async () => {
+    const emailEl = document.getElementById('alert-email');
+    const email   = emailEl.value.trim();
+    const name    = document.getElementById('alert-name').value.trim() || null;
+    const msgEl   = document.getElementById('form-msg');
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      emailEl.classList.add('error');
+      msgEl.className = 'form-msg error';
+      msgEl.textContent = 'Please enter a valid email address.';
+      return;
+    }
+    emailEl.classList.remove('error');
+    msgEl.className = 'form-msg';
+    msgEl.textContent = '';
+
+    const types     = getChecked('type-pills');
+    const sectors   = getChecked('sector-pills');
+    const frequency = document.querySelector('input[name=frequency]:checked').value;
+
+    // Region selection
+    const allRegionChecked = document.querySelector('#region-pills [data-region="all"] input')?.checked;
+    const regions = allRegionChecked
+      ? []
+      : getChecked('region-pills');
+
+    const btn = document.getElementById('btn-subscribe');
+    btn.disabled = true;
+    btn.textContent = 'Subscribing…';
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/job_alert_subscriptions`, {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'apikey':        ANON_KEY,
+        'Authorization': 'Bearer ' + ANON_KEY,
+        'Prefer':        'return=minimal',
+      },
+      body: JSON.stringify({ email, name, countries: [], regions, sectors, types, frequency }),
+    });
+
+    if (res.ok || res.status === 201) {
+      msgEl.className = 'form-msg success';
+      msgEl.textContent = '✓ You\'re subscribed! Check your inbox for your first alert soon.';
+      btn.textContent = 'Subscribed ✓';
+      if (typeof gtag === 'function') gtag('event', 'job_alert_subscribe', { frequency });
+    } else {
+      const err = await res.json().catch(() => ({}));
+      msgEl.className = 'form-msg error';
+      if (err?.code === '23505') {
+        msgEl.textContent = 'This email is already subscribed. Check your inbox or contact hello@afrorama.org to update your preferences.';
+      } else {
+        msgEl.textContent = 'Something went wrong. Please try again or email hello@afrorama.org.';
+      }
+      btn.disabled = false;
+      btn.textContent = 'Get job alerts →';
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>

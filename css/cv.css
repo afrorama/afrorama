@@ -393,6 +393,17 @@
 .paywall-price { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 2.4rem; letter-spacing: -.02em; color: var(--dark); }
 .paywall-price sup { font-size: 1rem; font-family: 'Inter', sans-serif; font-weight: 700; }
 
+/* Paywall two-option layout */
+.paywall-options      { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.paywall-option       { background: var(--white); border: 2px solid var(--gray-mid); border-radius: var(--radius-md); padding: 16px 12px; text-align: center; position: relative; }
+.paywall-option-best  { border-color: #1a1a1a; box-shadow: 3px 3px 0 #1a1a1a; }
+.paywall-opt-badge    { background: #FFE400; color: var(--dark); font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; padding: 2px 8px; border-radius: 100px; display: inline-block; margin-bottom: 8px; }
+.paywall-opt-price    { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 2rem; letter-spacing: -.02em; color: var(--dark); line-height: 1; }
+.paywall-opt-price sup{ font-size: .8rem; font-family: 'Inter', sans-serif; font-weight: 700; }
+.paywall-opt-label    { font-size: .75rem; font-weight: 700; color: var(--dark); margin: 2px 0; }
+.paywall-opt-desc     { font-size: .7rem; color: var(--gray-dark); line-height: 1.4; }
+@media (max-width: 380px) { .paywall-options { grid-template-columns: 1fr; } }
+
 /* --- Sidebar --- */
 .cv-sidebar { display: flex; flex-direction: column; gap: 18px; }
 .cv-info-card { background: var(--white); border: 2.5px solid var(--dark); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 4px 4px 0 var(--dark); }
