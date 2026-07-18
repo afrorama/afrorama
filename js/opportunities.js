@@ -423,7 +423,7 @@
       const sb   = Supa.getSupabase();
       const user = window.AfroramaAuth?.getCurrentUser?.();
 
-      sb.rpc('increment_views', { listing_id: jobId }).catch(() => {
+      sb.rpc('increment_views', { listing_id: jobId }).then(null, () => {
         sb.from('listings').select('views').eq('id', jobId).single()
           .then(({ data }) => {
             if (data) sb.from('listings').update({ views: (data.views || 0) + 1 }).eq('id', jobId);
@@ -470,7 +470,7 @@
       const user = window.AfroramaAuth?.getCurrentUser?.();
 
       // Increment counter
-      sb.rpc('increment_apply_clicks', { listing_id: jobId }).catch(() => {
+      sb.rpc('increment_apply_clicks', { listing_id: jobId }).then(null, () => {
         sb.from('listings').select('apply_clicks').eq('id', jobId).single()
           .then(({ data }) => {
             if (data) sb.from('listings').update({ apply_clicks: (data.apply_clicks || 0) + 1 }).eq('id', jobId);
