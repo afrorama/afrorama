@@ -419,17 +419,41 @@
     });
   });
 
-  /* ── Paywall: $6/month membership ── */
+  /* ── Paywall: $9/month membership (requires login) ── */
   document.getElementById('btn-pay-member')?.addEventListener('click', async () => {
     const btn = document.getElementById('btn-pay-member');
-    btn.textContent = 'Redirecting…';
+    btn.textContent = 'Checking…';
     btn.disabled = true;
+
     const user = window.AfroramaAuth ? await window.AfroramaAuth.getUser().catch(() => null) : null;
+    if (!user) {
+      // Not logged in — send to auth, come back here and auto-trigger checkout
+      const returnUrl = window.location.pathname + '?pay=membership';
+      window.location.href = '/auth.html?next=' + encodeURIComponent(returnUrl);
+      return;
+    }
+
+    btn.textContent = 'Redirecting…';
     await window.AfroramaStripe.pay('membership', {
-      userId:    user?.id,
-      userEmail: user?.email,
+      userId:    user.id,
+      userEmail: user.email,
       onError:   (err) => { btn.textContent = 'Join for $9/mo →'; btn.disabled = false; alert('Payment error: ' + err.message); },
     });
   });
+
+  /* ── Auto-trigger checkout when returning from auth with ?pay= ── */
+  (async function autoPayOnReturn() {
+    const payType = new URLSearchParams(location.search).get('pay');
+    if (!payType) return;
+    history.replaceState({}, '', location.pathname); // clean the URL
+    // Give auth a moment to initialise
+    await new Promise(resolve => setTimeout(resolve, 600));
+    const user = window.AfroramaAuth ? await window.AfroramaAuth.getUser().catch(() => null) : null;
+    if (!user) return;
+    await window.AfroramaStripe.pay(payType, {
+      userId:    user.id,
+      userEmail: user.email,
+    });
+  })();
 
 })();
