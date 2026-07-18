@@ -61,7 +61,7 @@
   const fileRemove   = document.getElementById('file-remove');
   const btnAnalyse   = document.getElementById('btn-analyse');
 
-  function handleFile(file) {
+  async function handleFile(file) {
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { alert('File too large. Please upload a file under 5 MB.'); return; }
     const allowed = ['.pdf', '.doc', '.docx'];
@@ -72,6 +72,10 @@
     fileSizeEl.textContent = (file.size / 1024).toFixed(0) + ' KB';
     fileSelected.classList.add('visible');
     btnAnalyse.disabled = false;
+    // Show sign-in hint if not logged in
+    const user = window.AfroramaAuth ? await window.AfroramaAuth.getUser().catch(() => null) : null;
+    const hint = document.getElementById('signin-hint');
+    if (hint) hint.style.display = user ? 'none' : 'block';
   }
 
   fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
@@ -391,8 +395,13 @@
     }
   }
 
-  btnAnalyse?.addEventListener('click', () => {
+  btnAnalyse?.addEventListener('click', async () => {
     if (!state.file) return;
+    const user = window.AfroramaAuth ? await window.AfroramaAuth.getUser().catch(() => null) : null;
+    if (!user) {
+      window.location.href = '/auth.html?next=' + encodeURIComponent(window.location.pathname);
+      return;
+    }
     runAnalysis();
   });
 
