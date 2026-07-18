@@ -114,12 +114,11 @@
 
   const CONFIGS = {
     membership: {
-      heading: 'Welcome, Member!',
-      intro:   'Your Afrorama membership is now active. You now have access to the CV Bank, unlimited CV Boosts, the Interview Preparator, discounted coaching and the member community.',
+      heading: 'Welcome!',
+      intro:   'Your membership to the Afrorama Lab is now active. You now have access to unlimited No Wahala CV Boosts!',
       actions: [
-        { href: 'profile.html',    label: 'Go to my profile',   cls: 'btn-primary' },
-        { href: 'cv-analyser.html',label: 'Boost my CV',        cls: 'btn-yellow'  },
-        { href: 'community.html',  label: 'Join the community', cls: 'btn-outline'  },
+        { href: 'profile.html',     label: 'Go to my profile', cls: 'btn-primary' },
+        { href: 'cv-analyser.html', label: 'Boost my CV',      cls: 'btn-yellow'  },
       ],
     },
     cv_boost: {
@@ -181,17 +180,18 @@
 
   content.innerHTML = html;
 
-  // Update profile if membership payment
   (async () => {
     if (type === 'cv_boost') {
-      // Unlock a free re-upload on the CV Analyser
       localStorage.setItem('afrorama_cv_reupload_used', 'false');
       return;
     }
     if (type !== 'membership') return;
     const user = await getUser();
     if (!user) return;
-    // Webhook handles the real update; this is an optimistic client-side flag
+    // Personalise heading with first name
+    const firstName = (user.full_name || '').trim().split(/\s+/)[0];
+    if (firstName) heading.textContent = `Welcome, ${firstName}!`;
+    // Optimistic flag — webhook handles the real DB update
     await upsertProfile(user.id, { is_member: true, member_since: new Date().toISOString() });
   })();
 })();
