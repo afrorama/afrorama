@@ -403,16 +403,28 @@
       </div>
     </div>
 
-    <!-- EMAIL + SUBMIT -->
+    <!-- SUBMIT -->
     <div class="form-block" style="border-bottom:none;">
-      <div class="form-block-title">Your email</div>
-      <div class="input-group">
-        <input type="email" id="alert-email" placeholder="your@email.com" autocomplete="email" required>
-        <input type="text"  id="alert-name"  placeholder="First name (optional)" autocomplete="given-name">
-        <button class="btn-subscribe" id="btn-subscribe">Get job alerts →</button>
+
+      <!-- Shown when NOT logged in -->
+      <div id="auth-gate">
+        <div class="form-block-title">Almost there</div>
+        <p style="font-size:.85rem;color:#555;margin-bottom:16px;line-height:1.6;">Sign in or create a free account to activate your alerts.</p>
+        <a href="/auth.html?next=/job-alerts.html" class="btn-subscribe" style="display:block;text-align:center;text-decoration:none;" id="btn-auth">
+          Sign in / Create free account →
+        </a>
+        <p class="form-fine">Free. No spam. Unsubscribe anytime.</p>
       </div>
-      <div class="form-msg" id="form-msg"></div>
-      <p class="form-fine">Free. No spam. Unsubscribe anytime.</p>
+
+      <!-- Shown when logged in -->
+      <div id="logged-in-gate" style="display:none;">
+        <div class="form-block-title">Your account</div>
+        <p id="logged-in-email" style="font-size:.85rem;color:#555;margin-bottom:16px;"></p>
+        <button class="btn-subscribe" id="btn-subscribe">Get job alerts →</button>
+        <div class="form-msg" id="form-msg"></div>
+        <p class="form-fine">Free. No spam. Unsubscribe anytime.</p>
+      </div>
+
     </div>
 
   </div>
@@ -498,42 +510,53 @@
   });
 
   /* ── Collect form values ── */
-  function getChecked(containerId, attr) {
-    return [...document.querySelectorAll(`#${containerId} .pill-label.checked input`)]
-      .map(cb => cb.value)
-      .filter(v => v !== 'all');
+  function getPrefs() {
+    const types     = [...document.querySelectorAll('#type-pills .pill-label.checked input')].map(cb => cb.value).filter(v => v !== 'all');
+    const sectors   = [...document.querySelectorAll('#sector-pills .pill-label.checked input')].map(cb => cb.value).filter(v => v !== 'all');
+    const frequency = document.querySelector('input[name=frequency]:checked').value;
+    const allRegion = document.querySelector('#region-pills [data-region="all"] input')?.checked;
+    const regions   = allRegion ? [] : [...document.querySelectorAll('#region-pills .pill-label.checked input')].map(cb => cb.value).filter(v => v !== 'all');
+    return { types, sectors, frequency, regions };
   }
 
-  /* ── Submit ── */
-  document.getElementById('btn-subscribe').addEventListener('click', async () => {
-    const emailEl = document.getElementById('alert-email');
-    const email   = emailEl.value.trim();
-    const name    = document.getElementById('alert-name').value.trim() || null;
-    const msgEl   = document.getElementById('form-msg');
+  /* ── Check auth and show correct gate ── */
+  async function initAuthGate() {
+    const Auth = window.AfroramaSupabase?.getSupabase
+      ? (await window.AfroramaSupabase.getSupabase().auth.getUser()).data?.user
+      : null;
 
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      emailEl.classList.add('error');
-      msgEl.className = 'form-msg error';
-      msgEl.textContent = 'Please enter a valid email address.';
-      return;
+    // Try AfroramaAuth too
+    const user = Auth || (window.AfroramaAuth ? await window.AfroramaAuth.getUser().catch(() => null) : null);
+
+    if (user) {
+      document.getElementById('auth-gate').style.display       = 'none';
+      document.getElementById('logged-in-gate').style.display  = 'block';
+      const name  = user.full_name || user.user_metadata?.full_name || '';
+      const email = user.email || '';
+      document.getElementById('logged-in-email').textContent =
+        (name ? name + ' · ' : '') + email;
+
+      // If returning from auth with saved prefs, auto-subscribe
+      const saved = localStorage.getItem('afrorama_alert_prefs');
+      if (saved) {
+        localStorage.removeItem('afrorama_alert_prefs');
+        await doSubscribe(user, JSON.parse(saved));
+      }
     }
-    emailEl.classList.remove('error');
-    msgEl.className = 'form-msg';
-    msgEl.textContent = '';
+  }
 
-    const types     = getChecked('type-pills');
-    const sectors   = getChecked('sector-pills');
-    const frequency = document.querySelector('input[name=frequency]:checked').value;
+  /* ── Save prefs + redirect to auth if not logged in ── */
+  document.getElementById('btn-auth').addEventListener('click', e => {
+    e.preventDefault();
+    localStorage.setItem('afrorama_alert_prefs', JSON.stringify(getPrefs()));
+    window.location.href = '/auth.html?next=' + encodeURIComponent('/job-alerts.html');
+  });
 
-    // Region selection
-    const allRegionChecked = document.querySelector('#region-pills [data-region="all"] input')?.checked;
-    const regions = allRegionChecked
-      ? []
-      : getChecked('region-pills');
-
-    const btn = document.getElementById('btn-subscribe');
-    btn.disabled = true;
-    btn.textContent = 'Subscribing…';
+  /* ── Do the actual Supabase insert ── */
+  async function doSubscribe(user, prefs) {
+    const btn   = document.getElementById('btn-subscribe');
+    const msgEl = document.getElementById('form-msg');
+    if (btn) { btn.disabled = true; btn.textContent = 'Subscribing…'; }
 
     const res = await fetch(`${SUPABASE_URL}/rest/v1/job_alert_subscriptions`, {
       method:  'POST',
@@ -543,26 +566,41 @@
         'Authorization': 'Bearer ' + ANON_KEY,
         'Prefer':        'return=minimal',
       },
-      body: JSON.stringify({ email, name, countries: [], regions, sectors, types, frequency }),
+      body: JSON.stringify({
+        email:     user.email,
+        name:      user.full_name || user.user_metadata?.full_name || null,
+        countries: [],
+        regions:   prefs.regions,
+        sectors:   prefs.sectors,
+        types:     prefs.types,
+        frequency: prefs.frequency,
+      }),
     });
 
     if (res.ok || res.status === 201) {
-      msgEl.className = 'form-msg success';
-      msgEl.textContent = '✓ You\'re subscribed! Check your inbox for your first alert soon.';
-      btn.textContent = 'Subscribed ✓';
-      if (typeof gtag === 'function') gtag('event', 'job_alert_subscribe', { frequency });
+      if (msgEl) { msgEl.className = 'form-msg success'; msgEl.textContent = '✓ You\'re subscribed! Your first alert will arrive soon.'; }
+      if (btn) btn.textContent = 'Subscribed ✓';
+      if (typeof gtag === 'function') gtag('event', 'job_alert_subscribe', { frequency: prefs.frequency });
     } else {
       const err = await res.json().catch(() => ({}));
-      msgEl.className = 'form-msg error';
-      if (err?.code === '23505') {
-        msgEl.textContent = 'This email is already subscribed. Check your inbox or contact hello@afrorama.org to update your preferences.';
-      } else {
-        msgEl.textContent = 'Something went wrong. Please try again or email hello@afrorama.org.';
+      if (msgEl) {
+        msgEl.className = 'form-msg error';
+        msgEl.textContent = err?.code === '23505'
+          ? 'You\'re already subscribed with this account.'
+          : 'Something went wrong. Please try again or email hello@afrorama.org.';
       }
-      btn.disabled = false;
-      btn.textContent = 'Get job alerts →';
+      if (btn) { btn.disabled = false; btn.textContent = 'Get job alerts →'; }
     }
+  }
+
+  /* ── Logged-in submit button ── */
+  document.getElementById('btn-subscribe').addEventListener('click', async () => {
+    const user = window.AfroramaAuth ? await window.AfroramaAuth.getUser().catch(() => null) : null;
+    if (!user) return;
+    await doSubscribe(user, getPrefs());
   });
+
+  initAuthGate();
 
 })();
 </script>
