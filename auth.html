@@ -345,7 +345,7 @@
       const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/auth.html' });
       if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
     }
-    showCheckEmail('Check your inbox', 'We've sent a password reset link to ' + email + '. Check your spam folder if it doesn't arrive within a minute.');
+    showCheckEmail('Check your inbox', "We've sent a password reset link to " + email + ". Check your spam folder if it doesn't arrive within a minute.");
   });
 
   // Register step 1 — validation only
@@ -398,7 +398,7 @@
       // Email confirmation required
       showCheckEmail(
         'Confirm your email',
-        'We've sent a confirmation link to ' + email + '. Click it to activate your account, then sign in.'
+        "We've sent a confirmation link to " + email + '. Click it to activate your account, then sign in.'
       );
     }
   });
