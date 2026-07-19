@@ -39,15 +39,35 @@
     const Auth = window.AfroramaAuth;
     if (!Auth) return;
     const user = await Auth.getUser().catch(() => null);
-    if (!user) return;
 
-    const name     = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Account';
+    const ctaGroup  = document.querySelector('.nav-cta-group');
+    const mobileMenu = document.getElementById('nav-mobile-menu');
+
+    if (!user) {
+      // Show Sign in link if not already present
+      if (ctaGroup && !ctaGroup.querySelector('a')) {
+        const a = document.createElement('a');
+        a.href = 'auth.html';
+        a.className = 'btn btn-outline btn-sm';
+        a.textContent = 'Sign in';
+        ctaGroup.appendChild(a);
+      }
+      if (mobileMenu && !mobileMenu.querySelector('a[href="auth.html"]')) {
+        const a = document.createElement('a');
+        a.href = 'auth.html';
+        a.textContent = 'Sign in';
+        mobileMenu.appendChild(a);
+      }
+      return;
+    }
+
+    const name      = user.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Account';
     const firstName = name.split(' ')[0];
     const initials  = name.split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
 
-    // Desktop nav — replace Sign in button
-    const signInBtn = document.querySelector('.nav-cta-group a[href="auth.html"]');
-    if (signInBtn) {
+    // Desktop nav — inject avatar menu into nav-cta-group
+    if (ctaGroup && !ctaGroup.querySelector('.nav-user-menu')) {
+      ctaGroup.innerHTML = '';
       const menu = document.createElement('div');
       menu.className = 'nav-user-menu';
       menu.innerHTML = `
@@ -58,11 +78,10 @@
         </button>
         <div class="nav-user-dropdown">
           <a href="profile.html">My profile</a>
-          <a href="opportunities.html">Saved jobs</a>
           <hr style="border:none;border-top:1px solid var(--gray-mid);margin:4px 0;">
           <button class="nav-signout-btn">Sign out</button>
         </div>`;
-      signInBtn.replaceWith(menu);
+      ctaGroup.appendChild(menu);
 
       const btn      = menu.querySelector('.nav-user-btn');
       const dropdown = menu.querySelector('.nav-user-dropdown');
@@ -75,14 +94,13 @@
       menu.querySelector('.nav-signout-btn').addEventListener('click', () => Auth.signOut());
     }
 
-    // Mobile menu — replace Sign in button
-    const mobileSignIn = document.querySelector('.nav-mobile-menu a[href="auth.html"]');
-    if (mobileSignIn) {
+    // Mobile menu
+    if (mobileMenu && !mobileMenu.querySelector('.nav-signout-btn')) {
       const signOutBtn = document.createElement('button');
-      signOutBtn.className = 'btn btn-outline';
+      signOutBtn.className = 'btn btn-outline nav-signout-btn';
       signOutBtn.textContent = 'Sign out (' + firstName + ')';
       signOutBtn.addEventListener('click', () => Auth.signOut());
-      mobileSignIn.replaceWith(signOutBtn);
+      mobileMenu.appendChild(signOutBtn);
     }
   }
 

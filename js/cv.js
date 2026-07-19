@@ -14,6 +14,19 @@
     reuploadUsed: localStorage.getItem('afrorama_cv_reupload_used') === 'true',
   };
 
+  // If logged in, check their saved profile for prior CV scores — overrides localStorage
+  (async () => {
+    const Auth = window.AfroramaAuth;
+    if (!Auth) return;
+    const user = await Auth.getUser().catch(() => null);
+    if (!user) return;
+    const { profile } = await Auth.getProfile(user.id).catch(() => ({}));
+    if (profile?.cv_score_history?.length > 0) {
+      state.reuploadUsed = true;
+      localStorage.setItem('afrorama_cv_reupload_used', 'true');
+    }
+  })();
+
   /* ================================================================
      SCORING CRITERIA (kept private — not shown in UI)
   ================================================================= */
