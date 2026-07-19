@@ -71,44 +71,31 @@
       <!-- SIDEBAR -->
       <aside class="profile-sidebar">
 
-        <!-- Quote card -->
-        <div class="quote-card" id="quote-card">
-          <div class="quote-text" id="daily-quote">Loading your daily boost…</div>
-          <div class="quote-attr">Your daily motivation</div>
-        </div>
-
-        <!-- Avatar + badges -->
+        <!-- Status card -->
         <div class="profile-card">
-          <div class="profile-avatar-wrap">
-            <div class="profile-avatar" id="profile-avatar">?</div>
-            <div class="profile-name"     id="profile-name">Loading…</div>
-            <div class="profile-location" id="profile-location"></div>
-            <div class="profile-badges"   id="profile-badges"></div>
-          </div>
-          <div style="padding:0 20px 20px;border-top:1.5px solid var(--gray-mid);">
-            <div style="padding-top:16px;">
-              <div class="toggle-field">
-                <div>
-                  <div class="toggle-label">Actively looking</div>
-                  <div class="toggle-hint">Signal your availability</div>
-                </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="toggle-looking">
-                  <div class="toggle-track"></div>
-                  <div class="toggle-thumb"></div>
-                </label>
+          <div class="profile-card-head"><h4>Status</h4></div>
+          <div style="padding:16px 20px;display:flex;flex-direction:column;gap:0;">
+            <div class="toggle-field">
+              <div>
+                <div class="toggle-label">Actively looking</div>
+                <div class="toggle-hint">Signal your availability</div>
               </div>
-              <div class="toggle-field">
-                <div>
-                  <div class="toggle-label">Email alerts</div>
-                  <div class="toggle-hint">New matching opportunities</div>
-                </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="toggle-alerts" checked>
-                  <div class="toggle-track"></div>
-                  <div class="toggle-thumb"></div>
-                </label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="toggle-looking">
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+            <div class="toggle-field">
+              <div>
+                <div class="toggle-label">Job alerts</div>
+                <div class="toggle-hint">New matching opportunities</div>
               </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="toggle-alerts">
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
             </div>
           </div>
         </div>
@@ -144,50 +131,6 @@
       <!-- MAIN -->
       <div>
 
-        <!-- Journey steps (shown if actively looking) -->
-        <div id="journey-panel" style="display:none;margin-bottom:28px;">
-          <div class="profile-card">
-            <div class="profile-card-head"><h4>Your impact journey</h4></div>
-            <div class="profile-card-body">
-              <p style="font-size:.85rem;color:var(--gray-dark);margin-bottom:16px;">You are actively looking. Here are the steps to land your next role.</p>
-              <div class="journey-steps-panel">
-                <div class="journey-step-item" id="jstep-cv">
-                  <div class="journey-step-num">01</div>
-                  <div>
-                    <div class="journey-step-title">Score your CV</div>
-                    <div class="journey-step-desc">Use the No Wahala CV Booster to get a score and personalised feedback before you apply.</div>
-                    <div class="journey-step-action"><a href="cv-analyser.html" class="btn btn-primary btn-sm">Boost my CV</a></div>
-                  </div>
-                </div>
-                <div class="journey-step-item" id="jstep-search">
-                  <div class="journey-step-num">02</div>
-                  <div>
-                    <div class="journey-step-title">Find your role</div>
-                    <div class="journey-step-desc">Browse live opportunities filtered by sector, region and type across all 54 African countries.</div>
-                    <div class="journey-step-action"><a href="opportunities.html" class="btn btn-primary btn-sm">Browse roles</a></div>
-                  </div>
-                </div>
-                <div class="journey-step-item" id="jstep-prep">
-                  <div class="journey-step-num">03</div>
-                  <div>
-                    <div class="journey-step-title">Prepare for interviews</div>
-                    <div class="journey-step-desc">Use the Interview Preparator to know what questions to expect and how to answer them. Members only.</div>
-                    <div class="journey-step-action"><a href="opportunities.html" class="btn btn-yellow btn-sm">Browse opportunities</a></div>
-                  </div>
-                </div>
-                <div class="journey-step-item" id="jstep-connect">
-                  <div class="journey-step-num">04</div>
-                  <div>
-                    <div class="journey-step-title">Connect with peers</div>
-                    <div class="journey-step-desc">Get support, ask questions and share your experience with the Afrorama community.</div>
-                    <div class="journey-step-action"><a href="opportunities.html" class="btn btn-outline btn-sm">Browse opportunities</a></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- Edit profile form -->
         <div class="profile-card" style="margin-bottom:24px;">
           <div class="profile-card-head" style="display:flex;justify-content:space-between;align-items:center;">
@@ -197,9 +140,13 @@
           <div class="profile-card-body">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
               <div class="form-group">
-                <label class="form-label" for="edit-name">Full name <span style="color:var(--orange)">*</span></label>
-                <input class="form-input" id="edit-name" type="text" required>
-                <span class="form-error" id="err-name" role="alert"></span>
+                <label class="form-label" for="edit-firstname">First name <span style="color:var(--orange)">*</span></label>
+                <input class="form-input" id="edit-firstname" type="text" placeholder="First name" required>
+                <span class="form-error" id="err-firstname" role="alert"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="edit-lastname">Last name</label>
+                <input class="form-input" id="edit-lastname" type="text" placeholder="Last name">
               </div>
               <div class="form-group">
                 <label class="form-label" for="edit-location">Location <span style="color:var(--orange)">*</span></label>
@@ -237,6 +184,50 @@
               </div>
             </div>
             <div id="save-msg" style="font-size:.8rem;color:var(--green-dk);margin-top:8px;display:none;">Changes saved.</div>
+          </div>
+        </div>
+
+        <!-- Journey steps (shown if actively looking) -->
+        <div id="journey-panel" style="display:none;margin-bottom:28px;">
+          <div class="profile-card">
+            <div class="profile-card-head"><h4>Your impact journey</h4></div>
+            <div class="profile-card-body">
+              <p style="font-size:.85rem;color:var(--gray-dark);margin-bottom:16px;">You are actively looking. Here are the steps to land your next role.</p>
+              <div class="journey-steps-panel">
+                <div class="journey-step-item" id="jstep-cv">
+                  <div class="journey-step-num">01</div>
+                  <div>
+                    <div class="journey-step-title">Score your CV</div>
+                    <div class="journey-step-desc">Use the No Wahala CV Booster to get a score and personalised feedback before you apply.</div>
+                    <div class="journey-step-action"><a href="cv-analyser.html" class="btn btn-primary btn-sm">Boost my CV</a></div>
+                  </div>
+                </div>
+                <div class="journey-step-item" id="jstep-search">
+                  <div class="journey-step-num">02</div>
+                  <div>
+                    <div class="journey-step-title">Find your role</div>
+                    <div class="journey-step-desc">Browse live opportunities filtered by sector, region and type across all 54 African countries.</div>
+                    <div class="journey-step-action"><a href="opportunities.html" class="btn btn-primary btn-sm">Browse roles</a></div>
+                  </div>
+                </div>
+                <div class="journey-step-item" id="jstep-prep">
+                  <div class="journey-step-num">03</div>
+                  <div>
+                    <div class="journey-step-title">Prepare for interviews</div>
+                    <div class="journey-step-desc">Use the Interview Preparator to know what questions to expect and how to answer them. Members only.</div>
+                    <div class="journey-step-action"><span style="font-size:.75rem;font-weight:700;color:var(--gray-dark);background:var(--gray-mid);padding:4px 12px;border-radius:20px;">Coming soon</span></div>
+                  </div>
+                </div>
+                <div class="journey-step-item" id="jstep-connect">
+                  <div class="journey-step-num">04</div>
+                  <div>
+                    <div class="journey-step-title">Connect with peers</div>
+                    <div class="journey-step-desc">Get support, ask questions and share your experience with the Afrorama community.</div>
+                    <div class="journey-step-action"><span style="font-size:.75rem;font-weight:700;color:var(--gray-dark);background:var(--gray-mid);padding:4px 12px;border-radius:20px;">Coming soon</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -283,48 +274,22 @@
   const { getUser, requireAuth, getProfile, upsertProfile, getSavedJobs, unsaveJob, updateSavedJob, isProfileComplete } = window.AfroramaAuth;
   const { SECTORS } = window.AfroramaData;
 
-  const QUOTES = [
-    { text: "The time is always right to do what is right.", attr: "Martin Luther King Jr." },
-    { text: "You are braver than you believe, stronger than you seem, and smarter than you think.", attr: "A.A. Milne" },
-    { text: "Africa's greatest resource is her people.", attr: "Afrorama" },
-    { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", attr: "Winston Churchill" },
-    { text: "Go confidently in the direction of your dreams.", attr: "Henry David Thoreau" },
-    { text: "You got this. Africa needs you.", attr: "Afrorama team" },
-    { text: "Dream big, start small, act now.", attr: "Robin Sharma" },
-  ];
-
   async function init() {
     const user = await requireAuth('auth.html');
     if (!user) return;
 
-    // Daily quote (rotates by day of year)
-    const q = QUOTES[new Date().getDay() % QUOTES.length];
-    document.getElementById('daily-quote').textContent = '"' + q.text + '"';
-    document.querySelector('.quote-attr').textContent   = q.attr;
-
     const { profile } = await getProfile(user.id);
 
-    // Greeting
-    const name = profile?.full_name || user.email?.split('@')[0] || 'Changemaker';
-    document.getElementById('page-greeting').textContent = 'Welcome back, ' + name.split(' ')[0] + '!';
-
-    // Avatar
-    const initials = name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
-    document.getElementById('profile-avatar').textContent = initials;
-    document.getElementById('profile-name').textContent   = name;
-    if (profile?.location) document.getElementById('profile-location').textContent = '📍 ' + profile.location;
-
-    // Badges
-    const badgesEl = document.getElementById('profile-badges');
-    if (profile?.is_member)            badgesEl.innerHTML += '<span class="profile-badge member">Member</span>';
-    if (profile?.is_actively_looking)  badgesEl.innerHTML += '<span class="profile-badge looking">Looking</span>';
-    if (profile?.cv_score >= 90)       badgesEl.innerHTML += '<span class="profile-badge in-bank">CV Bank</span>';
+    // Greeting — prefer profile full_name, then OAuth metadata, then email prefix
+    const rawName   = profile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Changemaker';
+    const firstName = rawName.split(/\s+/)[0];
+    document.getElementById('page-greeting').textContent = 'Welcome back, ' + firstName + '!';
 
     // Toggles
     const lookTog  = document.getElementById('toggle-looking');
     const alertTog = document.getElementById('toggle-alerts');
-    if (profile?.is_actively_looking) lookTog.checked  = true;
-    if (profile?.email_alerts !== false) alertTog.checked = true;
+    if (profile?.is_actively_looking)  lookTog.checked  = true;
+    alertTog.checked = profile?.email_alerts === true;
 
     // Show journey if looking
     if (profile?.is_actively_looking) document.getElementById('journey-panel').style.display = 'block';
@@ -334,7 +299,13 @@
       await upsertProfile(user.id, { is_actively_looking: lookTog.checked });
     });
     alertTog.addEventListener('change', async () => {
-      await upsertProfile(user.id, { email_alerts: alertTog.checked });
+      if (alertTog.checked) {
+        // Not subscribed yet — send them to set up alerts
+        alertTog.checked = false;
+        window.location.href = '/job-alerts.html';
+        return;
+      }
+      await upsertProfile(user.id, { email_alerts: false });
     });
 
     // CV score
@@ -357,36 +328,40 @@
       });
     }
 
-    // Pre-fill form
-    document.getElementById('edit-name').value       = profile?.full_name     || '';
-    document.getElementById('edit-location').value   = profile?.location       || '';
-    document.getElementById('edit-linkedin').value   = profile?.linkedin_url   || '';
-    document.getElementById('edit-experience').value = profile?.years_exp      || '';
+    // Pre-fill form — split full_name into first + last
+    const nameParts = (profile?.full_name || '').trim().split(/\s+/);
+    document.getElementById('edit-firstname').value  = nameParts[0] || '';
+    document.getElementById('edit-lastname').value   = nameParts.slice(1).join(' ') || '';
+    document.getElementById('edit-location').value   = profile?.location     || '';
+    document.getElementById('edit-linkedin').value   = profile?.linkedin_url || '';
+    document.getElementById('edit-experience').value = profile?.years_exp    || '';
     (profile?.job_type_prefs || []).forEach(v => {
       const cb = document.querySelector(`.pref-check[value="${v}"]`);
       if (cb) cb.checked = true;
     });
 
-    // Save profile — with mandatory validation
+    // Save profile
     document.getElementById('btn-save-profile').addEventListener('click', async () => {
-      const name     = document.getElementById('edit-name').value.trim();
-      const location = document.getElementById('edit-location').value.trim();
-      const sectors  = [...document.querySelectorAll('.sector-check:checked')].map(i=>i.value);
-      const prefs    = [...document.querySelectorAll('.pref-check:checked')].map(i=>i.value);
+      const firstName = document.getElementById('edit-firstname').value.trim();
+      const lastName  = document.getElementById('edit-lastname').value.trim();
+      const fullName  = [firstName, lastName].filter(Boolean).join(' ');
+      const location  = document.getElementById('edit-location').value.trim();
+      const sectors   = [...document.querySelectorAll('.sector-check:checked')].map(i=>i.value);
+      const prefs     = [...document.querySelectorAll('.pref-check:checked')].map(i=>i.value);
 
       let valid = true;
-      const nameErr = document.getElementById('err-name');
-      const locErr  = document.getElementById('err-location');
-      const secErr  = document.getElementById('err-sectors');
-      [nameErr, locErr, secErr].forEach(e => { if(e) e.textContent = ''; });
+      const firstnameErr = document.getElementById('err-firstname');
+      const locErr       = document.getElementById('err-location');
+      const secErr       = document.getElementById('err-sectors');
+      [firstnameErr, locErr, secErr].forEach(e => { if(e) e.textContent = ''; });
 
-      if (!name)           { nameErr.textContent = 'Full name is required.'; valid = false; }
-      if (!location)       { locErr.textContent  = 'Location is required.';  valid = false; }
-      if (!sectors.length) { secErr.textContent  = 'Select at least one sector.'; valid = false; }
+      if (!firstName)      { firstnameErr.textContent = 'First name is required.';    valid = false; }
+      if (!location)       { locErr.textContent        = 'Location is required.';     valid = false; }
+      if (!sectors.length) { secErr.textContent        = 'Select at least one sector.'; valid = false; }
       if (!valid) return;
 
       await upsertProfile(user.id, {
-        full_name:      name,
+        full_name:      fullName,
         location,
         linkedin_url:   document.getElementById('edit-linkedin').value.trim(),
         years_exp:      document.getElementById('edit-experience').value,

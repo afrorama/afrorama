@@ -432,7 +432,9 @@
 
 </div><!-- end #subscribe-view -->
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/main.js"></script>
 <script>
 (function () {
@@ -580,6 +582,10 @@
     if (res.ok || res.status === 201) {
       if (msgEl) { msgEl.className = 'form-msg success'; msgEl.textContent = '✓ You\'re subscribed! Your first alert will arrive soon.'; }
       if (btn) btn.textContent = 'Subscribed ✓';
+      // Mark email_alerts: true in their profile so the profile page toggle reflects it
+      if (window.AfroramaAuth && user?.id) {
+        window.AfroramaAuth.upsertProfile(user.id, { email_alerts: true }).catch(() => {});
+      }
       if (typeof gtag === 'function') gtag('event', 'job_alert_subscribe', { frequency: prefs.frequency });
     } else {
       const err = await res.json().catch(() => ({}));

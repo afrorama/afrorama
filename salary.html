@@ -253,17 +253,30 @@
   </div>
 </section>
 
-<!-- ═══ FREE FOR EVERYONE BANNER ═══ -->
+<!-- ═══ MEMBERS BANNER ═══ -->
 <div style="background:var(--yellow);border-top:2.5px solid var(--dark);border-bottom:2.5px solid var(--dark);padding:14px 0;">
   <div class="container" style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;text-align:center;">
-    <span style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dark);">Free for everyone</span>
-    <span style="font-size:.85rem;color:var(--dark);font-weight:600;">Browse real salary data from across Africa's impact sector. No sign-up required.</span>
+    <span style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dark);">Free with a free account</span>
+    <span style="font-size:.85rem;color:var(--dark);font-weight:600;">Sign in or create a free Afrorama account to access real salary data.</span>
   </div>
 </div>
 
 <!-- ═══ MAIN ═══ -->
 <main>
   <div class="container">
+
+    <!-- AUTH GATE (shown if not signed in) -->
+    <div id="salary-gate" style="display:none;">
+      <div class="access-layer">
+        <div class="access-layer-icon">📊</div>
+        <h2>Free Salary Data</h2>
+        <p>Create a free Afrorama account to access real salary benchmarks from across Africa's social impact sector.</p>
+        <div class="access-actions">
+          <a href="/auth.html?next=/salary.html" class="btn btn-primary">Create free account →</a>
+          <a href="/auth.html?next=/salary.html" class="btn btn-outline">Sign in</a>
+        </div>
+      </div>
+    </div>
 
     <!-- SALARY DATABASE → search + results -->
     <div id="salary-database">
@@ -538,6 +551,17 @@
 
   // ── Init ───────────────────────────────────────────────────────
   async function init() {
+    // Gate content behind sign-in
+    const Auth = window.AfroramaAuth;
+    if (Auth) {
+      const user = await Auth.getUser().catch(() => null);
+      if (!user) {
+        document.getElementById('salary-gate').style.display = 'block';
+        document.getElementById('salary-database').style.display = 'none';
+        return;
+      }
+    }
+
     populateSelects();
     await loadSubmissions();
     computeHeroStats();
