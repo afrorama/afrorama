@@ -237,16 +237,62 @@
       <!-- Right: contribute card -->
       <div class="contribute-card" id="contribute-card">
         <h3>Share your salary</h3>
-        <p>Anonymous and secure. Sign-ups to contribute your own salary data are opening soon. For now, explore the full database below for free.</p>
-        <span class="btn btn-primary" style="width:100%;justify-content:center;opacity:.6;cursor:default;pointer-events:none;margin-bottom:16px;">Coming soon</span>
-        <!-- Greyed-out form preview -->
-        <div style="opacity:.35;pointer-events:none;user-select:none;">
-          <div class="form-group"><label class="form-label">Organisation</label><input class="form-input" placeholder="e.g. UNDP, Amref, Dalberg" disabled></div>
-          <div class="form-group" style="margin-top:10px;"><label class="form-label">Job title</label><input class="form-input" placeholder="e.g. Programme Officer" disabled></div>
-          <div class="contribute-row" style="margin-top:10px;">
-            <div class="form-group"><label class="form-label">Annual salary (USD)</label><input class="form-input" placeholder="e.g. 55000" disabled></div>
-            <div class="form-group"><label class="form-label">Years experience</label><select class="form-select" disabled><option>Select…</option></select></div>
+        <p>Anonymous and secure. Help Africa's impact sector get paid fairly — your entry is never linked to your name.</p>
+
+        <!-- Shown when not signed in -->
+        <div id="contribute-signin" style="display:none;">
+          <a href="/auth.html?next=/salary" class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:12px;">Sign in to contribute →</a>
+          <p style="font-size:.78rem;color:var(--gray-dark);text-align:center;margin:0;">Free account required — takes 30 seconds</p>
+        </div>
+
+        <!-- Shown when signed in -->
+        <div id="contribute-form-active" style="display:none;">
+          <div class="contribute-success" id="contribute-success">
+            <span>✓</span> Thank you! Your entry has been added.
           </div>
+          <form class="contribute-form" id="salary-contribute-form" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="c-org">Organisation <span style="color:var(--orange)">*</span></label>
+              <input class="form-input" id="c-org" type="text" placeholder="e.g. UNDP, Amref, Dalberg" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="c-title">Job title <span style="color:var(--orange)">*</span></label>
+              <input class="form-input" id="c-title" type="text" placeholder="e.g. Programme Officer" required>
+            </div>
+            <div class="contribute-row">
+              <div class="form-group">
+                <label class="form-label" for="c-salary">Annual salary (USD) <span style="color:var(--orange)">*</span></label>
+                <input class="form-input" id="c-salary" type="number" min="0" placeholder="e.g. 55000" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="c-exp">Years experience</label>
+                <select class="form-select" id="c-exp">
+                  <option value="">Select…</option>
+                  <option value="0-1">0–1 years</option>
+                  <option value="2-4">2–4 years</option>
+                  <option value="5-8">5–8 years</option>
+                  <option value="9-14">9–14 years</option>
+                  <option value="15+">15+ years</option>
+                </select>
+              </div>
+            </div>
+            <div class="contribute-row">
+              <div class="form-group">
+                <label class="form-label" for="c-sector">Sector</label>
+                <select class="form-select" id="c-sector">
+                  <option value="">Select…</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="c-country">Country</label>
+                <select class="form-select" id="c-country">
+                  <option value="">Select…</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;" id="c-submit">Submit anonymously →</button>
+            <p style="font-size:.72rem;color:var(--gray-dark);margin:4px 0 0;text-align:center;">Entries are 100% anonymous. No name or email is stored with your data.</p>
+          </form>
         </div>
       </div>
     </div>
@@ -551,22 +597,95 @@
 
   // ── Init ───────────────────────────────────────────────────────
   async function init() {
-    // Gate content behind sign-in
     const Auth = window.AfroramaAuth;
-    if (Auth) {
-      const user = await Auth.getUser().catch(() => null);
-      if (!user) {
-        document.getElementById('salary-gate').style.display = 'block';
-        document.getElementById('salary-database').style.display = 'none';
-        return;
-      }
+    const user = Auth ? await Auth.getUser().catch(() => null) : null;
+
+    if (!user) {
+      // Not signed in: gate the database, show sign-in prompt on contribute card
+      document.getElementById('salary-gate').style.display = 'block';
+      document.getElementById('salary-database').style.display = 'none';
+      document.getElementById('contribute-signin').style.display = 'block';
+      return;
     }
 
+    // Signed in: show the contribute form and the database
+    document.getElementById('contribute-form-active').style.display = 'block';
+    populateContributeSelects();
     populateSelects();
     await loadSubmissions();
     computeHeroStats();
     renderResults();
   }
+
+  // ── Populate contribute card selects ─────────────────────────
+  function populateContributeSelects() {
+    const sectors = (window.AfroramaData?.SECTORS || []).slice().sort();
+    const cSector = document.getElementById('c-sector');
+    sectors.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s; o.textContent = s;
+      cSector?.appendChild(o);
+    });
+
+    const africaCountries = (window.AfroramaData?.AFRICAN_COUNTRIES || [])
+      .slice().sort((a, b) => a.name.localeCompare(b.name));
+    const cCountry = document.getElementById('c-country');
+    africaCountries.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c.id; o.textContent = c.name;
+      cCountry?.appendChild(o);
+    });
+  }
+
+  // ── Contribute form submission ────────────────────────────────
+  document.getElementById('salary-contribute-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const org    = document.getElementById('c-org').value.trim();
+    const title  = document.getElementById('c-title').value.trim();
+    const salary = parseInt(document.getElementById('c-salary').value, 10);
+    const exp    = document.getElementById('c-exp').value;
+    const sector = document.getElementById('c-sector').value;
+    const country = document.getElementById('c-country').value;
+
+    if (!org || !title || !salary) return;
+
+    const btn = document.getElementById('c-submit');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    const entry = {
+      company:   org,
+      position:  title,
+      salary:    salary,
+      years_exp: exp || null,
+      sector:    sector || 'Governance & Public Policy',
+      country:   country || null,
+      year:      new Date().getFullYear(),
+    };
+
+    const Supa = window.AfroramaSupabase;
+    if (Supa && !Supa.isDemoMode()) {
+      const sb = Supa.getSupabase();
+      const { error } = await sb.from('salary_submissions').insert(entry);
+      if (error) {
+        btn.disabled = false;
+        btn.textContent = 'Submit anonymously →';
+        alert('Something went wrong. Please try again.');
+        return;
+      }
+    } else {
+      const saved = JSON.parse(localStorage.getItem('afrorama_salary_submissions') || '[]');
+      saved.push(entry);
+      localStorage.setItem('afrorama_salary_submissions', JSON.stringify(saved));
+    }
+
+    // Success
+    document.getElementById('salary-contribute-form').style.display = 'none';
+    document.getElementById('contribute-success').classList.add('visible');
+    allData.push(entry);
+    computeHeroStats();
+    renderResults();
+  });
 
   // ── Search and filter ─────────────────────────────────────────
   function getFilters() {

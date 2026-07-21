@@ -589,10 +589,10 @@
             </div>
           </div>
           <div class="job-card-right">
-            <span class="deadline-pill ${urgent ? 'urgent' : 'normal'}">
+            ${days !== Infinity ? `<span class="deadline-pill ${urgent ? 'urgent' : 'normal'}">
               ${urgent ? '⚠ ' : ''}<svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
               ${days}d left
-            </span>
+            </span>` : ''}
             <span class="posted-date">Posted ${formatDate(j.posted)}</span>
             ${currentUser ? `
             <button class="bookmark-btn ${saved ? 'saved' : ''}" data-job-id="${j.id}" aria-label="${saved ? 'Unsave' : 'Save'} ${esc(j.title)}" title="${saved ? 'Saved to profile' : 'Save to profile'}">
