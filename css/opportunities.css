@@ -543,14 +543,30 @@
   line-height: 1.6;
   font-style: italic;
 }
+.cv-nudge {
+  margin: 0 24px 0;
+  padding: 12px 16px;
+  background: rgba(76,159,56,.07);
+  border: 1.5px solid rgba(76,159,56,.25);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cv-nudge-text { display: flex; flex-direction: column; gap: 2px; }
+.cv-nudge-text strong { font-size: .82rem; color: var(--dark); }
+.cv-nudge-text span { font-size: .78rem; color: var(--gray-dark); }
 .modal-footer {
-  padding: 18px 24px;
+  padding: 14px 24px 18px;
   border-top: 1px solid var(--gray-mid);
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  margin-top: 12px;
 }
 
 /* ===== DARK MODE ===== */
