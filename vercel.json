@@ -4,6 +4,27 @@
     {
       "source": "/opportunity/:id",
       "destination": "https://vqchwioyhyiuunpyildz.supabase.co/functions/v1/opportunity/:id"
-    }
+    },
+    { "source": "/ngo-jobs-kenya",       "destination": "/ngo-jobs.html" },
+    { "source": "/ngo-jobs-ghana",       "destination": "/ngo-jobs.html" },
+    { "source": "/ngo-jobs-nigeria",     "destination": "/ngo-jobs.html" },
+    { "source": "/ngo-jobs-rwanda",      "destination": "/ngo-jobs.html" },
+    { "source": "/ngo-jobs-uganda",      "destination": "/ngo-jobs.html" },
+    { "source": "/ngo-jobs-zambia",      "destination": "/ngo-jobs.html" },
+    { "source": "/ngo-jobs-tanzania",    "destination": "/ngo-jobs.html" },
+    { "source": "/ngo-jobs-ethiopia",    "destination": "/ngo-jobs.html" },
+    { "source": "/ngo-jobs-senegal",     "destination": "/ngo-jobs.html" },
+    { "source": "/ngo-jobs-morocco",     "destination": "/ngo-jobs.html" },
+    { "source": "/social-impact-jobs-health",          "destination": "/ngo-jobs.html" },
+    { "source": "/social-impact-jobs-education",       "destination": "/ngo-jobs.html" },
+    { "source": "/social-impact-jobs-finance",         "destination": "/ngo-jobs.html" },
+    { "source": "/social-impact-jobs-technology",      "destination": "/ngo-jobs.html" },
+    { "source": "/social-impact-jobs-agriculture",     "destination": "/ngo-jobs.html" },
+    { "source": "/social-impact-jobs-climate",         "destination": "/ngo-jobs.html" },
+    { "source": "/social-impact-jobs-gender",          "destination": "/ngo-jobs.html" },
+    { "source": "/social-impact-jobs-human-rights",    "destination": "/ngo-jobs.html" },
+    { "source": "/social-impact-jobs-infrastructure",  "destination": "/ngo-jobs.html" },
+    { "source": "/social-impact-jobs-governance",      "destination": "/ngo-jobs.html" },
+    { "source": "/social-impact-jobs-peacebuilding",   "destination": "/ngo-jobs.html" }
   ]
 }

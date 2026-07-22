@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2VQCQTDVQG"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-2VQCQTDVQG');</script>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="meta-title">NGO &amp; Social Impact Jobs in Africa | Afrorama</title>
+  <meta name="description" id="meta-desc" content="Browse NGO jobs and social impact careers across Africa on Afrorama — Africa's dedicated platform for development, humanitarian and social enterprise roles.">
+  <link rel="canonical" href="https://afrorama.org/opportunities" id="meta-canonical">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Afrorama">
+  <meta property="og:title" id="og-title" content="NGO Jobs in Africa | Afrorama">
+  <meta property="og:description" id="og-desc" content="Browse NGO and social impact jobs across Africa.">
+  <meta property="og:image" content="https://afrorama.org/assets/hero.jpg">
+  <meta name="robots" content="index, follow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .filter-hero {
+      background: var(--green-dk);
+      border-bottom: 3px solid var(--dark);
+      padding: 52px 0 38px;
+    }
+    .filter-hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(255,228,0,.15); border: 1.5px solid rgba(255,228,0,.3);
+      border-radius: 100px; padding: 4px 14px;
+      font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .12em;
+      color: var(--yellow); margin-bottom: 14px;
+      font-family: 'Bebas Neue', Impact, sans-serif;
+    }
+    .filter-hero h1 {
+      font-family: 'Bebas Neue', Impact, sans-serif;
+      font-size: clamp(2.6rem, 6vw, 5rem); font-weight: 400;
+      letter-spacing: .04em; text-transform: uppercase;
+      color: var(--yellow); line-height: 1; margin-bottom: 14px;
+      text-shadow: 3px 3px 0 rgba(0,0,0,.2);
+    }
+    .filter-hero p { color: rgba(255,255,255,.78); font-size: .95rem; line-height: 1.7; max-width: 580px; margin-bottom: 22px; }
+    .filter-pills { display: flex; gap: 7px; flex-wrap: wrap; }
+    .filter-pill {
+      display: inline-flex; align-items: center;
+      background: rgba(255,255,255,.1); border: 1.5px solid rgba(255,255,255,.22);
+      color: rgba(255,255,255,.85); border-radius: 100px;
+      padding: 5px 13px; font-size: .76rem; font-weight: 600;
+      text-decoration: none; transition: background .15s, border-color .15s, color .15s;
+      white-space: nowrap;
+    }
+    .filter-pill:hover { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.5); }
+    .filter-pill.active { background: var(--yellow); border-color: var(--yellow); color: var(--dark); }
+
+    .filter-layout { display: grid; grid-template-columns: 240px 1fr; gap: 28px; padding: 36px 0 80px; align-items: start; }
+
+    .filter-sidebar { display: flex; flex-direction: column; gap: 20px; }
+    .sidebar-panel {
+      background: var(--white); border: 2.5px solid var(--dark);
+      border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: 4px 4px 0 var(--dark);
+    }
+    .sidebar-panel-head { background: var(--dark); padding: 12px 16px; }
+    .sidebar-panel-head h4 { color: var(--yellow); font-family: 'Bebas Neue', Impact, sans-serif; font-size: .9rem; font-weight: 400; letter-spacing: .06em; text-transform: uppercase; margin: 0; }
+    .sidebar-panel-body { padding: 8px 0; }
+    .sidebar-link {
+      display: block; padding: 7px 16px; font-size: .81rem; font-weight: 600;
+      color: var(--dark); text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: background .1s, border-color .1s;
+    }
+    .sidebar-link:hover { background: var(--gray-light); }
+    .sidebar-link.active { border-left-color: var(--orange); color: var(--orange); background: rgba(253,105,37,.06); }
+
+    .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .results-count { font-size: .85rem; color: var(--gray-dark); }
+    .results-count strong { color: var(--dark); }
+
+    .seo-job-card {
+      background: var(--white); border: 2.5px solid var(--dark);
+      border-radius: var(--radius-lg); margin-bottom: 14px;
+      box-shadow: 4px 4px 0 var(--dark);
+      transition: transform .12s, box-shadow .12s;
+      overflow: hidden;
+    }
+    .seo-job-card:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--dark); }
+    .seo-job-inner { padding: 18px 20px 14px; display: flex; gap: 14px; align-items: flex-start; }
+    .seo-org-logo {
+      width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: .78rem; color: #fff; letter-spacing: -.02em;
+      border: 1.5px solid var(--dark);
+    }
+    .seo-job-body { flex: 1; min-width: 0; }
+    .seo-job-title { font-size: .95rem; font-weight: 800; color: var(--dark); line-height: 1.25; margin-bottom: 3px; }
+    .seo-job-org  { font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--gray-dark); margin-bottom: 9px; }
+    .seo-job-meta { display: flex; gap: 14px; flex-wrap: wrap; font-size: .75rem; color: var(--gray-dark); margin-bottom: 10px; }
+    .seo-job-meta span { display: flex; align-items: center; gap: 4px; }
+    .seo-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .seo-tag {
+      font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+      padding: 2px 8px; border-radius: 100px; border: 1.5px solid var(--dark);
+    }
+    .seo-job-footer { padding: 0 20px 16px; display: flex; gap: 8px; align-items: center; }
+
+    .no-jobs { text-align: center; padding: 60px 24px; color: var(--gray-dark); }
+    .no-jobs-icon { font-size: 40px; margin-bottom: 12px; }
+    .no-jobs h3 { color: var(--dark); margin-bottom: 8px; }
+
+    .cross-section { border-top: 2px solid var(--gray-mid); padding-top: 32px; margin-top: 24px; }
+    .cross-section h3 { font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--gray-dark); margin-bottom: 12px; }
+    .cross-grid { display: flex; gap: 7px; flex-wrap: wrap; }
+    .cross-chip {
+      font-size: .77rem; font-weight: 600; color: var(--dark);
+      border: 1.5px solid var(--gray-mid); border-radius: 100px;
+      padding: 4px 12px; text-decoration: none;
+      transition: border-color .12s, background .12s;
+    }
+    .cross-chip:hover { border-color: var(--dark); background: var(--gray-light); }
+
+    .alert-banner {
+      background: var(--yellow); border: 2.5px solid var(--dark);
+      border-radius: var(--radius-lg); padding: 18px 20px;
+      box-shadow: 4px 4px 0 var(--dark); margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    }
+    .alert-banner-text strong { display: block; font-size: .9rem; font-weight: 800; color: var(--dark); }
+    .alert-banner-text span { font-size: .8rem; color: rgba(0,0,0,.6); }
+
+    @media (max-width: 820px) {
+      .filter-layout { grid-template-columns: 1fr; }
+      .filter-sidebar { display: none; }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<nav class="nav" id="main-nav" role="navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+      <span class="nav-logo-text">afrorama</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="opportunities.html">Opportunities</a></li>
+      <li><a href="cv-analyser.html">No Wahala CV</a></li>
+      <li><a href="salary.html">Salary Intelligence</a></li>
+    </ul>
+    <div class="nav-cta-group"></div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile-menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu">
+  <a href="opportunities.html">Opportunities</a>
+  <a href="cv-analyser.html">No Wahala CV</a>
+  <a href="salary.html">Salary Intelligence</a>
+</div>
+
+<!-- HERO -->
+<section class="filter-hero">
+  <div class="container">
+    <div class="filter-hero-eyebrow">Afrorama Job Board</div>
+    <h1 id="page-h1">NGO Jobs in Africa</h1>
+    <p id="page-desc">Browse social impact jobs and NGO careers across Africa — from major INGOs to local organisations driving change on the ground.</p>
+    <div class="filter-pills" id="country-pills"></div>
+  </div>
+</section>
+
+<!-- MAIN -->
+<main>
+  <div class="container">
+    <div class="filter-layout">
+
+      <!-- Sidebar -->
+      <aside class="filter-sidebar" id="sidebar">
+        <div class="sidebar-panel">
+          <div class="sidebar-panel-head"><h4>By Country</h4></div>
+          <div class="sidebar-panel-body" id="sidebar-countries"></div>
+        </div>
+        <div class="sidebar-panel">
+          <div class="sidebar-panel-head"><h4>By Sector</h4></div>
+          <div class="sidebar-panel-body" id="sidebar-sectors"></div>
+        </div>
+        <div class="sidebar-panel">
+          <div class="sidebar-panel-head"><h4>Tools</h4></div>
+          <div class="sidebar-panel-body" style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+            <a href="/cv-analyser" class="btn btn-primary btn-sm" style="width:100%;justify-content:center;font-size:.78rem;">Score my CV free →</a>
+            <a href="/job-alerts" class="btn btn-outline btn-sm" style="width:100%;justify-content:center;font-size:.78rem;">Get job alerts</a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Jobs -->
+      <div>
+        <div class="alert-banner" id="alert-banner">
+          <div class="alert-banner-text">
+            <strong id="alert-title">Get these jobs by email</strong>
+            <span id="alert-sub">Never miss a new role — free weekly digest.</span>
+          </div>
+          <a href="/job-alerts" class="btn btn-outline btn-sm" style="white-space:nowrap;">Set up alerts →</a>
+        </div>
+
+        <div class="results-header">
+          <span class="results-count" id="results-count">Loading…</span>
+          <a href="/opportunities" class="btn btn-outline btn-sm">All opportunities →</a>
+        </div>
+
+        <div id="jobs-grid" role="list" aria-label="Job listings"></div>
+
+        <!-- Cross-links for internal linking / SEO -->
+        <div class="cross-section" id="cross-section"></div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="footer" aria-label="Site footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="assets/logo-icon.svg" class="footer-logo-icon" alt="" aria-hidden="true">
+          <span style="font-size:1.1rem;font-weight:800;letter-spacing:-.03em;">afrorama</span>
+        </div>
+        <p>Africa's dedicated platform for social impact careers. Connecting talent with organisations driving meaningful change across all 54 countries.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Opportunities</h5>
+        <ul>
+          <li><a href="opportunities.html?type=jobs">Jobs</a></li>
+          <li><a href="opportunities.html?type=internship">Internships</a></li>
+          <li><a href="opportunities.html?type=consultancy">Consultancies</a></li>
+          <li><a href="opportunities.html?type=capacity">Funding &amp; Fellowships</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>By Country</h5>
+        <ul>
+          <li><a href="/ngo-jobs-kenya">NGO Jobs Kenya</a></li>
+          <li><a href="/ngo-jobs-nigeria">NGO Jobs Nigeria</a></li>
+          <li><a href="/ngo-jobs-ghana">NGO Jobs Ghana</a></li>
+          <li><a href="/ngo-jobs-ethiopia">NGO Jobs Ethiopia</a></li>
+          <li><a href="/ngo-jobs-uganda">NGO Jobs Uganda</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="post.html">Post a Role</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Use</a></li>
+          <li><a href="mailto:hello@afrorama.org">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Afrorama. All rights reserved.</span>
+      <span>Africa's #1 social impact job board</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script>
+(function () {
+
+  // ── Config ───────────────────────────────────────────────────
+  const COUNTRIES = {
+    kenya:     { name: 'Kenya',     iso: 'KE', region: 'East Africa',    desc: 'Kenya is home to some of Africa\'s most active NGOs and development organisations, with Nairobi serving as a regional hub for international agencies.' },
+    ghana:     { name: 'Ghana',     iso: 'GH', region: 'West Africa',    desc: 'Ghana\'s stable democracy and growing civil society make it a leading destination for social impact careers in West Africa.' },
+    nigeria:   { name: 'Nigeria',   iso: 'NG', region: 'West Africa',    desc: 'Nigeria hosts a large and diverse social impact sector spanning health, education, climate resilience, and financial inclusion.' },
+    rwanda:    { name: 'Rwanda',    iso: 'RW', region: 'East Africa',    desc: 'Rwanda\'s rapidly growing economy and strong institutions make it an increasingly attractive destination for development sector careers.' },
+    uganda:    { name: 'Uganda',    iso: 'UG', region: 'East Africa',    desc: 'Uganda is a major hub for humanitarian and development work, particularly across health systems and refugee response.' },
+    zambia:    { name: 'Zambia',    iso: 'ZM', region: 'Southern Africa',desc: 'Zambia\'s development sector focuses on health, agriculture, and governance with a growing number of NGO employers across the country.' },
+    tanzania:  { name: 'Tanzania',  iso: 'TZ', region: 'East Africa',    desc: 'Tanzania offers opportunities across health, conservation, agriculture, and education — one of East Africa\'s most active development contexts.' },
+    ethiopia:  { name: 'Ethiopia',  iso: 'ET', region: 'East Africa',    desc: 'Ethiopia hosts major international NGOs, UN agencies, and the African Union, making Addis Ababa a significant social impact hub.' },
+    senegal:   { name: 'Senegal',   iso: 'SN', region: 'West Africa',    desc: 'Senegal serves as a regional anchor for francophone West Africa, with a growing number of humanitarian and development roles based in Dakar.' },
+    morocco:   { name: 'Morocco',   iso: 'MA', region: 'North Africa',   desc: 'Morocco\'s strategic location bridging Africa and Europe makes it a growing base for organisations working across the continent.' },
+  };
+
+  const SECTORS = {
+    health:           { name: 'Health',                          label: 'Health',           desc: 'Public health, community health workers, WASH, disease surveillance, health systems strengthening, and global health careers.' },
+    education:        { name: 'Education',                       label: 'Education',        desc: 'Curriculum development, teacher training, EdTech, literacy programmes, and education policy roles across Africa.' },
+    finance:          { name: 'Finance & Economics',             label: 'Finance',          desc: 'Grants management, financial inclusion, development finance, microfinance, and economic research roles.' },
+    technology:       { name: 'Innovation & Technology',         label: 'Technology',       desc: 'Tech for good: digital health, AgriTech, FinTech for development, civic tech, and data science for social impact.' },
+    agriculture:      { name: 'Agriculture & Food Security',     label: 'Agriculture',      desc: 'Food systems, smallholder farmer support, climate-smart agriculture, nutrition, and food security programming.' },
+    climate:          { name: 'Climate & Environment',           label: 'Climate',          desc: 'Renewable energy, conservation, climate adaptation, WASH, environmental governance, and green economy roles.' },
+    gender:           { name: 'Gender & Social Inclusion',       label: 'Gender',           desc: 'Women\'s economic empowerment, GBV prevention, social protection, disability inclusion, and gender programming.' },
+    'human-rights':   { name: 'Human Rights',                    label: 'Human Rights',     desc: 'Advocacy, legal aid, refugee protection, transitional justice, and human rights monitoring and documentation.' },
+    infrastructure:   { name: 'Infrastructure & Urban Development', label: 'Infrastructure', desc: 'Urban planning, transport, affordable housing, sustainable cities, and infrastructure development in Africa.' },
+    governance:       { name: 'Governance & Public Policy',      label: 'Governance',       desc: 'Policy research, public administration reform, peacebuilding, anti-corruption, and democratic governance.' },
+    peacebuilding:    { name: 'Peacebuilding',                   label: 'Peacebuilding',    desc: 'Conflict prevention, peace mediation, stabilisation, humanitarian response, and post-conflict reconstruction.' },
+  };
+
+  const ORG_COLOURS = ['#DDA63A','#26BDE2','#FD6925','#3F7E44','#DD1367','#00689D','#A21942','#4C9F38','#E5243B','#19486A'];
+  function orgColour(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+    return ORG_COLOURS[Math.abs(h) % ORG_COLOURS.length];
+  }
+  function orgInitials(name) {
+    return name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  }
+  function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+  function daysLeft(deadline) {
+    if (!deadline) return null;
+    return Math.ceil((new Date(deadline) - new Date()) / 86400000);
+  }
+
+  // ── Parse URL slug ────────────────────────────────────────────
+  const path    = window.location.pathname; // e.g. /ngo-jobs-kenya or /social-impact-jobs-health
+  let filterType  = null; // 'country' or 'sector'
+  let filterSlug  = null;
+  let filterConfig = null;
+
+  const countryMatch = path.match(/^\/ngo-jobs-([a-z-]+)$/);
+  const sectorMatch  = path.match(/^\/social-impact-jobs-([a-z-]+)$/);
+
+  if (countryMatch) {
+    filterType   = 'country';
+    filterSlug   = countryMatch[1];
+    filterConfig = COUNTRIES[filterSlug] || null;
+  } else if (sectorMatch) {
+    filterType   = 'sector';
+    filterSlug   = sectorMatch[1];
+    filterConfig = SECTORS[filterSlug] || null;
+  }
+
+  // ── Update SEO meta tags ──────────────────────────────────────
+  function setMeta() {
+    let title, desc, canonical;
+    if (filterType === 'country' && filterConfig) {
+      title     = `NGO Jobs in ${filterConfig.name} | Social Impact Careers | Afrorama`;
+      desc      = `Find NGO jobs and social impact careers in ${filterConfig.name}. Browse the latest openings in international development, humanitarian aid, and social enterprise.`;
+      canonical = `https://afrorama.org/ngo-jobs-${filterSlug}`;
+    } else if (filterType === 'sector' && filterConfig) {
+      title     = `Social Impact Jobs in ${filterConfig.name} | Africa | Afrorama`;
+      desc      = `Browse ${filterConfig.name} jobs across Africa's social impact sector. Find NGO, INGO, and social enterprise roles on Afrorama.`;
+      canonical = `https://afrorama.org/social-impact-jobs-${filterSlug}`;
+    } else {
+      title     = 'NGO Jobs in Africa | Social Impact Careers | Afrorama';
+      desc      = 'Browse NGO jobs and social impact careers across Africa on Afrorama — the continent\'s dedicated platform for development, humanitarian and social enterprise roles.';
+      canonical = 'https://afrorama.org/opportunities';
+    }
+    document.getElementById('meta-title').textContent     = title;
+    document.getElementById('meta-desc').setAttribute('content', desc);
+    document.getElementById('meta-canonical').setAttribute('href', canonical);
+    document.getElementById('og-title').setAttribute('content', title);
+    document.getElementById('og-desc').setAttribute('content', desc);
+    document.title = title;
+  }
+
+  // ── Update hero ───────────────────────────────────────────────
+  function setHero() {
+    const h1   = document.getElementById('page-h1');
+    const pdesc = document.getElementById('page-desc');
+    const alertTitle = document.getElementById('alert-title');
+    const alertSub   = document.getElementById('alert-sub');
+
+    if (filterType === 'country' && filterConfig) {
+      h1.textContent    = `NGO Jobs in ${filterConfig.name}`;
+      pdesc.textContent = filterConfig.desc;
+      alertTitle.textContent = `Get ${filterConfig.name} NGO jobs by email`;
+      alertSub.textContent   = `Free weekly digest of the latest openings in ${filterConfig.name}.`;
+    } else if (filterType === 'sector' && filterConfig) {
+      h1.textContent    = `${filterConfig.name} Jobs in Africa`;
+      pdesc.textContent = filterConfig.desc;
+      alertTitle.textContent = `Get ${filterConfig.label} jobs by email`;
+      alertSub.textContent   = `Weekly digest of ${filterConfig.label.toLowerCase()} roles across Africa's social impact sector.`;
+    } else {
+      h1.textContent    = 'NGO Jobs in Africa';
+      pdesc.textContent = 'Browse social impact jobs and NGO careers across Africa — from major INGOs to local organisations driving change on the ground.';
+    }
+  }
+
+  // ── Render country pills in hero ──────────────────────────────
+  function renderPills() {
+    const container = document.getElementById('country-pills');
+    const entries = filterType === 'sector' ? Object.entries(SECTORS) : Object.entries(COUNTRIES);
+    const prefix  = filterType === 'sector' ? '/social-impact-jobs-' : '/ngo-jobs-';
+    container.innerHTML = entries.slice(0, 10).map(([slug, cfg]) => {
+      const active = slug === filterSlug ? ' active' : '';
+      const label  = filterType === 'sector' ? cfg.label : cfg.name;
+      return `<a href="${prefix}${slug}" class="filter-pill${active}">${esc(label)}</a>`;
+    }).join('');
+  }
+
+  // ── Render sidebar ────────────────────────────────────────────
+  function renderSidebar() {
+    const cEl = document.getElementById('sidebar-countries');
+    const sEl = document.getElementById('sidebar-sectors');
+    cEl.innerHTML = Object.entries(COUNTRIES).map(([slug, cfg]) => {
+      const active = filterType === 'country' && slug === filterSlug ? ' active' : '';
+      return `<a href="/ngo-jobs-${slug}" class="sidebar-link${active}">${esc(cfg.name)}</a>`;
+    }).join('');
+    sEl.innerHTML = Object.entries(SECTORS).map(([slug, cfg]) => {
+      const active = filterType === 'sector' && slug === filterSlug ? ' active' : '';
+      return `<a href="/social-impact-jobs-${slug}" class="sidebar-link${active}">${esc(cfg.label)}</a>`;
+    }).join('');
+  }
+
+  // ── Render job cards ──────────────────────────────────────────
+  function renderJobs(jobs) {
+    const grid   = document.getElementById('jobs-grid');
+    const count  = document.getElementById('results-count');
+    const today  = new Date().toISOString().split('T')[0];
+    const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const active = jobs.filter(j => {
+      if (j.deadline) return j.deadline >= today;
+      return new Date(j.created_at || j.posted) >= cutoff;
+    });
+
+    count.innerHTML = `<strong>${active.length}</strong> open role${active.length !== 1 ? 's' : ''}`;
+
+    if (!active.length) {
+      grid.innerHTML = `<div class="no-jobs">
+        <div class="no-jobs-icon">🔍</div>
+        <h3>No current openings</h3>
+        <p>Check back soon — we add new roles daily. You can also <a href="/job-alerts" style="color:var(--dark);font-weight:700;">set up email alerts</a> to be notified the moment something matches.</p>
+        <a href="/opportunities" class="btn btn-primary" style="margin-top:16px;">Browse all opportunities →</a>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = active.map(j => {
+      const colour  = orgColour(j.organisation || '');
+      const initials = orgInitials(j.organisation || '?');
+      const days    = daysLeft(j.deadline);
+      const urgent  = days !== null && days <= 7;
+      const typeMap = { jobs: 'Job', internship: 'Internship', consultancy: 'Consultancy', capacity: 'Fellowship' };
+      const typeLabel = typeMap[j.type] || 'Role';
+
+      return `<article class="seo-job-card" role="listitem">
+        <div class="seo-job-inner">
+          <div class="seo-org-logo" style="background:${colour};">${esc(initials)}</div>
+          <div class="seo-job-body">
+            <h2 class="seo-job-title">${esc(j.title)}</h2>
+            <div class="seo-job-org">${esc(j.organisation || '')}</div>
+            <div class="seo-job-meta">
+              ${j.location ? `<span><svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${esc(j.location)}</span>` : ''}
+              ${j.deadline ? `<span style="color:${urgent ? 'var(--orange)' : 'inherit'};">${urgent ? '⚠ ' : ''}${days === 0 ? 'Closes today' : days === 1 ? '1 day left' : `${days}d left`}</span>` : ''}
+              ${j.salary && j.salary !== 'See listing' ? `<span>💰 ${esc(j.salary)}</span>` : ''}
+            </div>
+            <div class="seo-tags">
+              <span class="seo-tag">${esc(typeLabel)}</span>
+              ${j.sector ? `<span class="seo-tag" style="background:rgba(63,126,68,.08);border-color:#3F7E44;color:#275a2a;">${esc(j.sector.split('&')[0].trim())}</span>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="seo-job-footer">
+          <a href="${esc(j.apply_url || '#')}" class="btn btn-primary btn-sm" target="_blank" rel="noopener">Apply now →</a>
+          <a href="/opportunities" class="btn btn-outline btn-sm">View similar</a>
+        </div>
+      </article>`;
+    }).join('');
+
+    // JSON-LD structured data for Google Jobs
+    const ld = {
+      '@context': 'https://schema.org',
+      '@graph': active.slice(0, 20).map(j => ({
+        '@type': 'JobPosting',
+        title: j.title,
+        description: (j.description || '').replace(/[•\n]/g, ' ').trim().slice(0, 500),
+        hiringOrganization: { '@type': 'Organization', name: j.organisation },
+        jobLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressCountry: j.country || '', addressLocality: j.location || '' } },
+        datePosted: j.posted || '',
+        validThrough: j.deadline || '',
+        employmentType: j.type === 'internship' ? 'INTERN' : j.type === 'consultancy' ? 'CONTRACTOR' : 'FULL_TIME',
+        url: j.apply_url || '',
+      })),
+    };
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(ld);
+    document.head.appendChild(script);
+  }
+
+  // ── Render cross-links ────────────────────────────────────────
+  function renderCrossLinks() {
+    const el = document.getElementById('cross-section');
+    const otherCountries = Object.entries(COUNTRIES)
+      .filter(([slug]) => slug !== filterSlug)
+      .map(([slug, cfg]) => `<a href="/ngo-jobs-${slug}" class="cross-chip">${esc(cfg.name)}</a>`)
+      .join('');
+    const otherSectors = Object.entries(SECTORS)
+      .filter(([slug]) => slug !== filterSlug)
+      .map(([slug, cfg]) => `<a href="/social-impact-jobs-${slug}" class="cross-chip">${esc(cfg.label)}</a>`)
+      .join('');
+    el.innerHTML = `
+      <h3>Browse NGO Jobs by Country</h3>
+      <div class="cross-grid">${otherCountries}</div>
+      <h3 style="margin-top:20px;">Browse by Sector</h3>
+      <div class="cross-grid">${otherSectors}</div>
+      <div style="margin-top:20px;">
+        <a href="/opportunities" style="font-size:.82rem;font-weight:700;color:var(--dark);">← See all opportunities on Afrorama</a>
+      </div>`;
+  }
+
+  // ── Load jobs from Supabase ───────────────────────────────────
+  async function loadJobs() {
+    const Supa = window.AfroramaSupabase;
+    if (!Supa || Supa.isDemoMode()) {
+      document.getElementById('results-count').textContent = 'Sign in to see live jobs';
+      return;
+    }
+    const sb = Supa.getSupabase();
+    let query = sb.from('listings')
+      .select('id, title, organisation, type, sector, location, country, deadline, posted, salary, apply_url, created_at, description')
+      .order('posted', { ascending: false })
+      .limit(100);
+
+    if (filterType === 'country' && filterConfig) {
+      query = query.eq('country', filterConfig.iso);
+    } else if (filterType === 'sector' && filterConfig) {
+      query = query.eq('sector', filterConfig.name);
+    }
+
+    const { data, error } = await query;
+    if (error) { console.error('[ngo-jobs] Supabase error:', error); return; }
+    renderJobs(data || []);
+  }
+
+  // ── Init ──────────────────────────────────────────────────────
+  setMeta();
+  setHero();
+  renderPills();
+  renderSidebar();
+  renderCrossLinks();
+  loadJobs();
+
+})();
+</script>
+</body>
+</html>
