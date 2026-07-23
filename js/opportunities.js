@@ -509,10 +509,10 @@
     if (state.query) {
       const q = state.query.toLowerCase();
       jobs = jobs.filter(j =>
-        j.title.toLowerCase().includes(q) ||
-        j.organisation.toLowerCase().includes(q) ||
-        j.sector.toLowerCase().includes(q) ||
-        j.location.toLowerCase().includes(q)
+        (j.title        || '').toLowerCase().includes(q) ||
+        (j.organisation || '').toLowerCase().includes(q) ||
+        (j.sector       || '').toLowerCase().includes(q) ||
+        (j.location     || '').toLowerCase().includes(q)
       );
     }
     jobs.sort((a, b) => {
