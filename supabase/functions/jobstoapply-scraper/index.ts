@@ -59,14 +59,40 @@ function countryToIso(name: string): string {
   return COUNTRY_ISO[(name || '').toLowerCase()] || 'ZZ';
 }
 
+const CSS_JUNK = /img:is\(|sourceURL=|contain-intrinsic-size|relatedParts\.push|metaItemHTML|hasMetaValue|filterValueLinks|escapeHtml\(/;
+
 function stripHtml(html: string): string {
-  return (html || '')
+  const text = (html || '')
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<style[\s\S]*?<\/style>/gi, '')
     .replace(/<\/?(li|p|br|h[1-6]|div|tr|td|th|ul|ol)[^>]*>/gi, '\n')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
     .replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+  // Discard if the result contains leaked CSS/JS rather than prose
+  if (CSS_JUNK.test(text)) return '';
+  return text;
+}
+
+function isCleanField(value: string): boolean {
+  return !CSS_JUNK.test(value || '');
+}
+
+// Returns true if the job entry looks like valid data worth importing
+function isValidJob(job: JtaJob): boolean {
+  const t = (job.title || '').trim();
+  const o = (job.org   || '').trim();
+  // Blank or suspiciously short title
+  if (!t || t.length < 5) return false;
+  // Section headings, about pages, site-level pages
+  if (/^(major\s+respons|qualifications|requirements|duties|about\s+the|key\s+respons|open\s+jobs|jobstoapply)/i.test(t)) return false;
+  // Title contains " - JobsToApply" suffix (site page title)
+  if (/jobstoapply/i.test(t)) return false;
+  // Org implausibly short (e.g. "II")
+  if (o.length < 3) return false;
+  // Location or other fields contain leaked CSS/JS
+  if (!isCleanField(job.location) || !isCleanField(job.country)) return false;
+  return true;
 }
 
 function mapType(typeStr: string): string {
@@ -171,6 +197,13 @@ Deno.serve(async () => {
   for (const job of allJobs) {
     const dbId = `jta-${job.id}`;
     if (existingSet.has(dbId)) { skipped++; continue; }
+
+    // Skip junk entries (bad title, implausible org)
+    if (!isValidJob(job)) {
+      console.log(`[jobstoapply] Skip (invalid): "${job.title}" @ "${job.org}"`);
+      skipped++;
+      continue;
+    }
 
     // Skip expired
     if (job.deadline && job.deadline < today) { skipped++; continue; }
