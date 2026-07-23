@@ -28,7 +28,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS job_alert_subscriptions_email_uq
 ALTER TABLE public.job_alert_subscriptions ENABLE ROW LEVEL SECURITY;
 
 -- 4. Allow anyone to subscribe (anon INSERT)
-CREATE POLICY IF NOT EXISTS "anyone_can_subscribe"
+CREATE POLICY "anyone_can_subscribe"
   ON public.job_alert_subscriptions
   FOR INSERT
   WITH CHECK (true);

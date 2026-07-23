@@ -43,15 +43,30 @@ const TO_EMAIL         = 'hello@afrorama.org';
 const SITE_URL         = 'https://www.afrorama.org';
 const JOB_LISTING_PRICE = 29;
 
-async function sendEmail(subject: string, html: string) {
+function buildCsv(listings: { title: string; organisation: string; type: string; country: string; location: string; deadline: string; paid_listing: boolean; payment_confirmed: boolean; apply_clicks: number; created_at: string }[]): string {
+  const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const header = ['Title','Organisation','Type','Country','Location','Deadline','Paid','Revenue Confirmed','Apply Clicks','Posted'];
+  const rows = listings.map(l => [
+    esc(l.title), esc(l.organisation), esc(l.type), esc(l.country), esc(l.location),
+    esc(l.deadline), esc(l.paid_listing ? 'Yes' : 'No'), esc(l.payment_confirmed ? 'Yes' : 'No'),
+    esc(l.apply_clicks), esc(l.created_at?.slice(0, 10)),
+  ]);
+  return [header.join(','), ...rows.map(r => r.join(','))].join('\n');
+}
+
+async function sendEmail(subject: string, html: string, csvContent: string, csvFilename: string) {
   if (!RESEND_API_KEY) {
     console.log(`[monthly-report] RESEND_API_KEY not set — would send: ${subject}`);
     return true;
   }
+  const csvBase64 = btoa(unescape(encodeURIComponent(csvContent)));
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: FROM_EMAIL, to: TO_EMAIL, subject, html }),
+    body: JSON.stringify({
+      from: FROM_EMAIL, to: TO_EMAIL, subject, html,
+      attachments: [{ filename: csvFilename, content: csvBase64 }],
+    }),
   });
   if (!res.ok) {
     console.error('[monthly-report] Email send failed:', await res.text());
@@ -125,9 +140,10 @@ Deno.serve(async () => {
 
   const { data: monthListings, error: listErr } = await supabase
     .from('listings')
-    .select('title, organisation, paid_listing, payment_confirmed, apply_clicks, created_at')
+    .select('title, organisation, type, country, location, deadline, paid_listing, payment_confirmed, apply_clicks, created_at')
     .gte('created_at', lastMonthStart.toISOString())
-    .lt('created_at', thisMonthStart.toISOString());
+    .lt('created_at', thisMonthStart.toISOString())
+    .order('created_at', { ascending: true });
 
   if (listErr) {
     console.error('[monthly-report] Listings query failed:', listErr.message);
@@ -164,9 +180,14 @@ Deno.serve(async () => {
 
   await supabase.from('analytics_snapshots').insert({ total_apply_clicks: totalApplyClicksNow });
 
+  const csvFilename = `afrorama-${lastMonthStart.toISOString().slice(0, 7)}.csv`;
+  const csvContent  = buildCsv(monthListings || []);
+
   const ok = await sendEmail(
     `Afrorama — ${label} report`,
     emailHTML({ label, newListings, paidListings, revenue, clickGrowth, topListings }),
+    csvContent,
+    csvFilename,
   );
 
   console.log(`[monthly-report] Done. Sent: ${ok}, newListings: ${newListings}, paidListings: ${paidListings}`);
