@@ -95,11 +95,16 @@ function isValidJob(job: JtaJob): boolean {
   return true;
 }
 
-function mapType(typeStr: string): string {
+function mapType(typeStr: string, title = ''): string {
+  const ti = title.toLowerCase();
+  // Title takes priority — a role called "Consultant" is consultancy regardless of how the source tagged it
+  if (/\bconsult(ant|ancy|ing)?\b/i.test(ti)) return 'consultancy';
+  if (/\bfellow(ship)?\b/i.test(ti))          return 'capacity';
+  if (/\bintern(ship)?\b/i.test(ti))          return 'internship';
   const t = (typeStr || '').toLowerCase();
-  if (/intern|trainee|volunteer/i.test(t))  return 'internship';
+  if (/intern|trainee|volunteer/i.test(t))    return 'internship';
   if (/consult|contract|freelance|temp/i.test(t)) return 'consultancy';
-  if (/fellow|grant|capacity/i.test(t))     return 'capacity';
+  if (/fellow|grant|capacity/i.test(t))       return 'capacity';
   return 'jobs';
 }
 
@@ -221,7 +226,7 @@ Deno.serve(async () => {
 
     const country     = countryToIso(job.country);
     const sector      = mapSector(`${job.title} ${job.org} ${bodyText}`);
-    const type        = mapType(job.type);
+    const type        = mapType(job.type, job.title);
     const description = await formatWithClaude(job.title, job.org, bodyText);
     const salary      = (job.salary_label || '').replace(/,$/, '').trim() || 'See listing';
 
