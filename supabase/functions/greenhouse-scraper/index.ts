@@ -34,6 +34,7 @@ const ORGS: { token: string; name: string; country: string }[] = [
   { token: 'educate',                                   name: 'Educate!',                                 country: 'UG' },
   { token: 'oneacrefundzambia',                         name: 'One Acre Fund Zambia',                     country: 'ZM' },
   { token: 'thenewyorktimes',                           name: 'The New York Times',                       country: 'KE' },
+  { token: 'oneacrefund',                               name: 'One Acre Fund',                            country: 'KE' },
   { token: 'oafkenya',                                  name: 'One Acre Fund Kenya',                      country: 'KE' },
   { token: 'tiltingfuturescareers',                     name: 'Tilting Futures',                          country: 'KE' },
   { token: 'oneacrefundmalawi',                         name: 'One Acre Fund Malawi',                     country: 'MW' },
