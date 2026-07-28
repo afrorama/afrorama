@@ -203,7 +203,7 @@
         </div>
       </div>
       <div class="song-preview">
-        <div class="song-flag-big" id="song-flag">🇿🇦</div>
+        <div class="song-flag-big" id="song-flag">🌍</div>
         <div>
           <div class="song-preview-text" id="song-preview-title">She Did It Again — Tyla</div>
           <div class="song-preview-sub" id="song-preview-country">South Africa</div>
@@ -276,11 +276,8 @@ const COUNTRY_NAMES = {
   NO:'Norway', DK:'Denmark', CA:'Canada', AU:'Australia',
 };
 
-function toFlag(iso) {
-  if (!iso) return '🌍';
-  const c = iso.toUpperCase().replace(/[^A-Z]/g, '');
-  if (c.length !== 2) return '🌍';
-  return c.split('').map(ch => String.fromCodePoint(ch.charCodeAt(0) + 127397)).join('');
+function toFlag(_iso) {
+  return '🌍';
 }
 
 function locationDisplay(listing) {
@@ -351,7 +348,7 @@ function updateSongPreview() {
   const title  = document.getElementById('song-title').value.trim();
   const artist = document.getElementById('song-artist').value.trim();
   const iso    = document.getElementById('song-iso').value.trim().toUpperCase();
-  document.getElementById('song-flag').textContent = iso.length === 2 ? toFlag(iso) : '🎵';
+  document.getElementById('song-flag').textContent = '🌍';
   document.getElementById('song-preview-title').textContent = [title, artist].filter(Boolean).join(' — ') || '—';
   document.getElementById('song-preview-country').textContent = COUNTRY_NAMES[iso] || iso || '';
 }
