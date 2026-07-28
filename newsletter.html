@@ -309,27 +309,55 @@ function shuffle(arr) {
   return arr;
 }
 
-// Diversity algorithm: cap at maxPerCountry per country, fill remaining with overflow
-function diversify(listings, targetCount, maxPerCountry = 2) {
+// Normalise org name for grouping — prevents UNDP Kenya + UNDP Uganda counting as different orgs
+function baseOrg(orgName) {
+  const n = (orgName || '').trim().toLowerCase();
+  if (n.startsWith('undp'))                                  return 'UNDP';
+  if (n.startsWith('unicef'))                                return 'UNICEF';
+  if (n.startsWith('unhcr'))                                 return 'UNHCR';
+  if (n.startsWith('wfp') || n.includes('world food prog')) return 'WFP';
+  if (n.startsWith('who') || n.includes('world health org')) return 'WHO';
+  if (n.startsWith('ilo') || n.includes('international labour')) return 'ILO';
+  if (n.startsWith('fao') || n.includes('food and agric'))  return 'FAO';
+  if (n.startsWith('iom') || n.includes('intl org for migr')) return 'IOM';
+  if (n.startsWith('unops'))                                 return 'UNOPS';
+  if (n.startsWith('unwomen') || n === 'un women')          return 'UN Women';
+  if (n.startsWith('unep'))                                  return 'UNEP';
+  if (n.startsWith('one acre fund'))                        return 'One Acre Fund';
+  if (n.startsWith('save the children'))                    return 'Save the Children';
+  if (n.startsWith('world vision'))                         return 'World Vision';
+  return (orgName || '').slice(0, 30);
+}
+
+// Diversity algorithm: cap by country AND org to ensure variety
+function diversify(listings, targetCount, maxPerCountry = 2, maxPerOrg = 2) {
   const countryCount = {};
+  const orgCount = {};
   const chosen = [];
   const overflow = [];
 
   for (const l of listings) {
-    const key = l.country || '_unknown';
-    const n   = countryCount[key] || 0;
-    if (n < maxPerCountry) {
+    const countryKey = l.country || '_unknown';
+    const orgKey     = baseOrg(l.organisation);
+    const cN = countryCount[countryKey] || 0;
+    const oN = orgCount[orgKey] || 0;
+    if (cN < maxPerCountry && oN < maxPerOrg) {
       chosen.push(l);
-      countryCount[key] = n + 1;
+      countryCount[countryKey] = cN + 1;
+      orgCount[orgKey]         = oN + 1;
     } else {
       overflow.push(l);
     }
   }
 
-  // If we're under target, fill from overflow (less diverse, but better than empty)
+  // If we're under target, fill from overflow prioritising orgs not yet represented
   const result = chosen.slice(0, targetCount);
   if (result.length < targetCount) {
-    for (const l of overflow) {
+    // Sort overflow so unseen orgs come first
+    const seenOrgs = new Set(result.map(l => baseOrg(l.organisation)));
+    const fresh = overflow.filter(l => !seenOrgs.has(baseOrg(l.organisation)));
+    const rest  = overflow.filter(l =>  seenOrgs.has(baseOrg(l.organisation)));
+    for (const l of [...fresh, ...rest]) {
       if (result.length >= targetCount) break;
       result.push(l);
     }
