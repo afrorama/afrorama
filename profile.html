@@ -183,6 +183,9 @@
                 <label class="check-item"><input type="checkbox" value="capacity"    class="pref-check"> Fellowships</label>
               </div>
             </div>
+            <div style="margin-top:20px;">
+              <button class="btn btn-primary" id="btn-save-profile-bottom" style="width:100%;">Save changes</button>
+            </div>
             <div id="save-msg" style="font-size:.8rem;color:var(--green-dk);margin-top:8px;display:none;">Changes saved.</div>
           </div>
         </div>
@@ -340,8 +343,8 @@
       if (cb) cb.checked = true;
     });
 
-    // Save profile
-    document.getElementById('btn-save-profile').addEventListener('click', async () => {
+    // Save profile — shared handler for both top and bottom buttons
+    const doSave = async () => {
       const firstName = document.getElementById('edit-firstname').value.trim();
       const lastName  = document.getElementById('edit-lastname').value.trim();
       const fullName  = [firstName, lastName].filter(Boolean).join(' ');
@@ -374,7 +377,9 @@
       msg.style.display = 'block';
       document.getElementById('setup-banner').style.display = 'none';
       setTimeout(() => msg.style.display = 'none', 2500);
-    });
+    };
+    document.getElementById('btn-save-profile').addEventListener('click', doSave);
+    document.getElementById('btn-save-profile-bottom').addEventListener('click', doSave);
 
     // Score history chart
     const history = profile?.cv_score_history || [];

@@ -381,27 +381,29 @@
      SEO — JobPosting JSON-LD schema (injected when jobs render)
   ================================================================= */
   function injectJobPostingSchema(jobs) {
-    const schema = jobs.slice(0, 10).map(j => ({
-      '@context':         'https://schema.org',
-      '@type':            'JobPosting',
-      'title':            j.title,
-      'description':      j.description,
-      'datePosted':       j.posted,
-      'validThrough':     j.deadline,
-      'employmentType':   j.type === 'jobs' ? 'FULL_TIME' : j.type === 'internship' ? 'INTERN' : 'CONTRACTOR',
-      'hiringOrganization': { '@type': 'Organization', 'name': j.organisation },
-      'jobLocation': {
-        '@type': 'Place',
-        'address': {
-          '@type':           'PostalAddress',
-          'addressLocality': j.location,
-          'addressCountry':  j.country,
+    const schema = jobs.slice(0, 10).map(j => {
+      const entry = {
+        '@context':       'https://schema.org',
+        '@type':          'JobPosting',
+        'title':          j.title,
+        'description':    j.description,
+        'datePosted':     j.posted,
+        'employmentType': j.type === 'jobs' ? 'FULL_TIME' : j.type === 'internship' ? 'INTERN' : 'CONTRACTOR',
+        'hiringOrganization': { '@type': 'Organization', 'name': j.organisation },
+        'jobLocation': {
+          '@type': 'Place',
+          'address': {
+            '@type':           'PostalAddress',
+            'addressLocality': j.location,
+            'addressRegion':   j.location,
+            'addressCountry':  j.country,
+          },
         },
-      },
-      'baseSalary': j.salary && j.salary !== 'Not specified' ? {
-        '@type': 'MonetaryAmount', 'currency': 'USD', 'value': j.salary,
-      } : undefined,
-    }));
+      };
+      // Only include validThrough when a real deadline exists
+      if (j.deadline) entry.validThrough = j.deadline;
+      return entry;
+    });
     const el = document.getElementById('jobposting-schema');
     if (el) el.textContent = JSON.stringify(schema);
   }

@@ -1,0 +1,52 @@
+# Afrorama
+
+> Afrorama is Africa's dedicated social impact job board, aggregating 1,000+ live roles across NGOs, development finance institutions (DFIs), INGOs, consultancies, fellowships and internships across all 54 African countries. Updated daily.
+
+## What Afrorama is
+
+Afrorama is the go-to platform for professionals seeking social impact careers in Africa. It aggregates job listings from organisations including GiveDirectly, One Acre Fund, IRC, UNHCR, Mercy Corps, Save the Children, Oxfam, CARE, World Vision, GIZ, Palladium, FHI 360, Catholic Relief Services, Conservation International, The Nature Conservancy, and many more.
+
+Job listings are sourced from Greenhouse ATS boards, ReliefWeb, UNDP, UNICEF, the African Development Bank (AfDB), the African Union, and other sector-specific sources. All listings are verified, AI-summarised and updated daily.
+
+## Job types covered
+
+- **Jobs**: Full-time and part-time professional roles
+- **Internships & Volunteering**: Paid and unpaid internships, volunteer programmes
+- **Consultancies & Research**: Short-term consultancy contracts, research assignments
+- **Fellowships & Funding**: Fellowship programmes, grants, capacity-building opportunities
+
+## Sectors covered
+
+Agriculture & Food Security, Climate & Environment, Education, Finance & Economics, Gender & Social Inclusion, Governance & Public Policy, Health, Human Rights, Infrastructure & Urban Development, Innovation & Technology, Peacebuilding & Conflict Resolution
+
+## Countries covered
+
+All 54 African countries, with the highest concentration of listings in Kenya, South Africa, Nigeria, Ethiopia, Ghana, Uganda, Rwanda, Senegal, Tanzania, Zambia, Mozambique, Malawi and Zimbabwe. European-based roles with Africa focus (London, Paris, Brussels, Geneva) are also included.
+
+## Key pages
+
+- [All Opportunities](https://afrorama.org/opportunities.html): Full searchable and filterable job board with 1,000+ live listings
+- [NGO Jobs in Kenya](https://afrorama.org/jobs-kenya.html): Social impact jobs in Kenya — Nairobi, Mombasa and beyond
+- [NGO Jobs in South Africa](https://afrorama.org/jobs-south-africa.html): Social impact jobs in South Africa — Johannesburg, Cape Town, Durban
+- [NGO Jobs in Nigeria](https://afrorama.org/jobs-nigeria.html): Social impact jobs in Nigeria — Lagos, Abuja and across the country
+- [NGO Jobs in Ethiopia](https://afrorama.org/jobs-ethiopia.html): Social impact jobs in Ethiopia — Addis Ababa and regional offices
+- [NGO Jobs in Ghana](https://afrorama.org/jobs-ghana.html): Social impact jobs in Ghana — Accra and beyond
+- [NGO Jobs in Uganda](https://afrorama.org/jobs-uganda.html): Social impact jobs in Uganda — Kampala and field offices
+- [NGO Jobs in Rwanda](https://afrorama.org/jobs-rwanda.html): Social impact jobs in Rwanda — Kigali and across the country
+- [NGO Jobs in Senegal](https://afrorama.org/jobs-senegal.html): Social impact jobs in Senegal — Dakar and francophone West Africa
+- [Salary Intelligence](https://afrorama.org/salary.html): Crowdsourced salary data for the African development sector
+- [No Wahala CV Booster](https://afrorama.org/cv-analyser.html): AI-powered CV analysis and optimisation for Africa-focused roles
+- [Post a Role](https://afrorama.org/post.html): For organisations posting social impact jobs in Africa
+- [About Afrorama](https://afrorama.org/about.html): Mission, team and background
+
+## Data freshness
+
+Listings are scraped and updated daily. Each listing includes: job title, organisation, location, country, sector, deadline, salary/stipend (where available), and a structured summary.
+
+## Who uses Afrorama
+
+Development sector professionals, NGO workers, recent graduates, researchers, consultants and changemakers across Africa and the diaspora seeking roles with social impact organisations operating on the continent.
+
+## Contact
+
+hello@afrorama.org
