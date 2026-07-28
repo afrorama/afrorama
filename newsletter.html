@@ -594,7 +594,7 @@ document.getElementById('btn-generate').addEventListener('click', () => {
     lines.push(section.label);
     items.forEach(l => {
       const { flag, name } = locationDisplay(l);
-      const url = `https://www.afrorama.org/opportunities.html?job=${encodeURIComponent(l.id)}&utm_source=afrorama&utm_medium=newsletter`;
+      const url = `https://www.afrorama.org/opportunities?job=${encodeURIComponent(l.id)}&utm_source=afrorama&utm_medium=newsletter`;
       lines.push(`${flag} ${name} | ${l.organisation} | ${l.title}: ${url}`);
     });
   });
