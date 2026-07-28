@@ -839,7 +839,15 @@
     // Deep-link: auto-open modal if ?job=ID is in the URL
     const deepJobId = new URLSearchParams(location.search).get('job');
     if (deepJobId) {
-      const deepJob = allJobs.find(j => String(j.id) === deepJobId);
+      let deepJob = allJobs.find(j => String(j.id) === deepJobId);
+      if (!deepJob) {
+        // Not in current results — fetch directly by ID from DB
+        const sb = window.AfroramaSupabase?.getSupabase();
+        if (sb) {
+          const { data } = await sb.from('listings').select('*').eq('id', deepJobId).single();
+          if (data) { deepJob = data; allJobs.unshift(data); }
+        }
+      }
       if (deepJob) setTimeout(() => openModal(deepJob.id), 300);
     }
 
