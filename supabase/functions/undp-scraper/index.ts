@@ -14,6 +14,7 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { trySubmitSalary } from '../_shared/currency.ts';
+import { sanitizeBullets, sanitizeSalary } from '../_shared/claude.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -117,9 +118,9 @@ async function formatWithClaude(title: string, org: string, description: string)
     if (!res.ok) return { description: fallbackDesc(description, org), salary: 'See listing' };
     const data = await res.json() as { content: { text: string }[] };
     const raw = data.content?.[0]?.text?.trim() || '';
-    const bullets = raw.match(/BULLETS:\s*([\s\S]*?)(?=SALARY:|$)/i)?.[1]?.trim() || fallbackDesc(description, org);
-    const salaryRaw = raw.match(/SALARY:\s*(.+)/i)?.[1]?.trim() || 'none';
-    return { description: bullets + DISCLAIMER, salary: salaryRaw.toLowerCase() === 'none' ? 'See listing' : salaryRaw };
+    const bullets = sanitizeBullets(raw.match(/BULLETS:\s*([\s\S]*?)(?=SALARY:|$)/i)?.[1]?.trim() || '', fallbackDesc(description, org));
+    const salaryRaw = sanitizeSalary(raw.match(/SALARY:\s*(.+)/i)?.[1]?.trim() || 'none');
+    return { description: bullets + DISCLAIMER, salary: salaryRaw };
   } catch { return { description: fallbackDesc(description, org), salary: 'See listing' }; }
 }
 

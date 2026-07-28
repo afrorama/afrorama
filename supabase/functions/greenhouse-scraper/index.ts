@@ -10,6 +10,7 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { trySubmitSalary } from '../_shared/currency.ts';
+import { sanitizeBullets, sanitizeSalary } from '../_shared/claude.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -85,6 +86,21 @@ const ORGS: { token: string; name: string; country: string }[] = [
   { token: 'oxfamamerica',                              name: 'Oxfam America',                            country: 'KE' },
   { token: 'care',                                      name: 'CARE',                                     country: 'KE' },
   { token: 'worldvision',                               name: 'World Vision',                             country: 'KE' },
+  // Impact investors & DFIs
+  { token: 'omidyarnetwork',                            name: 'Omidyar Network',                          country: 'KE' },
+  { token: 'luminate',                                  name: 'Luminate',                                 country: 'KE' },
+  { token: 'skoll',                                     name: 'Skoll Foundation',                         country: 'KE' },
+  { token: 'rockefellerfoundation',                     name: 'Rockefeller Foundation',                   country: 'KE' },
+  { token: 'fordfoundation',                            name: 'Ford Foundation',                          country: 'KE' },
+  { token: 'gatesfoundation',                           name: 'Gates Foundation',                         country: 'KE' },
+  { token: 'opensocietyfoundations',                    name: 'Open Society Foundations',                 country: 'KE' },
+  { token: 'norfund',                                   name: 'Norfund',                                  country: 'KE' },
+  { token: 'villageenterprise',                         name: 'Village Enterprise',                       country: 'KE' },
+  { token: 'rootcapital',                               name: 'Root Capital',                             country: 'KE' },
+  { token: 'icrw',                                      name: 'ICRW',                                     country: 'KE' },
+  { token: 'technoserve',                               name: 'TechnoServe',                              country: 'KE' },
+  { token: 'familyplanning2030',                        name: 'FP2030',                                   country: 'KE' },
+  { token: 'emergent',                                  name: 'Emergent',                                 country: 'KE' },
 ];
 
 const AFRICA_ISO = new Set([
@@ -121,6 +137,16 @@ const COUNTRY_ISO: Record<string, string> = {
   'Lesotho':'LS','Liberia':'LR','Libya':'LY','Madagascar':'MG','Mauritania':'MR',
   'Mauritius':'MU','Morocco':'MA','Sierra Leone':'SL','Togo':'TG','Tunisia':'TN',
 };
+
+// Non-Africa locations that should block import even if an Africa keyword appears
+// (e.g. Greenhouse sometimes appends a regional office name to the duty-station)
+const NON_AFRICA_BLOCKLIST = [
+  'syria', 'iraq', 'afghanistan', 'yemen', 'jordan', 'lebanon', 'turkey',
+  'pakistan', 'bangladesh', 'myanmar', 'ukraine', 'haiti', 'colombia',
+  'der alzor', 'deir ez-zor', 'hasaka', 'aleppo', 'damascus', 'idlib',
+  'kabul', 'kandahar', 'sanaa', "aden", 'mosul', 'basra', 'beirut', 'amman',
+  'ankara', 'islamabad', 'dhaka', 'yangon', 'port-au-prince',
+];
 
 // City → ISO fallback
 const CITY_ISO: Record<string, string> = {
@@ -298,8 +324,8 @@ SALARY: [salary or none]`;
     const bulletMatch = raw.match(/BULLETS:\s*([\s\S]*?)(?=SALARY:|$)/i);
     const salaryMatch = raw.match(/SALARY:\s*(.+)/i);
 
-    const bullets   = bulletMatch?.[1]?.trim() || fallbackDesc(description, org);
-    const salaryRaw = salaryMatch?.[1]?.trim() || 'none';
+    const bullets   = sanitizeBullets(bulletMatch?.[1]?.trim() || '', fallbackDesc(description, org));
+    const salaryRaw = sanitizeSalary(salaryMatch?.[1]?.trim() || 'none');
     const salary    = salaryRaw.toLowerCase() === 'none' ? 'See listing' : salaryRaw;
 
     return { description: bullets + DISCLAIMER, salary };
@@ -311,8 +337,8 @@ SALARY: [salary or none]`;
 Deno.serve(async (req) => {
   console.log('[greenhouse-scraper] Starting...');
 
-  // Batch support — 13 orgs per batch to stay within timeout
-  const batchSize  = 13;
+  // Batch support — 4 orgs per batch to stay within the 150s timeout
+  const batchSize  = 4;
   const batchParam = new URL(req.url).searchParams.get('batch');
   const batch      = Math.max(0, parseInt(batchParam || '0', 10));
   const start      = (batch * batchSize) % ORGS.length;
@@ -322,7 +348,7 @@ Deno.serve(async (req) => {
   let totalImported = 0, totalSkipped = 0;
 
   for (const org of orgs) {
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 100));
 
     try {
       // Greenhouse public board API — returns all jobs with location
@@ -340,39 +366,50 @@ Deno.serve(async (req) => {
       const jobs: any[] = json?.jobs || [];
       console.log(`[greenhouse-scraper] ${org.name}: ${jobs.length} jobs`);
 
+      // Pre-filter to Africa jobs, then check which are already in the DB
+      interface CandidateJob {
+        job: any; jobId: string; dbId: string; locRaw: string; location: { name: string; iso: string };
+      }
+      const candidates: CandidateJob[] = [];
       for (const job of jobs) {
-        const title    = job.title || 'Untitled';
-        const jobId    = String(job.id || '');
+        const jobId = String(job.id || '');
         if (!jobId) continue;
-
-        // Greenhouse location: { name: "Nairobi, Kenya" } — a single string
-        const locRaw = job.location?.name || job.offices?.[0]?.name || '';
-
+        const locRaw         = job.location?.name || job.offices?.[0]?.name || '';
+        const locLower       = locRaw.toLowerCase();
+        if (NON_AFRICA_BLOCKLIST.some(place => locLower.includes(place))) continue;
         const locationByText = isAfricanLocation(locRaw, org.country);
-        const titleSignal    = isAfricanLocation(title, org.country);
-        // Include if location is African OR title signals Africa (catches non-Africa-based Africa roles)
+        const titleSignal    = isAfricanLocation(job.title || '', org.country);
         if (!locationByText && !titleSignal) continue;
-        const location = locationByText || titleSignal!;
+        candidates.push({ job, jobId, dbId: `gh-${org.token}-${jobId}`, locRaw, location: (locationByText || titleSignal)! });
+      }
 
-        // Department from departments array
+      if (candidates.length === 0) continue;
+
+      // Skip jobs already in DB — avoids redundant Claude calls on every run
+      const { data: existing } = await supabase
+        .from('listings').select('id').in('id', candidates.map(c => c.dbId));
+      const existingSet = new Set((existing || []).map((r: any) => r.id));
+
+      for (const { job, jobId, dbId, locRaw, location } of candidates) {
+        if (existingSet.has(dbId)) { totalSkipped++; continue; }
+
+        const title  = job.title || 'Untitled';
         const dept   = job.departments?.[0]?.name || '';
         const sector = mapSector(dept);
-
         const applyUrl = job.absolute_url || `https://boards.greenhouse.io/${org.token}/jobs/${jobId}`;
         const posted   = job.updated_at?.slice(0, 10) || new Date().toISOString().split('T')[0];
 
         const bodyText = stripHtml(job.content || '');
         const deadline = extractDeadline(bodyText);
-        // A deadline found in the text that's already in the past means this
-        // posting is stale — skip it rather than showing it as still open.
         if (deadline && new Date(deadline) < new Date()) {
-          console.log(`[greenhouse-scraper] ${org.name} job ${jobId}: skipping expired posting (closed ${deadline})`);
+          console.log(`[greenhouse-scraper] ${org.name} job ${jobId}: skipping expired (closed ${deadline})`);
+          totalSkipped++;
           continue;
         }
         const { description, salary } = await formatWithClaude(title, org.name, bodyText);
 
         const entry = {
-          id:           `gh-${org.token}-${jobId}`,
+          id:           dbId,
           title,
           organisation: org.name,
           type:         mapType(title),
@@ -382,7 +419,8 @@ Deno.serve(async (req) => {
           deadline,
           posted,
           salary,
-          description, apply_url:    applyUrl,
+          description,
+          apply_url:    applyUrl,
           experience:   null,
           org_domain:   `${org.token}.greenhouse.io`,
           source:       'Greenhouse',
@@ -396,14 +434,17 @@ Deno.serve(async (req) => {
           .upsert(entry, { onConflict: 'id', ignoreDuplicates: false });
 
         if (error) { console.error(`[greenhouse-scraper] Upsert error: ${error.message}`); totalSkipped++; }
-        else totalImported++;
+        else {
+          totalImported++;
+          console.log(`[greenhouse-scraper] ✓ ${title} @ ${org.name}`);
+        }
 
         await trySubmitSalary(supabase, {
           company: org.name, position: title, salaryText: salary,
           experienceText: null, sector, country: location.iso,
         });
 
-        await new Promise(r => setTimeout(r, 150));
+        await new Promise(r => setTimeout(r, 50));
       }
     } catch (err) {
       console.warn(`[greenhouse-scraper] ${org.name} failed:`, (err as Error).message);

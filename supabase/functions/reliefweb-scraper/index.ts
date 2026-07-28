@@ -44,6 +44,7 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { trySubmitSalary } from '../_shared/currency.ts';
+import { sanitizeBullets, sanitizeSalary } from '../_shared/claude.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -175,8 +176,8 @@ SALARY: [salary or none]`;
     const bulletMatch = raw.match(/BULLETS:\s*([\s\S]*?)(?=SALARY:|$)/i);
     const salaryMatch = raw.match(/SALARY:\s*(.+)/i);
 
-    const bullets   = bulletMatch?.[1]?.trim() || fallbackDesc(bodyText, org);
-    const salaryRaw = salaryMatch?.[1]?.trim() || 'none';
+    const bullets   = sanitizeBullets(bulletMatch?.[1]?.trim() || '', fallbackDesc(bodyText, org));
+    const salaryRaw = sanitizeSalary(salaryMatch?.[1]?.trim() || 'none');
     const salary    = salaryRaw.toLowerCase() === 'none' ? 'See listing' : salaryRaw;
 
     return { description: bullets + DISCLAIMER, salary };
