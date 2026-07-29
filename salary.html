@@ -608,6 +608,11 @@
     const Auth = window.AfroramaAuth;
     const user = Auth ? await Auth.getUser().catch(() => null) : null;
 
+    // Load data and compute hero stats for everyone — the table is publicly
+    // readable and the numbers entice non-signed-in visitors to create an account
+    await loadSubmissions();
+    computeHeroStats();
+
     if (!user) {
       // Not signed in: gate the database, show sign-in prompt on contribute card
       document.getElementById('salary-gate').style.display = 'block';
@@ -620,8 +625,6 @@
     document.getElementById('contribute-form-active').style.display = 'block';
     populateContributeSelects();
     populateSelects();
-    await loadSubmissions();
-    computeHeroStats();
     renderResults();
   }
 
