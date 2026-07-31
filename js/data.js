@@ -64,6 +64,7 @@ const AFRICAN_COUNTRIES = [
   { id: 'NE', name: 'Niger',                      region: 'West Africa',     lon: 9,    lat: 17  },
   { id: 'NG', name: 'Nigeria',                    region: 'West Africa',     lon: 8,    lat: 9   },
   { id: 'RW', name: 'Rwanda',                     region: 'East Africa',     lon: 30,   lat: -2  },
+  { id: 'SC', name: 'Seychelles',                  region: 'East Africa',     lon: 55.5, lat: -4.6 },
   { id: 'ST', name: 'São Tomé & Príncipe',        region: 'Central Africa',  lon: 6.6,  lat: 0.2 },
   { id: 'SN', name: 'Senegal',                    region: 'West Africa',     lon: -14,  lat: 14  },
   { id: 'SL', name: 'Sierra Leone',               region: 'West Africa',     lon: -12,  lat: 8   },

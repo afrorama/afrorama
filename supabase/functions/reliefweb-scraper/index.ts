@@ -64,7 +64,7 @@ const AFRICA_COUNTRIES = [
   'Gambia', 'Ghana', 'Guinea', 'Guinea-Bissau', 'Kenya', 'Lesotho', 'Liberia',
   'Libya', 'Madagascar', 'Malawi', 'Mali', 'Mauritania', 'Mauritius',
   'Morocco', 'Mozambique', 'Namibia', 'Niger', 'Nigeria', 'Rwanda',
-  'Sao Tome and Principe', 'Senegal', 'Sierra Leone', 'Somalia',
+  'Sao Tome and Principe', 'Senegal', 'Seychelles', 'Sierra Leone', 'Somalia',
   'South Africa', 'South Sudan', 'Sudan', 'Togo', 'Tunisia', 'Uganda',
   'United Republic of Tanzania', 'Zambia', 'Zimbabwe',
 ];
@@ -94,6 +94,7 @@ const COUNTRY_ISO: Record<string, string> = {
   'Rwanda':'RW','Zambia':'ZM','Mozambique':'MZ','Malawi':'MW',
   'Zimbabwe':'ZW','Botswana':'BW','Namibia':'NA','Cameroon':'CM',
   "Côte d'Ivoire":'CI','Burkina Faso':'BF','Mali':'ML','Niger':'NE',
+  'Seychelles':'SC',
   'Chad':'TD','Sudan':'SD','South Sudan':'SS','Somalia':'SO',
   'DR Congo':'CD','Democratic Republic of the Congo':'CD',
 };

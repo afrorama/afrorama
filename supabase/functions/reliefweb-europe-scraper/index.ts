@@ -78,7 +78,7 @@ const EUROPE_AFRICA_ORGS = [
 const AFRICA_KEYWORDS = [
   'africa', 'african', 'sub-saharan',
   'kenya', 'nigeria', 'ethiopia', 'ghana', 'uganda', 'tanzania', 'rwanda',
-  'senegal', 'mozambique', 'zambia', 'malawi', 'zimbabwe', 'somalia',
+  'seychelles', 'senegal', 'mozambique', 'zambia', 'malawi', 'zimbabwe', 'somalia',
   'south africa', 'cameroon', "côte d'ivoire", 'ivory coast', 'mali',
   'niger', 'chad', 'burkina faso', 'madagascar', 'angola', 'drc', 'congo',
   'sudan', 'south sudan', 'sierra leone', 'liberia', 'guinea',

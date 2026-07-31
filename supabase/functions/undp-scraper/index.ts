@@ -37,7 +37,7 @@ const AFRICA_ISO: Record<string, string> = {
   LR:'Liberia', LY:'Libya', MG:'Madagascar', MW:'Malawi', ML:'Mali',
   MR:'Mauritania', MU:'Mauritius', MA:'Morocco', MZ:'Mozambique',
   NA:'Namibia', NE:'Niger', NG:'Nigeria', RW:'Rwanda', ST:'Sao Tome and Principe',
-  SN:'Senegal', SL:'Sierra Leone', SO:'Somalia', ZA:'South Africa',
+  SC:'Seychelles', SN:'Senegal', SL:'Sierra Leone', SO:'Somalia', ZA:'South Africa',
   SS:'South Sudan', SD:'Sudan', TG:'Togo', TN:'Tunisia', UG:'Uganda',
   TZ:'Tanzania', ZM:'Zambia', ZW:'Zimbabwe',
 };
