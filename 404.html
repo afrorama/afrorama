@@ -1,125 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2VQCQTDVQG"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-2VQCQTDVQG');
-  </script>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page not found | Afrorama</title>
-  <meta name="robots" content="noindex">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="stylesheet" href="/css/main.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found | Afrorama</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
   <style>
-    body { background: #F6F5F2; margin: 0; }
-    .nf-wrap {
-      min-height: 100vh;
+    .not-found-wrap {
+      min-height: calc(100vh - var(--nav-h));
+      background: var(--green-dk);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 48px 24px;
+      padding: 64px 24px;
     }
-    .nf-card {
-      background: #fff;
-      border: 2.5px solid #1a1a1a;
-      border-radius: 20px;
-      max-width: 440px;
+    .not-found-inner {
+      max-width: 560px;
       width: 100%;
-      box-shadow: 5px 5px 0 #1a1a1a;
-      overflow: hidden;
       text-align: center;
     }
-    .nf-head {
-      background: #1a1a1a;
-      padding: 40px 28px 32px;
-    }
-    .nf-sun {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 16px;
-      display: block;
-    }
-    .nf-num {
+    .not-found-code {
       font-family: 'Bebas Neue', Impact, sans-serif;
-      font-size: 5rem;
-      letter-spacing: .06em;
-      line-height: 1;
-      color: #FFE400;
+      font-size: clamp(8rem, 22vw, 14rem);
+      line-height: .9;
+      color: var(--yellow);
+      letter-spacing: -.02em;
+      /* Subtle text-stroke so it reads on the dark green */
+      -webkit-text-stroke: 2px rgba(0,0,0,.15);
     }
-    .nf-subtitle {
-      font-family: 'Bebas Neue', Impact, sans-serif;
-      font-size: 1.4rem;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.7);
-      margin-top: 4px;
+    .not-found-title {
+      font-size: clamp(1.3rem, 3.5vw, 1.9rem);
+      font-weight: 800;
+      color: var(--white);
+      margin: 16px 0 12px;
+      letter-spacing: -.025em;
     }
-    .nf-body {
-      padding: 30px 28px 32px;
-    }
-    .nf-body p {
-      color: #555;
-      font-family: Inter, sans-serif;
-      font-size: .95rem;
+    .not-found-body {
+      font-size: .97rem;
+      color: rgba(255,255,255,.72);
       line-height: 1.65;
-      margin: 0 0 24px;
+      margin: 0 0 36px;
     }
-    .nf-actions {
+    .not-found-actions {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
-    .nf-btn {
-      display: block;
-      padding: 13px 20px;
-      border-radius: 100px;
-      font-family: Inter, sans-serif;
-      font-size: .9rem;
-      font-weight: 700;
-      text-decoration: none;
-      border: 2px solid #1a1a1a;
-      transition: opacity .15s;
+    /* Override default dark btn border for the white-on-green context */
+    .not-found-wrap .btn-yellow {
+      border-color: var(--dark);
+      box-shadow: 3px 3px 0 rgba(0,0,0,.3);
     }
-    .nf-btn:hover { opacity: .8; }
-    .nf-btn-primary { background: #FFE400; color: #1a1a1a; }
-    .nf-btn-outline { background: transparent; color: #1a1a1a; }
-    .nf-brand {
-      margin-top: 28px;
-      font-family: Inter, sans-serif;
-      font-size: .78rem;
-      color: #aaa;
+    .not-found-wrap .btn-ghost {
+      background: transparent;
+      color: rgba(255,255,255,.85);
+      border: 2.5px solid rgba(255,255,255,.4);
+      box-shadow: 3px 3px 0 rgba(0,0,0,.2);
     }
-    .nf-brand a {
-      color: #888;
-      text-decoration: none;
-      font-weight: 700;
+    .not-found-wrap .btn-ghost:hover {
+      border-color: rgba(255,255,255,.75);
+      color: var(--white);
+      box-shadow: 4px 4px 0 rgba(0,0,0,.25);
     }
+    .not-found-links {
+      margin-top: 48px;
+      display: flex;
+      gap: 8px 28px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .not-found-links a {
+      font-size: .82rem;
+      font-weight: 600;
+      color: rgba(255,255,255,.55);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      transition: color .15s;
+    }
+    .not-found-links a:hover { color: var(--yellow); }
   </style>
 </head>
 <body>
-<div class="nf-wrap">
-  <div class="nf-card">
-    <div class="nf-head">
-      <img class="nf-sun" src="/logo-mark.png" alt="Afrorama" style="filter:invert(1);">
-      <div class="nf-num">404</div>
-      <div class="nf-subtitle">Page not found</div>
+
+<nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="/" aria-label="Afrorama home">
+      <img src="assets/logo-icon.svg" class="nav-logo-icon" alt="" aria-hidden="true">
+      <span class="nav-logo-text">afrorama</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="/opportunities">Opportunities</a></li>
+      <li><a href="/salary">Salary Intelligence</a></li>
+      <li><a href="/community">Community</a></li>
+    </ul>
+    <div class="nav-cta-group">
+      <a href="/post" class="btn btn-primary btn-sm">Post a role</a>
     </div>
-    <div class="nf-body">
-      <p>The page you're looking for doesn't exist or may have moved. Head back and find your next opportunity.</p>
-      <div class="nf-actions">
-        <a href="/opportunities.html" class="nf-btn nf-btn-primary">Browse opportunities</a>
-        <a href="/" class="nf-btn nf-btn-outline">Go home</a>
-      </div>
-      <p class="nf-brand">
-        <a href="/">afrorama</a> — Africa's social impact job board
-      </p>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu" role="dialog" aria-label="Mobile menu">
+  <a href="/opportunities">Opportunities</a>
+  <a href="/salary">Salary Intelligence</a>
+  <a href="/community">Community</a>
+  <a href="/post" class="btn btn-primary">Post a role</a>
+</div>
+
+<div class="not-found-wrap">
+  <div class="not-found-inner">
+    <div class="not-found-code" aria-hidden="true">404</div>
+    <h1 class="not-found-title">This listing has expired or been removed</h1>
+    <p class="not-found-body">
+      The opportunity you're looking for is no longer available — it may have closed,
+      been filled, or the link has changed. Over 1,000 active roles across Africa are
+      waiting for you.
+    </p>
+    <div class="not-found-actions">
+      <a href="/opportunities" class="btn btn-yellow">
+        Browse current opportunities →
+      </a>
+      <a href="/" class="btn btn-ghost">
+        Go home
+      </a>
     </div>
+    <nav class="not-found-links" aria-label="Quick links">
+      <a href="/opportunities?type=jobs">Jobs</a>
+      <a href="/opportunities?type=internship">Internships</a>
+      <a href="/opportunities?type=consultancy">Consultancies</a>
+      <a href="/opportunities?type=capacity">Fellowships</a>
+      <a href="/salary">Salary data</a>
+    </nav>
   </div>
 </div>
+
+<script src="js/main.js" defer></script>
+<script>
+  // Mobile menu toggle (minimal — no full nav.js dependency needed)
+  const hamburger = document.getElementById('nav-hamburger');
+  const mobileMenu = document.getElementById('nav-mobile-menu');
+  if (hamburger && mobileMenu) {
+    hamburger.addEventListener('click', () => {
+      const open = mobileMenu.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', open);
+    });
+  }
+</script>
 </body>
 </html>

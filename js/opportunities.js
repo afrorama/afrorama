@@ -700,6 +700,26 @@
     document.getElementById('modal-posted').textContent  = formatDate(job.posted);
     document.getElementById('modal-description').innerHTML = formatAsHtml(job.description);
 
+    // Internal links — country + sector (SEO internal linking)
+    const relatedEl      = document.getElementById('modal-related-links');
+    const countryLinkEl  = document.getElementById('modal-country-link');
+    const sectorLinkEl   = document.getElementById('modal-sector-link');
+    if (relatedEl && countryLinkEl && sectorLinkEl) {
+      const countryName = country?.name || job.location;
+      countryLinkEl.href        = `/opportunities?country=${encodeURIComponent(job.country || '')}`;
+      countryLinkEl.textContent = `More ${countryName} jobs →`;
+      const sectorSlug = encodeURIComponent((job.sector || '').toLowerCase().replace(/\s+&\s+/g,'').replace(/\s+/g,'-'));
+      sectorLinkEl.href        = `/opportunities?sector=${sectorSlug}`;
+      sectorLinkEl.textContent = `More ${job.sector || 'sector'} roles →`;
+      relatedEl.style.display = 'flex';
+    }
+
+    // CV nudge — include job title for tracking
+    const cvNudge = document.getElementById('modal-cv-nudge-btn');
+    if (cvNudge) {
+      cvNudge.href = `/cv-analyser?utm_source=modal&utm_content=${encodeURIComponent((job.title || '').slice(0,50))}`;
+    }
+
     // Share button
     const shareBtn = document.getElementById('modal-share-btn');
     if (shareBtn) {
@@ -807,6 +827,43 @@
     history.replaceState(null, '', location.pathname);
   }
 
+  function showExpiredToast() {
+    const existing = document.getElementById('expired-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'expired-toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.innerHTML = `
+      <span>⏱ This listing has expired — browse current opportunities below.</span>
+      <button aria-label="Dismiss" onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:inherit;font-size:1.1rem;line-height:1;padding:0 0 0 10px;opacity:.7;">✕</button>
+    `;
+    Object.assign(toast.style, {
+      position: 'fixed', bottom: '24px', left: '50%',
+      transform: 'translateX(-50%)',
+      background: '#1C1D1C', color: '#fff',
+      padding: '13px 20px', borderRadius: '100px',
+      boxShadow: '0 4px 20px rgba(0,0,0,.22)',
+      display: 'flex', alignItems: 'center', gap: '8px',
+      fontSize: '.88rem', fontWeight: '600',
+      zIndex: '9999', whiteSpace: 'nowrap',
+      border: '2px solid rgba(255,255,255,.12)',
+      animation: 'toastIn .25s ease-out',
+    });
+    document.body.appendChild(toast);
+
+    // Inject keyframe once
+    if (!document.getElementById('toast-style')) {
+      const s = document.createElement('style');
+      s.id = 'toast-style';
+      s.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}';
+      document.head.appendChild(s);
+    }
+
+    setTimeout(() => toast.remove(), 6000);
+  }
+
   /* ================================================================
      INIT
   ================================================================= */
@@ -848,7 +905,12 @@
           if (data) { deepJob = data; allJobs.unshift(data); }
         }
       }
-      if (deepJob) setTimeout(() => openModal(deepJob.id), 300);
+      if (deepJob) {
+        setTimeout(() => openModal(deepJob.id), 300);
+      } else {
+        // Job not found (expired or removed) — show friendly toast
+        showExpiredToast();
+      }
     }
 
     // Type filters

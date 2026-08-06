@@ -15,7 +15,13 @@
   <title>1,000+ Social Impact Jobs in Africa 2026 | NGO, DFI &amp; Development Careers | Afrorama</title>
   <meta name="description" content="Browse 1,000+ live social impact jobs across Africa — NGOs, development banks, consultancies and fellowships. Updated daily. Filter by country, sector and type.">
   <meta name="keywords" content="social impact jobs Africa, NGO jobs Africa, development jobs Kenya, NGO careers South Africa, social impact Senegal, fellowship Africa, consultancy Africa">
-  <meta name="robots" content="index, follow">
+  <meta name="robots" id="meta-robots" content="index, follow">
+  <script>
+    // Deep-link modal URLs (?job=ID) are ephemeral state — don't let Google index them
+    if (new URLSearchParams(location.search).has('job')) {
+      document.getElementById('meta-robots').content = 'noindex, follow';
+    }
+  </script>
   <link rel="canonical" href="https://afrorama.org/opportunities">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://afrorama.org/opportunities">
@@ -287,7 +293,12 @@
         <strong>Applying? Don't waste an application.</strong>
         <span>Check whether your CV is tailored for this role in under 2 minutes.</span>
       </div>
-      <a id="modal-cv-nudge-btn" href="/cv-analyser" class="btn btn-outline btn-sm" style="white-space:nowrap;flex-shrink:0;">Analyse my CV →</a>
+      <a id="modal-cv-nudge-btn" href="/cv-analyser" class="btn btn-outline btn-sm" style="white-space:nowrap;flex-shrink:0;">Free CV Score →</a>
+    </div>
+    <!-- Country + sector internal links (populated by JS) -->
+    <div id="modal-related-links" style="display:none;padding:10px 24px;border-top:1px solid var(--gray-mid);gap:16px;flex-wrap:wrap;font-size:.8rem;">
+      <a id="modal-country-link" href="/opportunities" style="color:var(--gray-dark);font-weight:600;text-decoration:underline;text-underline-offset:3px;"></a>
+      <a id="modal-sector-link" href="/opportunities" style="color:var(--gray-dark);font-weight:600;text-decoration:underline;text-underline-offset:3px;"></a>
     </div>
     <div class="modal-footer">
       <a href="post.html" class="btn btn-outline btn-sm">Post a similar role</a>
