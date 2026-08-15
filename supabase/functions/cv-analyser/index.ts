@@ -6,7 +6,15 @@
  *
  * POST body: { text: string, filename?: string }
  * Response:  { scores: { language, impact, summary, structure, tailoring }, total: number }
+ *
+ * Auth gate (server-side — cannot be bypassed by clearing localStorage):
+ *   - Requires a valid user JWT in the Authorization header
+ *   - First analysis is free (cv_score_history empty)
+ *   - Subsequent analyses require cv_extra_boosts > 0; one boost is consumed per run
+ *   - Returns 401 if not authenticated, 402 if limit reached with no credits
  */
+
+import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
@@ -19,6 +27,53 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return Response.json({ error: 'POST only' }, { status: 405, headers: CORS });
 
   try {
+    // ── Auth gate ────────────────────────────────────────────────────
+    const authHeader = req.headers.get('Authorization') || '';
+    const userToken  = authHeader.replace(/^Bearer\s+/i, '').trim();
+
+    if (!userToken) {
+      return Response.json({ error: 'Sign in to use the CV analyser.' }, { status: 401, headers: CORS });
+    }
+
+    // Verify the JWT and get the real user identity
+    const supabaseUser = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: `Bearer ${userToken}` } } },
+    );
+    const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
+    if (authError || !user) {
+      return Response.json({ error: 'Session expired — please sign in again.' }, { status: 401, headers: CORS });
+    }
+
+    // Read the user's profile (service role bypasses RLS for a clean read)
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('cv_score_history, cv_extra_boosts')
+      .eq('id', user.id)
+      .single();
+
+    const historyLen  = Array.isArray(profile?.cv_score_history) ? profile.cv_score_history.length : 0;
+    const extraBoosts = profile?.cv_extra_boosts ?? 0;
+
+    // First analysis is free; after that require a paid boost
+    if (historyLen >= 1 && extraBoosts <= 0) {
+      return Response.json(
+        { error: 'free_used', message: 'You have used your free CV analysis. Purchase a boost to analyse again.' },
+        { status: 402, headers: CORS },
+      );
+    }
+
+    // Consume one paid boost if this is not the first analysis
+    if (historyLen >= 1 && extraBoosts > 0) {
+      await supabaseAdmin.rpc('decrement_cv_boosts', { profile_id: user.id });
+    }
+
+    // ── Proceed with analysis ────────────────────────────────────────
     const { text, filename } = await req.json() as { text: string; filename?: string };
 
     if (!text || text.trim().length < 100) {

@@ -62,6 +62,18 @@ $$ LANGUAGE sql SECURITY DEFINER;
 
 GRANT EXECUTE ON FUNCTION public.increment_cv_boosts(UUID) TO authenticated, anon, service_role;
 
+-- 5b. cv_extra_boosts decrement helper (used by cv-analyser edge function)
+--     Called server-side when a user consumes a paid boost credit.
+--     GREATEST(..., 0) prevents the counter going negative.
+CREATE OR REPLACE FUNCTION public.decrement_cv_boosts(profile_id UUID)
+RETURNS void AS $$
+  UPDATE public.profiles
+  SET cv_extra_boosts = GREATEST(COALESCE(cv_extra_boosts, 0) - 1, 0)
+  WHERE id = profile_id;
+$$ LANGUAGE sql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION public.decrement_cv_boosts(UUID) TO service_role;
+
 -- 6. (Optional, not launch-critical) Community table grants — cheap safety net
 --    Prevents 42501 console errors if a user navigates directly to community.html
 GRANT SELECT ON public.community_posts TO anon;

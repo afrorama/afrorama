@@ -230,13 +230,35 @@
     }
 
     const FUNCTION_URL = 'https://vqchwioyhyiuunpyildz.supabase.co/functions/v1/cv-analyser';
-    const ANON_KEY     = 'sb_publishable_HeGZfQZEDI_IR46a2Ezp-Q_tIUdhF6_';
+
+    // Send the user's real JWT so the server can enforce the free-analysis limit.
+    // The anon key is public and can't be used for auth gating server-side.
+    const sb = window.AfroramaSupabase?.getSupabase();
+    const { data: sessionData } = await sb?.auth.getSession() ?? {};
+    const userToken = sessionData?.session?.access_token;
+
+    if (!userToken) throw new Error('Session expired — please sign in again.');
 
     const res  = await fetch(FUNCTION_URL, {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ANON_KEY}` },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userToken}` },
       body:    JSON.stringify({ text, filename: file.name }),
     });
+
+    // 402 = free analysis already used, no paid credits remaining
+    if (res.status === 402) {
+      const err = await res.json().catch(() => ({}));
+      if (err.error === 'free_used') {
+        // Surface the paywall directly rather than showing a generic error
+        document.getElementById('analysing-panel').style.display = 'none';
+        document.getElementById('upload-panel').style.display    = 'block';
+        document.getElementById('reupload-free').style.display   = 'none';
+        document.getElementById('paywall-card').style.display    = 'block';
+        state.reuploadUsed = true;
+        localStorage.setItem('afrorama_cv_reupload_used', 'true');
+        return null; // signal to caller to abort without showing an alert
+      }
+    }
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Analysis failed');
@@ -381,6 +403,9 @@
 
     try {
       const result = await analyseWithClaude(state.file);
+
+      // null = paywall was shown (free limit hit) — nothing more to do
+      if (!result) return;
 
       // Mark all steps done
       STEPS.forEach(id => {
