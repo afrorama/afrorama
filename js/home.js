@@ -288,7 +288,13 @@
   function renderLatest(jobs) {
     const container = document.getElementById('latest-jobs');
     if (!container) return;
-    jobs = jobs.slice(0, 3);
+    // Featured (paid) listings always pin to the top, same rule as the
+    // full opportunities list — otherwise scraped jobs push a $29 paid
+    // listing off this teaser within hours.
+    jobs = [...jobs].sort((a, b) => {
+      if (!!b.paid_listing !== !!a.paid_listing) return b.paid_listing ? 1 : -1;
+      return new Date(b.posted) - new Date(a.posted);
+    }).slice(0, 3);
     if (!jobs.length) { container.innerHTML = '<p style="color:var(--gray-dark);grid-column:1/-1">No opportunities at the moment.</p>'; return; }
     container.innerHTML = jobs.map(j => {
       const days    = daysUntil(j.deadline);
