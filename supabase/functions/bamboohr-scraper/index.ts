@@ -354,6 +354,20 @@ Deno.serve(async (req) => {
         const mentionsAfrica = AFRICA_MENTIONS.some(c => titleLower.includes(c) || locationLower.includes(c));
         if (!AFRICA_ISO.has(country) && !mentionsAfrica) continue;
 
+        // Guard against the org.country fallback: when the job's own location
+        // data was empty, `country` above silently defaulted to the org's
+        // usual country even if this specific posting names a different
+        // place entirely (e.g. a Kenya-default org's "Venezuela Scoping
+        // Mission" was previously imported as Kenya). If we fell back to the
+        // org default AND the title/location explicitly names a real,
+        // non-African country, skip rather than trust the default.
+        if (!resolvedIso) {
+          const textCheck = `${titleLower} ${locationLower}`;
+          const namesOtherCountry = Object.entries(COUNTRY_NAME_ISO)
+            .some(([name, iso]) => !AFRICA_ISO.has(iso) && textCheck.includes(name));
+          if (namesOtherCountry) continue;
+        }
+
         const rawDesc = stripHtml(detailDesc || job.description || job.jobDescription || '');
         const deadline = extractDeadline(rawDesc);
         // A deadline found in the text that's already in the past means this
