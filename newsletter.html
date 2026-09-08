@@ -91,6 +91,13 @@
       flex-shrink: 0; font-size: .7rem; font-weight: 700; color: #888;
       background: #F0EFEB; border-radius: 6px; padding: 2px 7px;
     }
+    .listing-item.featured { border-color: #1C1D1C; background: #FFFDF0; }
+    .listing-item.featured.checked { background: #FFFAE0; }
+    .listing-featured-tag {
+      flex-shrink: 0; font-size: .68rem; font-weight: 800; letter-spacing: .03em;
+      color: #1C1D1C; background: #FFE400; border: 1.5px solid #1C1D1C;
+      border-radius: 100px; padding: 2px 8px;
+    }
     .empty-msg { color: #aaa; font-size: .83rem; font-style: italic; padding: 8px 0; }
 
     #listings-area { display: none; }
@@ -399,45 +406,72 @@ document.getElementById('btn-fetch').addEventListener('click', async () => {
   try {
     const today = isoDate(new Date());
     // Fetch up to 500 active listings created in the window, newest first
-    const url = `${SUPABASE_URL}/rest/v1/listings`
+    const dateUrl = `${SUPABASE_URL}/rest/v1/listings`
       + `?created_at=gte.${since}T00:00:00Z`
       + `&created_at=lte.${until}T23:59:59Z`
       + `&or=(deadline.gte.${today},deadline.is.null)`
       + `&or=(paid_listing.eq.false,payment_confirmed.eq.true)`
       + `&order=created_at.desc`
       + `&limit=500`
-      + `&select=id,title,organisation,type,location,country,apply_url,deadline`;
+      + `&select=id,title,organisation,type,location,country,apply_url,deadline,paid_listing,created_at`;
 
-    const res = await fetch(url, {
-      headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` }
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const rawAll = await res.json();
+    // Featured (paid) listings must always be offered, regardless of the
+    // selected date range — otherwise a listing posted 2+ weeks ago (but
+    // still live) silently drops out of range and a paying customer gets
+    // skipped this issue.
+    const featuredUrl = `${SUPABASE_URL}/rest/v1/listings`
+      + `?paid_listing=eq.true`
+      + `&payment_confirmed=eq.true`
+      + `&or=(deadline.gte.${today},deadline.is.null)`
+      + `&order=created_at.desc`
+      + `&limit=100`
+      + `&select=id,title,organisation,type,location,country,apply_url,deadline,paid_listing,created_at`;
+
+    const [dateRes, featRes] = await Promise.all([
+      fetch(dateUrl,     { headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` } }),
+      fetch(featuredUrl, { headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` } }),
+    ]);
+    if (!dateRes.ok) throw new Error(`HTTP ${dateRes.status}`);
+    if (!featRes.ok) throw new Error(`HTTP ${featRes.status}`);
+    const rawAll = [...(await featRes.json()), ...(await dateRes.json())];
 
     // Collapse listings that share the same title+organisation (same role
-    // re-posted under a new source ID). Results are already newest-first,
-    // so the first occurrence of each key is the one to keep.
-    const seenKeys = new Set();
-    const all = rawAll.filter(l => {
+    // re-posted under a new source ID). A paid/featured copy always wins
+    // the duplicate, even if a scraper found the same role later —
+    // otherwise a customer's paid listing loses its featured status the
+    // moment it gets re-scraped for free.
+    const seen = new Map();
+    for (const l of rawAll) {
       const key = `${(l.title || '').trim().toLowerCase()}|${(l.organisation || '').trim().toLowerCase()}`;
-      if (seenKeys.has(key)) return false;
-      seenKeys.add(key);
-      return true;
-    });
+      const existing = seen.get(key);
+      if (!existing) { seen.set(key, l); continue; }
+      if (!!existing.paid_listing !== !!l.paid_listing) {
+        if (l.paid_listing) seen.set(key, l);
+        continue;
+      }
+      if (new Date(l.created_at) > new Date(existing.created_at)) seen.set(key, l);
+    }
+    const all = [...seen.values()];
 
-    // Apply diversity per section
+    // Apply diversity per section. Featured listings are always included in
+    // full, on top of the diversified regular pool filling out the rest of
+    // each section's target — they never compete with the shuffle/caps that
+    // can otherwise drop a listing from the selection.
     sectionListings = {};
     fullPools = {};
     let totalPool = 0;
     SECTIONS.forEach(s => {
-      const pool = all.filter(l => s.types.includes(l.type));
-      fullPools[s.key] = pool;
-      sectionListings[s.key] = diversify(shuffle([...pool]), s.target, 2);
+      const pool     = all.filter(l => s.types.includes(l.type));
+      const featured = pool.filter(l => l.paid_listing);
+      const regular  = pool.filter(l => !l.paid_listing);
+      fullPools[s.key] = regular; // reshuffle only touches the non-featured pool
+      const remaining = Math.max(0, s.target - featured.length);
+      sectionListings[s.key] = [...featured, ...diversify(shuffle([...regular]), remaining, 2)];
       totalPool += pool.length;
     });
 
     showStatus(
-      `${totalPool} active listings found. Auto-selected up to ${SECTIONS.reduce((a,s) => a + s.target, 0)} with country diversity.`,
+      `${totalPool} active listings found. Auto-selected up to ${SECTIONS.reduce((a,s) => a + s.target, 0)} with country diversity — featured listings always included.`,
       'ok'
     );
     renderSections();
@@ -488,11 +522,16 @@ function renderSections() {
       msg.textContent = 'No active listings in this category for the selected period.';
       block.appendChild(msg);
     } else {
-      items.sort((a, b) => a.organisation.localeCompare(b.organisation));
+      // Featured listings float to the top of their section so they're the
+      // first thing the admin sees, not buried among the shuffled regulars.
+      items.sort((a, b) => {
+        if (!!b.paid_listing !== !!a.paid_listing) return b.paid_listing ? 1 : -1;
+        return a.organisation.localeCompare(b.organisation);
+      });
       items.forEach(listing => {
         const { flag, name } = locationDisplay(listing);
         const item = document.createElement('label');
-        item.className = 'listing-item checked';
+        item.className = 'listing-item checked' + (listing.paid_listing ? ' featured' : '');
         item.dataset.section = section.key;
         item.dataset.id = listing.id;
         item.innerHTML = `
@@ -500,7 +539,7 @@ function renderSections() {
           <span class="listing-flag">${flag}</span>
           <span class="listing-text">
             <div class="listing-org">${listing.organisation}</div>
-            <div class="listing-title">${listing.title}</div>
+            <div class="listing-title">${listing.paid_listing ? '<span class="listing-featured-tag">★ Featured</span> ' : ''}${listing.title}</div>
           </span>
           <span class="listing-country-tag">${name}</span>`;
         item.querySelector('input').addEventListener('change', e => {
@@ -549,7 +588,11 @@ window.toggleSection = function(key, checked) {
 // ── Reshuffle ──
 function shuffleAll() {
   SECTIONS.forEach(s => {
-    sectionListings[s.key] = diversify(shuffle([...fullPools[s.key]]), s.target, 2);
+    // Featured listings stay put across reshuffles — only the free/regular
+    // pool (already excluded from fullPools) gets re-diversified.
+    const featured  = (sectionListings[s.key] || []).filter(l => l.paid_listing);
+    const remaining = Math.max(0, s.target - featured.length);
+    sectionListings[s.key] = [...featured, ...diversify(shuffle([...fullPools[s.key]]), remaining, 2)];
   });
   renderSections();
   renderDiversityBar();
