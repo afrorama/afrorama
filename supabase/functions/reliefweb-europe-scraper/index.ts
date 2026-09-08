@@ -91,6 +91,34 @@ const EUROPE_COUNTRIES = [
   'Austria', 'Ireland', 'Finland',
 ];
 
+// ReliefWeb's country.name values → ISO2, so the job's own stated country
+// (not a keyword guess) decides both inclusion and the `country` column.
+const AFRICA_ISO: Record<string, string> = {
+  'algeria':'DZ','angola':'AO','benin':'BJ','botswana':'BW','burkina faso':'BF',
+  'burundi':'BI','cabo verde':'CV','cape verde':'CV','cameroon':'CM',
+  'central african republic':'CF','chad':'TD','comoros':'KM',
+  'republic of congo':'CG','congo':'CG','democratic republic of the congo':'CD',
+  'dr congo':'CD','djibouti':'DJ','egypt':'EG','equatorial guinea':'GQ',
+  'eritrea':'ER','eswatini':'SZ','swaziland':'SZ','ethiopia':'ET','gabon':'GA',
+  'gambia':'GM','ghana':'GH','guinea':'GN','guinea-bissau':'GW','kenya':'KE',
+  'lesotho':'LS','liberia':'LR','libya':'LY','madagascar':'MG','malawi':'MW',
+  'mali':'ML','mauritania':'MR','mauritius':'MU','morocco':'MA','mozambique':'MZ',
+  'namibia':'NA','niger':'NE','nigeria':'NG','rwanda':'RW',
+  'sao tome and principe':'ST','senegal':'SN','seychelles':'SC',
+  'sierra leone':'SL','somalia':'SO','south africa':'ZA','south sudan':'SS',
+  'sudan':'SD','tanzania':'TZ',
+  'united republic of tanzania':'TZ', 'togo':'TG','tunisia':'TN','uganda':'UG',
+  'zambia':'ZM','zimbabwe':'ZW',
+};
+
+const EUROPE_ISO: Record<string, string> = {
+  'united kingdom of great britain and northern ireland':'GB', 'united kingdom':'GB',
+  'france':'FR', 'belgium':'BE', 'netherlands':'NL', 'germany':'DE',
+  'switzerland':'CH', 'sweden':'SE', 'norway':'NO', 'denmark':'DK',
+  'italy':'IT', 'spain':'ES', 'austria':'AT', 'ireland':'IE', 'finland':'FI',
+  'cyprus':'CY', 'estonia':'EE', 'luxembourg':'LU',
+};
+
 const SECTOR_MAP: Record<string, string> = {
   'Program/Project Management':             'Governance & Public Policy',
   'Monitoring and Evaluation':              'Governance & Public Policy',
@@ -250,8 +278,9 @@ Deno.serve(async (req) => {
     const org = ((f.source || []) as any[]).map((s: any) => s.name).join(', ') || 'Unknown';
 
     // Derive readable location — prefer first country listed
-    const jobCountries = ((f.country || []) as any[]).map((c: any) => c.name as string);
-    const location     = jobCountries[0] || 'Europe';
+    const jobCountries   = ((f.country || []) as any[]).map((c: any) => c.name as string);
+    const rawCountryName = jobCountries[0] || '';
+    const location       = rawCountryName || 'Europe';
 
     // Strip HTML — trim body early to reduce memory footprint
     const bodyHtml = (f.body || '') as string;
@@ -261,10 +290,35 @@ Deno.serve(async (req) => {
       .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
       .replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim().slice(0, 3000);
 
-    // Always require Africa keyword in title/org/body — org being known is not sufficient
-    // (known orgs like Save the Children also post jobs in Asia, Latin America, etc.)
-    const africaMatch = isAfricaFocused(f.title || '', org, bodyText);
-    if (!africaMatch) {
+    // Resolve the job's OWN stated country — the strongest signal, unlike a
+    // keyword guess against org boilerplate (big multi-mandate INGOs mention
+    // "Africa" in their generic About-us text even for a job that's
+    // specifically in Venezuela, Ukraine, Afghanistan, etc. — that false
+    // positive is what let dozens of non-Africa roles through previously).
+    const countryKey = rawCountryName.trim().toLowerCase();
+    const africaIso   = AFRICA_ISO[countryKey];
+    const europeIso   = EUROPE_ISO[countryKey];
+
+    let country: string;
+    if (africaIso) {
+      // Job is physically in Africa — always in scope, no keyword check needed.
+      country = africaIso;
+    } else if (europeIso) {
+      // Europe duty-station — this scraper's actual reason to exist (e.g. an
+      // "East Africa Programme Manager" desk role based in London). Only
+      // keep if a keyword genuinely signals it's Africa-focused.
+      if (!isAfricaFocused(f.title || '', org, bodyText)) { skipped++; continue; }
+      country = europeIso;
+    } else if (!rawCountryName) {
+      // No country at all on the ReliefWeb entry — fall back to the keyword
+      // check; if it passes, there's no more specific data than a generic
+      // "Europe region" marker.
+      if (!isAfricaFocused(f.title || '', org, bodyText)) { skipped++; continue; }
+      country = 'EU';
+    } else {
+      // Job names a specific real country that's neither Africa nor one of
+      // our Europe duty-stations (Venezuela, Colombia, Ukraine, USA,
+      // Afghanistan, etc.) — always skip, regardless of org boilerplate text.
       skipped++;
       continue;
     }
@@ -291,7 +345,7 @@ Deno.serve(async (req) => {
       type:         'jobs',
       sector,
       location,
-      country:      'EU',
+      country,
       deadline,
       posted:       (f.date as any)?.created?.slice(0, 10) || new Date().toISOString().split('T')[0],
       salary,
@@ -311,7 +365,7 @@ Deno.serve(async (req) => {
       imported++;
       await trySubmitSalary(supabase, {
         company: org, position: f.title || '', salaryText: salary,
-        experienceText: entry.experience || '', sector, country: 'EU',
+        experienceText: entry.experience || '', sector, country,
       });
     }
   }
