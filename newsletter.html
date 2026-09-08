@@ -378,6 +378,24 @@ const range = defaultRange();
 document.getElementById('since-date').value = range.from;
 document.getElementById('until-date').value  = range.to;
 
+// Rotate the default song every time this page is opened, instead of
+// always starting on whichever track is hardcoded first in the markup.
+// Round-robins through SONG_LIST via localStorage so every song gets a
+// turn before any repeat, rather than picking randomly each time.
+(function rotateDefaultSong() {
+  let lastIndex = -1;
+  try { lastIndex = parseInt(localStorage.getItem('afrorama_last_song_index'), 10); } catch {}
+  if (!Number.isInteger(lastIndex)) lastIndex = -1;
+  const nextIndex = (lastIndex + 1) % SONG_LIST.length;
+  try { localStorage.setItem('afrorama_last_song_index', String(nextIndex)); } catch {}
+
+  const song = SONG_LIST[nextIndex];
+  document.getElementById('song-title').value  = song.title;
+  document.getElementById('song-artist').value = song.artist;
+  document.getElementById('song-iso').value    = song.iso;
+  updateSongPreview(); // function declaration below is hoisted, safe to call here
+})();
+
 // Song preview live update
 function updateSongPreview() {
   const title  = document.getElementById('song-title').value.trim();
