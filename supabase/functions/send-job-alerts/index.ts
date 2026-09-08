@@ -70,6 +70,7 @@ interface Listing {
   deadline: string | null;
   created_at: string;
   apply_url: string | null;
+  paid_listing: boolean;
 }
 
 function shouldSendToday(sub: Subscriber): boolean {
@@ -112,17 +113,22 @@ function buildEmail(sub: Subscriber, listings: Listing[]): { subject: string; ht
   const freq       = sub.frequency === 'daily' ? 'daily' : 'weekly';
   const unsubUrl   = `${SITE_URL}/job-alerts?unsubscribe=${sub.unsubscribe_token}`;
   const total      = listings.length;
-  const preview    = listings.slice(0, 20); // Show max 20, push to site for rest
+  const preview    = listings.slice(0, 20); // Show max 20 — featured listings are pinned first so they always make the cut
   const hasMore    = total > 20;
-  const subject    = `${total} new opportunit${total === 1 ? 'y' : 'ies'} matching your alerts`;
+  // "matching your alerts" rather than "new" — featured listings repeat in every
+  // send until they expire, so not everything shown is necessarily new.
+  const subject    = `${total} opportunit${total === 1 ? 'y' : 'ies'} matching your alerts`;
 
   const listRows = preview.map(l => {
     const typeLabel = TYPE_LABELS[l.type] || l.type;
     const deadline  = l.deadline ? `<span style="color:#e05a00;font-weight:600;">Closes ${esc(l.deadline.slice(0, 10))}</span> &nbsp;·&nbsp; ` : '';
+    const featuredBadge = l.paid_listing
+      ? `<span style="display:inline-block;background:#FFE400;color:#1a1a1a;font-size:.62rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:100px;border:1.5px solid #1a1a1a;margin-right:6px;vertical-align:middle;">★ Featured</span>`
+      : '';
     return `
     <tr>
       <td style="padding:14px 0;border-bottom:1px solid #f0f0f0;">
-        <a href="${SITE_URL}/opportunities" style="font-size:.95rem;font-weight:700;color:#1a1a1a;text-decoration:none;display:block;margin-bottom:5px;line-height:1.3;">${esc(l.title)}</a>
+        <a href="${SITE_URL}/opportunities" style="font-size:.95rem;font-weight:700;color:#1a1a1a;text-decoration:none;display:block;margin-bottom:5px;line-height:1.3;">${featuredBadge}${esc(l.title)}</a>
         <div style="font-size:.78rem;color:#888;">${deadline}${esc(l.organisation)} &nbsp;·&nbsp; ${esc(typeLabel)}</div>
       </td>
     </tr>`;
@@ -167,8 +173,8 @@ function buildEmail(sub: Subscriber, listings: Listing[]): { subject: string; ht
     <p style="margin:0 0 6px;font-size:1rem;font-weight:800;color:#1a1a1a;">${greeting}</p>
     <p style="margin:0 0 22px;font-size:.9rem;color:#555;line-height:1.6;">
       ${hasMore
-        ? `You have <strong style="color:#1a1a1a;">${total} new roles</strong> matching your alerts. Here are the top 20 — see the rest on afrorama.`
-        : `You have <strong style="color:#1a1a1a;">${total} new role${total === 1 ? '' : 's'}</strong> matching your alerts.`
+        ? `You have <strong style="color:#1a1a1a;">${total} roles</strong> matching your alerts. Here are the top 20 — see the rest on afrorama.`
+        : `You have <strong style="color:#1a1a1a;">${total} role${total === 1 ? '' : 's'}</strong> matching your alerts.`
       }
     </p>
 
@@ -241,13 +247,29 @@ Deno.serve(async () => {
   const globalCutoff = new Date(Date.now() - 8 * 24 * 3600 * 1000);
   const { data: allListings, error: listErr } = await supabase
     .from('listings')
-    .select('id, title, organisation, type, country, sector, location, deadline, created_at, apply_url')
+    .select('id, title, organisation, type, country, sector, location, deadline, created_at, apply_url, paid_listing')
     .gte('created_at', globalCutoff.toISOString())
     .order('created_at', { ascending: false });
 
   if (listErr) {
     console.error('[send-job-alerts] Listings error:', listErr.message);
     return Response.json({ error: listErr.message }, { status: 500 });
+  }
+
+  // Featured (paid) listings must appear in every relevant subscriber's alert
+  // for as long as they're live — not just the one send when they were new —
+  // so this is fetched independent of the 8-day recency cutoff above.
+  const today = new Date().toISOString().split('T')[0];
+  const { data: featuredListings, error: featErr } = await supabase
+    .from('listings')
+    .select('id, title, organisation, type, country, sector, location, deadline, created_at, apply_url, paid_listing')
+    .eq('paid_listing', true)
+    .eq('payment_confirmed', true)
+    .or(`deadline.gte.${today},deadline.is.null`);
+
+  if (featErr) {
+    console.error('[send-job-alerts] Featured listings error:', featErr.message);
+    return Response.json({ error: featErr.message }, { status: 500 });
   }
 
   const { data: subscribers, error: subErr } = await supabase
@@ -266,10 +288,18 @@ Deno.serve(async () => {
     if (!shouldSendToday(sub)) { skipped++; continue; }
 
     const cutoff  = getListingCutoff(sub);
-    const matching = ((allListings as Listing[]) ?? []).filter(l => {
+    const freshMatches = ((allListings as Listing[]) ?? []).filter(l => {
       if (new Date(l.created_at) <= cutoff) return false;
       return matchesSubscriber(l, sub);
     });
+    const featuredMatches = ((featuredListings as Listing[]) ?? []).filter(l => matchesSubscriber(l, sub));
+
+    // Featured listings are pinned first (and re-included every send even if
+    // not "new"); de-dup in case one is both featured and freshly posted.
+    const seenIds = new Set<string>();
+    const matching: Listing[] = [];
+    for (const l of featuredMatches) { if (!seenIds.has(l.id)) { seenIds.add(l.id); matching.push(l); } }
+    for (const l of freshMatches)    { if (!seenIds.has(l.id)) { seenIds.add(l.id); matching.push(l); } }
 
     if (matching.length === 0) { skipped++; continue; }
 
