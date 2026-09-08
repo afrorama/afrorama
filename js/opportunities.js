@@ -74,9 +74,15 @@
     for (const j of jobs) {
       const key      = `${(j.title || '').trim().toLowerCase()}|${(j.organisation || '').trim().toLowerCase()}`;
       const existing = seen.get(key);
-      if (!existing || new Date(j.created_at) > new Date(existing.created_at)) {
-        seen.set(key, j);
+      // A paid listing always wins the duplicate, even if a scraper found
+      // the same role later — otherwise a customer's paid/featured post
+      // silently loses its badge the moment we re-scrape it for free.
+      if (!existing) { seen.set(key, j); continue; }
+      if (!!existing.paid_listing !== !!j.paid_listing) {
+        if (j.paid_listing) seen.set(key, j);
+        continue;
       }
+      if (new Date(j.created_at) > new Date(existing.created_at)) seen.set(key, j);
     }
     return [...seen.values()];
   }
