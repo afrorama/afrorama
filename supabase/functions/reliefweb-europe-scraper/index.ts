@@ -18,6 +18,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { trySubmitSalary } from '../_shared/currency.ts';
 import { sanitizeBullets, sanitizeSalary } from '../_shared/claude.ts';
+import { extractApplyUrl, findAfricanCountriesInText } from '../_shared/reliefweb.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -280,7 +281,7 @@ Deno.serve(async (req) => {
     // Derive readable location — prefer first country listed
     const jobCountries   = ((f.country || []) as any[]).map((c: any) => c.name as string);
     const rawCountryName = jobCountries[0] || '';
-    const location       = rawCountryName || 'Europe';
+    let location          = rawCountryName || 'Europe';
 
     // Strip HTML — trim body early to reduce memory footprint
     const bodyHtml = (f.body || '') as string;
@@ -310,11 +311,21 @@ Deno.serve(async (req) => {
       if (!isAfricaFocused(f.title || '', org, bodyText)) { skipped++; continue; }
       country = europeIso;
     } else if (!rawCountryName) {
-      // No country at all on the ReliefWeb entry — fall back to the keyword
-      // check; if it passes, there's no more specific data than a generic
-      // "Europe region" marker.
-      if (!isAfricaFocused(f.title || '', org, bodyText)) { skipped++; continue; }
-      country = 'EU';
+      // No country at all on the ReliefWeb entry (common for flexible-
+      // location roles and multi-country consultancies). Before falling
+      // back to a generic "Europe" marker, check whether the body/title
+      // actually names specific African countries anyway — e.g. "Land for
+      // Life evaluation across Burkina Faso, Ethiopia, Liberia and Sierra
+      // Leone" has no ReliefWeb country tag but is clearly African work,
+      // and labelling it "Europe" was actively misleading, not just vague.
+      const mentioned = findAfricanCountriesInText(`${f.title || ''} ${bodyText}`);
+      if (mentioned.isos.length > 0) {
+        country  = mentioned.isos[0];
+        location = mentioned.names.join(', ');
+      } else {
+        if (!isAfricaFocused(f.title || '', org, bodyText)) { skipped++; continue; }
+        country = 'EU';
+      }
     } else {
       // Job names a specific real country that's neither Africa nor one of
       // our Europe duty-stations (Venezuela, Colombia, Ukraine, USA,
@@ -332,9 +343,7 @@ Deno.serve(async (req) => {
     const rawAlias = f.url_alias || '';
     const rwUrl    = rawAlias.startsWith('http') ? rawAlias : rawAlias ? `https://reliefweb.int${rawAlias}` : `https://reliefweb.int/job/${item.id}`;
     const howToApplyHtml = (f['how_to_apply-html'] || '') as string;
-    const directMatch    = howToApplyHtml.match(/href=["']([^"']+)["']/i);
-    const directUrl      = directMatch?.[1] || '';
-    const applyUrl       = (directUrl && directUrl.startsWith('http') && !directUrl.includes('reliefweb.int')) ? directUrl : rwUrl;
+    const applyUrl       = extractApplyUrl(howToApplyHtml, rwUrl);
 
     const { description, salary } = await formatDescription(bodyText, f.title || '', org);
 

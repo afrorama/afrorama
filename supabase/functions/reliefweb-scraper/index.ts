@@ -45,6 +45,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { trySubmitSalary } from '../_shared/currency.ts';
 import { sanitizeBullets, sanitizeSalary } from '../_shared/claude.ts';
+import { extractApplyUrl } from '../_shared/reliefweb.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -253,8 +254,6 @@ Deno.serve(async () => {
     // Extract direct employer URL from how_to_apply-html (preferred)
     // Falls back to ReliefWeb listing URL if no external link found
     const howToApplyHtml = (f['how_to_apply-html'] || '') as string;
-    const directUrlMatch = howToApplyHtml.match(/href=["']([^"']+)["']/i);
-    const directUrl = directUrlMatch?.[1] || '';
 
     const rawAlias = f.url_alias || '';
     const rwFallback = rawAlias.startsWith('http')
@@ -263,9 +262,7 @@ Deno.serve(async () => {
         ? `https://reliefweb.int${rawAlias}`
         : `https://reliefweb.int/job/${item.id}`;
 
-    const applyUrl = (directUrl && directUrl.startsWith('http') && !directUrl.includes('reliefweb.int'))
-      ? directUrl
-      : rwFallback;
+    const applyUrl = extractApplyUrl(howToApplyHtml, rwFallback);
 
     // Strip HTML and format into structured bullets
     const bodyHtml = (f.body || '') as string;
