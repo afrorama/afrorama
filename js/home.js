@@ -196,29 +196,23 @@
     if (countEl) countEl.textContent = jobs.length;
 
     const isDark = document.documentElement.dataset.theme === 'dark';
-    const tileUrl = isDark
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+    container.classList.toggle('leaflet-dark-tiles', isDark);
 
     const map = L.map('leaflet-home-map', {
       center: [0, 20], zoom: 3, minZoom: 2, maxZoom: 12,
       zoomControl: true, scrollWheelZoom: false,
     });
 
-    let tileLayer = L.tileLayer(tileUrl, {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd', maxZoom: 20,
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      subdomains: 'abc', maxZoom: 19,
     }).addTo(map);
 
-    // Switch tiles when theme changes
+    // OSM has no dark style, so fake one with a CSS filter on the tile pane when theme changes
     document.getElementById('theme-toggle')?.addEventListener('click', () => {
       setTimeout(() => {
         const dark = document.documentElement.dataset.theme === 'dark';
-        const url  = dark
-          ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-          : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-        map.removeLayer(tileLayer);
-        tileLayer = L.tileLayer(url, { subdomains: 'abcd', maxZoom: 20 }).addTo(map);
+        container.classList.toggle('leaflet-dark-tiles', dark);
       }, 100);
     });
 

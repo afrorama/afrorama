@@ -14,17 +14,17 @@
     reuploadUsed: localStorage.getItem('afrorama_cv_reupload_used') === 'true',
   };
 
-  // If logged in, check their saved profile for prior CV scores — overrides localStorage
+  // Score history and progress chart are per-user, so they only exist when signed in
   (async () => {
     const Auth = window.AfroramaAuth;
-    if (!Auth) return;
-    const user = await Auth.getUser().catch(() => null);
-    if (!user) return;
+    const user = Auth ? await Auth.getUser().catch(() => null) : null;
+    if (!user) { renderHistory([]); return; }
     const { profile } = await Auth.getProfile(user.id).catch(() => ({}));
     if (profile?.cv_score_history?.length > 0) {
       state.reuploadUsed = true;
       localStorage.setItem('afrorama_cv_reupload_used', 'true');
     }
+    renderHistory(profile?.cv_score_history || []);
   })();
 
   /* ================================================================
@@ -106,17 +106,10 @@
   /* ================================================================
      SCORE HISTORY
   ================================================================= */
-  function loadHistory() { return JSON.parse(localStorage.getItem('afrorama_cv_history') || '[]'); }
-  function saveHistory(entry) {
-    const h = loadHistory();
-    h.push(entry);
-    localStorage.setItem('afrorama_cv_history', JSON.stringify(h.slice(-10)));
-  }
-
-  function renderHistory() {
-    const h  = loadHistory();
+  function renderHistory(h) {
     const el = document.getElementById('score-history');
-    if (!el || h.length < 2) return;
+    if (!el) return;
+    if (!h || h.length < 2) { el.classList.remove('visible'); return; }
     el.classList.add('visible');
 
     // Build SVG line chart
@@ -177,7 +170,6 @@
     const listEl = document.getElementById('history-list');
     if (listEl) listEl.innerHTML = svg;
   }
-  renderHistory();
 
   /* ================================================================
      SIMULATION (replace with real Claude API call on backend)
@@ -378,10 +370,6 @@
       document.getElementById('paywall-card').style.display  = 'block';
     }
 
-    // Save to history
-    saveHistory({ date: new Date().toISOString(), score: total, filename: state.file?.name });
-    renderHistory();
-
     rp.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -418,7 +406,9 @@
 
       const user = await window.AfroramaAuth?.getUser().catch(() => null);
       if (user) {
-        await window.AfroramaAuth?.saveCVScore(user.id, result.total, state.file?.name).catch(err => console.warn('[cv] score save failed:', err));
+        const saved = await window.AfroramaAuth?.saveCVScore(user.id, result.total, state.file?.name)
+          .catch(err => { console.warn('[cv] score save failed:', err); return null; });
+        renderHistory(saved?.profile?.cv_score_history || []);
       }
 
     } catch (err) {

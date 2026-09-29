@@ -239,6 +239,10 @@
   border: 3px solid var(--dark);
   box-shadow: 6px 6px 0 var(--dark);
 }
+/* OSM only ships a light basemap; fake a dark one by inverting the tile pane */
+#leaflet-home-map.leaflet-dark-tiles .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+}
 .map-market-stats { display: flex; flex-direction: column; gap: 10px; }
 .map-market-stats h5 {
   font-size: .78rem; font-weight: 800;
