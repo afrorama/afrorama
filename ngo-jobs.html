@@ -461,20 +461,28 @@
       </article>`;
     }).join('');
 
-    // JSON-LD structured data for Google Jobs
+    // JSON-LD structured data for Google Jobs — description + datePosted are
+    // required, so skip any listing missing them rather than emit an empty
+    // string (GSC flags that as a site-wide "missing field" error).
     const ld = {
       '@context': 'https://schema.org',
-      '@graph': active.slice(0, 20).map(j => ({
-        '@type': 'JobPosting',
-        title: j.title,
-        description: (j.description || '').replace(/[•\n]/g, ' ').trim().slice(0, 500),
-        hiringOrganization: { '@type': 'Organization', name: j.organisation },
-        jobLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressCountry: j.country || '', addressLocality: j.location || '' } },
-        datePosted: j.posted || '',
-        validThrough: j.deadline || '',
-        employmentType: j.type === 'internship' ? 'INTERN' : j.type === 'consultancy' ? 'CONTRACTOR' : 'FULL_TIME',
-        url: j.apply_url || '',
-      })),
+      '@graph': active
+        .filter(j => j.title && j.description && j.posted)
+        .slice(0, 20)
+        .map(j => {
+          const entry = {
+            '@type': 'JobPosting',
+            title: j.title,
+            description: j.description.replace(/[•\n]/g, ' ').trim().slice(0, 500),
+            hiringOrganization: { '@type': 'Organization', name: j.organisation },
+            jobLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressCountry: j.country || '', addressLocality: j.location || '' } },
+            datePosted: j.posted,
+            employmentType: j.type === 'internship' ? 'INTERN' : j.type === 'consultancy' ? 'CONTRACTOR' : 'FULL_TIME',
+          };
+          if (j.deadline)   entry.validThrough = j.deadline;
+          if (j.apply_url)  entry.url = j.apply_url;
+          return entry;
+        }),
     };
     const script = document.createElement('script');
     script.type = 'application/ld+json';
