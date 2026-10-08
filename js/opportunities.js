@@ -387,7 +387,10 @@
      SEO — JobPosting JSON-LD schema (injected when jobs render)
   ================================================================= */
   function injectJobPostingSchema(jobs) {
-    const schema = jobs.slice(0, 10).map(j => {
+    // Google requires description + datePosted on every JobPosting — skip any
+    // listing missing them rather than emit an incomplete entry (GSC flags that
+    // as a site-wide "missing field" error).
+    const schema = jobs.filter(j => j.title && j.description && j.posted).slice(0, 10).map(j => {
       const entry = {
         '@context':       'https://schema.org',
         '@type':          'JobPosting',
