@@ -175,11 +175,11 @@ async function formatWithClaude(title: string, org: string, description: string)
   const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
   if (!apiKey) {
     console.error('[unv-scraper formatWithClaude] ANTHROPIC_API_KEY is not set — falling back');
-    return { description: fallbackDesc(description, org), salary: 'Volunteer role' };
+    return { description: fallbackDesc(description, org), salary: 'See listing' };
   }
   if (!description || description.length < 80) {
     console.error(`[unv-scraper formatWithClaude] description too short (${description?.length ?? 0} chars) — falling back`);
-    return { description: fallbackDesc(description, org), salary: 'Volunteer role' };
+    return { description: fallbackDesc(description, org), salary: 'See listing' };
   }
 
   const prompt = `You are writing a job summary for Afrorama, Africa's social impact job board. Format the volunteer role description below in British English.
@@ -192,9 +192,9 @@ Task 1 — Write exactly 5 bullet points:
 - British English spelling (organise, programme, analyse, prioritise)
 
 Task 2 — Extract any living allowance or stipend:
-- UNV roles often mention a Volunteer Living Allowance (VLA) or stipend — extract it if mentioned (e.g. "USD 1,200/month VLA")
+- UNV roles almost always pay a Volunteer Living Allowance (VLA) or stipend, even when this specific posting doesn't quote the figure — extract it if mentioned (e.g. "USD 1,200/month VLA")
 - Also look for grade references (P3, G5, NOA), "Competitive", or any compensation clue
-- If none mentioned, write: Volunteer role
+- If no figure is mentioned, write: See listing — never write "unpaid" or "volunteer role", since UNV assignments are not actually unpaid
 
 Role: ${title} with ${org}
 
@@ -208,7 +208,7 @@ BULLETS:
 • [bullet 3]
 • [bullet 4]
 • [bullet 5]
-SALARY: [allowance or Volunteer role]`;
+SALARY: [allowance or See listing]`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -227,7 +227,7 @@ SALARY: [allowance or Volunteer role]`;
     if (!res.ok) {
       const errBody = await res.text().catch(() => '');
       console.error(`[unv-scraper formatWithClaude] Anthropic API returned ${res.status}: ${errBody.slice(0, 300)}`);
-      return { description: fallbackDesc(description, org), salary: 'Volunteer role' };
+      return { description: fallbackDesc(description, org), salary: 'See listing' };
     }
 
     const data        = await res.json() as { content: { text: string }[] };
@@ -236,12 +236,12 @@ SALARY: [allowance or Volunteer role]`;
     const salaryMatch = raw.match(/SALARY:\s*(.+)/i);
 
     const bullets   = sanitizeBullets(bulletMatch?.[1]?.trim() || '', fallbackDesc(description, org));
-    const salaryRaw = sanitizeSalary(salaryMatch?.[1]?.trim() || 'Volunteer role');
+    const salaryRaw = sanitizeSalary(salaryMatch?.[1]?.trim() || 'See listing');
 
     return { description: bullets + DISCLAIMER, salary: salaryRaw };
   } catch (err) {
     console.error(`[unv-scraper formatWithClaude] Exception calling Anthropic API: ${err instanceof Error ? err.message : String(err)}`);
-    return { description: fallbackDesc(description, org), salary: 'Volunteer role' };
+    return { description: fallbackDesc(description, org), salary: 'See listing' };
   }
 }
 
