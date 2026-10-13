@@ -102,12 +102,28 @@ export function parseSalaryToUSD(text: string | null | undefined): ParsedSalary 
   const t = text.trim().toLowerCase();
   if (!t) return null;
 
+  // Try to find a real figure first. UN Volunteer (UNV) assignments, for example,
+  // mention "volunteer" in the role/contract type while still paying a Volunteer
+  // Living Allowance — a genuine amount in the text always outranks that wording.
+  const amount = parseAmountFromText(t);
+  if (amount !== null) return { amountUSD: amount, unpaid: false };
+
   if (UNPAID_PATTERNS.some(p => t.includes(p))) return { amountUSD: 0, unpaid: true };
+  return null; // vague ("negotiable", "not disclosed", ...) or genuinely unparseable
+}
+
+function parseAmountFromText(t: string): number | null {
   if (VAGUE_PATTERNS.some(p => t.includes(p))) return null;
 
   // Currency code/symbol — longest alias first so "kshs." beats "ks".
   const aliasKeys = Object.keys(CURRENCY_ALIASES).sort((a, b) => b.length - a.length);
-  const aliasPattern = aliasKeys.map(a => a.replace(/[.$€£₦₵]/g, m => `\\${m}`)).join('|');
+  const aliasPattern = aliasKeys.map(a => {
+    const escaped = a.replace(/[.$€£₦₵]/g, m => `\\${m}`);
+    // The bare single-letter "r" (ZAR) is the only alias short enough to turn up
+    // inside ordinary words ("volunteer", "director", "year"...) — require it to
+    // start a word and lead straight into a figure, like real "R1,500" notation.
+    return a.length === 1 ? `\\b${escaped}(?=\\s?\\d)` : escaped;
+  }).join('|');
   const currencyMatch = t.match(new RegExp(`(${aliasPattern})`, 'i'));
   if (!currencyMatch) return null;
   const currency = CURRENCY_ALIASES[currencyMatch[1].toLowerCase()];
@@ -152,7 +168,7 @@ export function parseSalaryToUSD(text: string | null | undefined): ParsedSalary 
   // (e.g. a real-world "USD 150" with no /month or /year qualifier).
   if (!amountUSD || amountUSD < 1_000 || amountUSD > 500_000) return null;
 
-  return { amountUSD, unpaid: false };
+  return amountUSD;
 }
 
 /**
