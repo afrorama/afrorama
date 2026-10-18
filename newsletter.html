@@ -316,6 +316,15 @@ function toFlag(_iso) {
   return '🌍';
 }
 
+// Job page URL — same slug rule as api/_shared.js (a stale slug still 301s to the right page)
+function jobUrl(l) {
+  const slug = String(`${l.title || ''} ${l.organisation || ''}`)
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+    .slice(0, 80).replace(/-+$/g, '') || 'job';
+  return `https://www.afrorama.org/jobs/${encodeURIComponent(l.id)}/${slug}`;
+}
+
 function locationDisplay(listing) {
   const loc = (listing.location || '').trim();
   if (/remote/i.test(loc)) return { flag: '🌍', name: 'Remote' };
@@ -684,7 +693,7 @@ document.getElementById('btn-generate').addEventListener('click', () => {
     lines.push(section.label);
     items.forEach(l => {
       const { flag, name } = locationDisplay(l);
-      const url = `https://www.afrorama.org/opportunities?job=${encodeURIComponent(l.id)}&utm_source=afrorama&utm_medium=newsletter`;
+      const url = `${jobUrl(l)}?utm_source=afrorama&utm_medium=newsletter`;
       lines.push(`${flag} ${name} | ${l.organisation} | ${l.title}: ${url}`);
     });
   });
@@ -747,7 +756,7 @@ document.getElementById('btn-wa-generate').addEventListener('click', () => {
     const when = days === null ? '' : days <= 0 ? ' · ⏳ closes today' : ` · ⏳ ${days} day${days === 1 ? '' : 's'} left`;
     lines.push(`💼 *${l.title}* — ${l.organisation}`);
     lines.push(`${flag} ${name}${when}`);
-    lines.push(`👉 https://www.afrorama.org/opportunities?job=${encodeURIComponent(l.id)}&${utm}`);
+    lines.push(`👉 ${jobUrl(l)}?${utm}`);
     lines.push('');
   });
   lines.push(`🔔 Get roles like these by email, free: https://www.afrorama.org/job-alerts?${utm}`);
