@@ -3,8 +3,9 @@
  *
  * Listens for Stripe events and updates the Supabase database accordingly.
  *
- * Deploy:
- *   supabase functions deploy stripe-webhook
+ * Deploy (--no-verify-jwt is required: Stripe sends no Supabase auth header;
+ * requests are authenticated by the stripe-signature check below instead):
+ *   supabase functions deploy stripe-webhook --no-verify-jwt
  *
  * Required secrets:
  *   STRIPE_SECRET_KEY       — sk_live_...
