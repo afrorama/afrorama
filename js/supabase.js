@@ -106,4 +106,14 @@ function isDemoMode() {
 const PUBLIC_LISTING_COLUMNS =
   'id,title,organisation,type,sector,location,country,deadline,posted,salary,description,requirements,apply_url,bitly_url,utm_url,source,views,apply_clicks,paid_listing,created_at,org_domain,experience,payment_confirmed';
 
-window.AfroramaSupabase = { getSupabase, isDemoMode, PUBLIC_LISTING_COLUMNS };
+// Canonical job page URL — must match slugify()/jobPath() in api/_shared.js
+// (a mismatched slug still works: the server 301s to the canonical URL).
+function jobPath(job) {
+  const slug = String(`${job.title || ''} ${job.organisation || ''}`)
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+    .slice(0, 80).replace(/-+$/g, '') || 'job';
+  return `/jobs/${encodeURIComponent(job.id)}/${slug}`;
+}
+
+window.AfroramaSupabase = { getSupabase, isDemoMode, PUBLIC_LISTING_COLUMNS, jobPath };

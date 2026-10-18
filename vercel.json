@@ -2,6 +2,18 @@
   "cleanUrls": true,
   "rewrites": [
     {
+      "source": "/jobs/:id/:slug",
+      "destination": "/api/job?id=:id&slug=:slug"
+    },
+    {
+      "source": "/jobs/:id",
+      "destination": "/api/job?id=:id"
+    },
+    {
+      "source": "/sitemap-jobs.xml",
+      "destination": "/api/sitemap-jobs"
+    },
+    {
       "source": "/opportunity/:id",
       "destination": "https://vqchwioyhyiuunpyildz.supabase.co/functions/v1/opportunity/:id"
     },
