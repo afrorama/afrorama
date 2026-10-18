@@ -44,19 +44,19 @@
     const mobileMenu = document.getElementById('nav-mobile-menu');
 
     if (!user) {
-      // Show Sign in link if not already present
-      if (ctaGroup && !ctaGroup.querySelector('a')) {
+      // Show Sign in link (before "Post a role") if not already present
+      if (ctaGroup && !ctaGroup.querySelector('a[href="auth.html"]')) {
         const a = document.createElement('a');
         a.href = 'auth.html';
         a.className = 'btn btn-outline btn-sm';
         a.textContent = 'Sign in';
-        ctaGroup.appendChild(a);
+        ctaGroup.insertBefore(a, ctaGroup.firstChild);
       }
       if (mobileMenu && !mobileMenu.querySelector('a[href="auth.html"]')) {
         const a = document.createElement('a');
         a.href = 'auth.html';
         a.textContent = 'Sign in';
-        mobileMenu.appendChild(a);
+        mobileMenu.insertBefore(a, mobileMenu.querySelector('a[href="post.html"]'));
       }
       return;
     }
