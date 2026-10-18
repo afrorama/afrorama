@@ -132,12 +132,12 @@
     .song-preview-sub { font-size: .75rem; color: #888; }
 
     /* Output */
-    textarea#output {
+    textarea#output, textarea#wa-output {
       width: 100%; height: 360px; font-family: 'Courier New', monospace; font-size: .78rem;
       line-height: 1.7; border: 1.5px solid #DDDCDA; border-radius: 10px;
       padding: 14px; resize: vertical; outline: none; color: #1C1D1C; background: #F8F7F3;
     }
-    textarea#output:focus { border-color: #1C1D1C; }
+    textarea#output:focus, textarea#wa-output:focus { border-color: #1C1D1C; }
     .output-actions { display: flex; gap: 10px; margin-top: 12px; align-items: center; }
     .copy-hint { font-size: .78rem; color: #5EC95E; font-weight: 700; }
     #output-area { display: none; }
@@ -231,6 +231,35 @@
         <button class="btn-dark" id="btn-copy">Copy to clipboard</button>
         <span class="copy-hint" id="copy-hint"></span>
       </div>
+    </div>
+  </div>
+
+  <!-- Step 5: WhatsApp version -->
+  <div class="card">
+    <h2>5. WhatsApp version (for community groups)</h2>
+    <p class="song-hint">Uses the roles ticked in step 2, featured first, then soonest deadline. Each group gets its own tag so Google Analytics shows which group sends visitors.</p>
+    <div class="row3" style="grid-template-columns: 1fr 1fr 110px;">
+      <div>
+        <label for="wa-group">Group tag</label>
+        <input type="text" id="wa-group" list="wa-group-list" placeholder="e.g. bwid" value="bwid">
+        <datalist id="wa-group-list">
+          <option value="bwid">Black Women in Development</option>
+        </datalist>
+      </div>
+      <div>
+        <label for="wa-heading">Heading</label>
+        <input type="text" id="wa-heading" value="afrorama picks for this week">
+      </div>
+      <div>
+        <label for="wa-max">Max roles</label>
+        <input type="text" id="wa-max" value="8" inputmode="numeric">
+      </div>
+    </div>
+    <button class="btn-dark" id="btn-wa-generate">Generate WhatsApp message</button>
+    <textarea id="wa-output" readonly style="margin-top:16px;"></textarea>
+    <div class="output-actions">
+      <button class="btn-dark" id="btn-wa-copy">Copy to clipboard</button>
+      <span class="copy-hint" id="wa-copy-hint"></span>
     </div>
   </div>
 
@@ -675,6 +704,66 @@ document.getElementById('btn-generate').addEventListener('click', () => {
   outEl.classList.add('show');
   outEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   document.getElementById('copy-hint').textContent = '';
+});
+
+// ── WhatsApp version ──
+const WA_GROUP_KEY = 'afrorama_wa_group';
+try {
+  const saved = localStorage.getItem(WA_GROUP_KEY);
+  if (saved) document.getElementById('wa-group').value = saved;
+} catch {}
+
+function waDaysLeft(deadline) {
+  if (!deadline) return null;
+  return Math.ceil((new Date(deadline + 'T23:59:59') - new Date()) / 86400000);
+}
+
+document.getElementById('btn-wa-generate').addEventListener('click', () => {
+  const checkedIds = new Set(
+    [...document.querySelectorAll('.listing-item input:checked')].map(el => el.dataset.id)
+  );
+  const seen = new Set();
+  const picked = SECTIONS.flatMap(sec => sectionListings[sec.key] || [])
+    .filter(l => checkedIds.has(l.id) && !seen.has(l.id) && seen.add(l.id));
+  if (!picked.length) { alert('No listings selected in step 2.'); return; }
+
+  const group = (document.getElementById('wa-group').value.trim().toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '')) || 'whatsapp-group';
+  try { localStorage.setItem(WA_GROUP_KEY, group); } catch {}
+  const heading = document.getElementById('wa-heading').value.trim() || 'afrorama picks for this week';
+  const max     = Math.max(1, parseInt(document.getElementById('wa-max').value, 10) || 8);
+  const utm     = `utm_source=whatsapp&utm_medium=community&utm_campaign=${encodeURIComponent(group)}`;
+
+  // Featured first, then soonest deadline (no deadline last)
+  const roles = picked.sort((a, b) => {
+    if (!!b.paid_listing !== !!a.paid_listing) return b.paid_listing ? 1 : -1;
+    return (a.deadline || '9999') .localeCompare(b.deadline || '9999');
+  }).slice(0, max);
+
+  const lines = [`🌍 *${heading}*`, ''];
+  roles.forEach(l => {
+    const { flag, name } = locationDisplay(l);
+    const days = waDaysLeft(l.deadline);
+    const when = days === null ? '' : days <= 0 ? ' · ⏳ closes today' : ` · ⏳ ${days} day${days === 1 ? '' : 's'} left`;
+    lines.push(`💼 *${l.title}* — ${l.organisation}`);
+    lines.push(`${flag} ${name}${when}`);
+    lines.push(`👉 https://www.afrorama.org/opportunities?job=${encodeURIComponent(l.id)}&${utm}`);
+    lines.push('');
+  });
+  lines.push(`🔔 Get roles like these by email, free: https://www.afrorama.org/job-alerts?${utm}`);
+  lines.push(`🔎 More opportunities: https://www.afrorama.org/opportunities?${utm}`);
+
+  document.getElementById('wa-output').value = lines.join('\n');
+  document.getElementById('wa-copy-hint').textContent = '';
+});
+
+document.getElementById('btn-wa-copy').addEventListener('click', async () => {
+  const el = document.getElementById('wa-output');
+  if (!el.value) return;
+  try { await navigator.clipboard.writeText(el.value); }
+  catch { el.select(); document.execCommand('copy'); }
+  document.getElementById('wa-copy-hint').textContent = '✓ Copied!';
+  setTimeout(() => { document.getElementById('wa-copy-hint').textContent = ''; }, 2500);
 });
 
 // ── Copy ──
