@@ -94,9 +94,11 @@ GRANT SELECT (id, full_name, is_moderator) ON public.profiles TO anon, authentic
 -- moderator status or Stripe IDs (set by stripe-webhook / service role).
 GRANT INSERT (
   id, full_name, linkedin_url, location, is_actively_looking,
-  job_type_prefs, sector_prefs, email_alerts, cv_score, cv_score_history
+  job_type_prefs, sector_prefs, email_alerts, cv_score, cv_score_history,
+  years_exp  -- added in profiles-years-exp.sql
 ) ON public.profiles TO authenticated;
 GRANT UPDATE (
   id, full_name, linkedin_url, location, is_actively_looking,
-  job_type_prefs, sector_prefs, email_alerts, cv_score, cv_score_history
+  job_type_prefs, sector_prefs, email_alerts, cv_score, cv_score_history,
+  years_exp  -- added in profiles-years-exp.sql
 ) ON public.profiles TO authenticated;

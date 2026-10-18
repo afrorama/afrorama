@@ -595,7 +595,7 @@
               </span>
             </div>
             <div class="job-card-tags">
-              ${j.paid_listing ? '<span class="badge badge-featured">★ Featured</span>' : ''}
+              ${j.paid_listing ? '<span class="badge badge-featured"><span class="badge-star">★</span> Featured</span>' : ''}
               <span class="badge badge-${j.type}">${t.icon} ${t.label}</span>
             </div>
           </div>
@@ -695,7 +695,7 @@
     const urgent  = days <= 7;
     document.getElementById('modal-org').textContent   = job.organisation;
     document.getElementById('modal-title').textContent = job.title;
-    document.getElementById('modal-type').innerHTML    = `${job.paid_listing ? '<span class="badge badge-featured">★ Featured</span> ' : ''}<span class="badge badge-${job.type}">${t.icon} ${t.label}</span>`;
+    document.getElementById('modal-type').innerHTML    = `${job.paid_listing ? '<span class="badge badge-featured"><span class="badge-star">★</span> Featured</span> ' : ''}<span class="badge badge-${job.type}">${t.icon} ${t.label}</span>`;
     // Show "City, Country" but avoid "Kenya, Kenya" if location already is the country
     const locationText = country && job.location !== country.name
       ? `${job.location}, ${country.name}`

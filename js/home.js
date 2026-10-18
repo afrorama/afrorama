@@ -305,7 +305,9 @@
       const inits = orgInitials(j.organisation);
       return `
         <article class="job-card-home t-${j.type}" tabindex="0" role="button" data-id="${j.id}" aria-label="${esc(j.title)} at ${esc(j.organisation)}">
-          ${j.paid_listing ? '<span class="badge badge-featured">★ Featured</span> ' : ''}<span class="badge badge-${j.type}">${t.icon} ${t.label}</span>
+          <div class="card-badges">
+            ${j.paid_listing ? '<span class="badge badge-featured"><span class="badge-star">★</span> Featured</span>' : ''}<span class="badge badge-${j.type}">${t.icon} ${t.label}</span>
+          </div>
           <div class="card-logo-wrap">
             <div class="card-logo" style="background:${bgCol};overflow:hidden" aria-hidden="true">
               <img class="home-org-logo-img" data-org="${esc(j.organisation)}" alt="${esc(j.organisation)}" style="display:none;width:100%;height:100%;object-fit:contain;border-radius:5px;background:white" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">

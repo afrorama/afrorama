@@ -329,6 +329,7 @@
 .job-card-home.t-consultancy::before { background: #FD6925; }
 .job-card-home.t-capacity::before    { background: #3F7E44; }
 .job-card-home:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--dark); }
+.card-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .card-logo-wrap { display: flex; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 2px; }
 .card-logo {
   width: 32px; height: 32px; border-radius: 8px;
