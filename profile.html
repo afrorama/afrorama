@@ -363,7 +363,7 @@
       if (!sectors.length) { secErr.textContent        = 'Select at least one sector.'; valid = false; }
       if (!valid) return;
 
-      await upsertProfile(user.id, {
+      const { error } = await upsertProfile(user.id, {
         full_name:      fullName,
         location,
         linkedin_url:   document.getElementById('edit-linkedin').value.trim(),
@@ -373,6 +373,12 @@
       });
 
       const msg = document.getElementById('save-msg');
+      if (error) {
+        console.error('[profile] save failed:', error.message);
+        msg.textContent = 'Could not save your profile. Please try again.';
+        msg.style.display = 'block';
+        return;
+      }
       msg.textContent = 'Profile saved!';
       msg.style.display = 'block';
       document.getElementById('setup-banner').style.display = 'none';
