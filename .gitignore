@@ -1,3 +1,5 @@
 .DS_Store
 supabase/.temp/
 Combined_All_Opportunities_2024_2026.csv
+.vercel
+.env*
