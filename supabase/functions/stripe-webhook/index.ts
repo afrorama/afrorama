@@ -3,8 +3,9 @@
  *
  * Listens for Stripe events and updates the Supabase database accordingly.
  *
- * Deploy:
- *   supabase functions deploy stripe-webhook
+ * Deploy (--no-verify-jwt is required: Stripe sends no Supabase auth header;
+ * requests are authenticated by the stripe-signature check below instead):
+ *   supabase functions deploy stripe-webhook --no-verify-jwt
  *
  * Required secrets:
  *   STRIPE_SECRET_KEY       — sk_live_...
@@ -94,7 +95,7 @@ Deno.serve(async (req: Request) => {
           // userId is repurposed to carry the listings.id (post.html is unauthenticated)
           const { error } = await supabase
             .from('listings')
-            .update({ payment_confirmed: true })
+            .update({ payment_confirmed: true, payment_confirmed_at: new Date().toISOString() })
             .eq('id', userId);
           if (error) console.error('[webhook] job_listing confirm failed:', error);
           else        console.log(`[webhook] Listing ${userId} payment confirmed`);

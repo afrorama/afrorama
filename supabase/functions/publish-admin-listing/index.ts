@@ -89,6 +89,7 @@ Deno.serve(async (req) => {
       source: 'Admin',
       paid_listing: !!paid_listing,
       payment_confirmed: true,
+      payment_confirmed_at: new Date().toISOString(),
       views: 0,
       apply_clicks: 0,
     });
