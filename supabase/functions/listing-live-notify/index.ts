@@ -1,9 +1,10 @@
 /**
  * Afrorama — listing-live-notify Edge Function
  *
- * Runs daily. Finds paid listings confirmed in the last 24 hours that
- * haven't had a live notification sent yet. Emails the poster to confirm
- * their listing is live, and BCCs TrustPilot to trigger an automatic
+ * Runs daily. Finds paid listings whose payment was confirmed in the last
+ * 48 hours (payment_confirmed_at, set by stripe-webhook and
+ * publish-admin-listing) that haven't had a live notification sent yet.
+ * Emails the poster to confirm their listing is live, and BCCs TrustPilot to trigger an automatic
  * review invitation.
  *
  * Deploy:
@@ -203,7 +204,7 @@ Deno.serve(async () => {
     .eq('paid_listing', true)
     .eq('payment_confirmed', true)
     .eq('live_notified', false)
-    .gte('updated_at', since)
+    .gte('payment_confirmed_at', since)
     .not('contact_email', 'is', null);
 
   if (error) {

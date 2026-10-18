@@ -94,7 +94,7 @@ Deno.serve(async (req: Request) => {
           // userId is repurposed to carry the listings.id (post.html is unauthenticated)
           const { error } = await supabase
             .from('listings')
-            .update({ payment_confirmed: true })
+            .update({ payment_confirmed: true, payment_confirmed_at: new Date().toISOString() })
             .eq('id', userId);
           if (error) console.error('[webhook] job_listing confirm failed:', error);
           else        console.log(`[webhook] Listing ${userId} payment confirmed`);
