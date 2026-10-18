@@ -117,10 +117,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/data.js"></script>
 <script src="js/supabase.js"></script>
+<script src="js/admin-auth.js"></script>
 <script>
 (function () {
-  const ADMIN_PASSWORD = 'ETaylor@2026!';
-  const ADMIN_KEY = 'afrorama_admin_analytics_session';
   const ANON_KEY = 'sb_publishable_HeGZfQZEDI_IR46a2Ezp-Q_tIUdhF6_';
   const SUPA_URL = 'https://vqchwioyhyiuunpyildz.supabase.co';
 
@@ -132,11 +131,11 @@
     loadData();
   }
 
-  if (sessionStorage.getItem(ADMIN_KEY) === '1') showDashboard();
+  AfroramaAdmin.isLoggedIn().then(ok => { if (ok) showDashboard(); });
 
-  document.getElementById('btn-login').addEventListener('click', () => {
-    if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) {
-      sessionStorage.setItem(ADMIN_KEY, '1'); showDashboard();
+  document.getElementById('btn-login').addEventListener('click', async () => {
+    if (await AfroramaAdmin.login(document.getElementById('admin-pass').value)) {
+      showDashboard();
     } else { alert('Incorrect password.'); }
   });
   document.getElementById('admin-pass').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btn-login').click(); });

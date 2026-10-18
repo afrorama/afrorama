@@ -353,12 +353,10 @@
 
 <script src="js/data.js"></script>
 <script src="js/salary-data.js"></script>
+<script src="js/admin-auth.js"></script>
 <script>
 (function () {
 
-  /* ── CONFIG ── change this password before deploying ── */
-  const ADMIN_PASSWORD = 'ETaylor@2026!';
-  const ADMIN_STORAGE  = 'afrorama_admin_session';
   const USER_SALT_KEY  = 'afrorama_salary_submissions';
 
   /* ── All country data ── */
@@ -456,15 +454,12 @@
   }
 
   /* ── Auth ── */
-  function isAuthed() { return sessionStorage.getItem(ADMIN_STORAGE) === '1'; }
+  AfroramaAdmin.isLoggedIn().then(ok => { if (ok) showAdmin(); });
 
-  if (isAuthed()) showAdmin();
-
-  document.getElementById('btn-login').addEventListener('click', () => {
+  document.getElementById('btn-login').addEventListener('click', async () => {
     const pass  = document.getElementById('admin-pass').value;
     const errEl = document.getElementById('pass-error');
-    if (pass === ADMIN_PASSWORD) {
-      sessionStorage.setItem(ADMIN_STORAGE, '1');
+    if (await AfroramaAdmin.login(pass)) {
       showAdmin();
     } else {
       errEl.textContent = 'Incorrect password. Try again.';
@@ -475,7 +470,7 @@
     if (e.key === 'Enter') document.getElementById('btn-login').click();
   });
   document.getElementById('btn-logout')?.addEventListener('click', () => {
-    sessionStorage.removeItem(ADMIN_STORAGE);
+    AfroramaAdmin.logout();
     location.reload();
   });
 

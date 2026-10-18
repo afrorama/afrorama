@@ -100,4 +100,10 @@ function isDemoMode() {
   return SUPABASE_URL === 'YOUR_SUPABASE_URL';
 }
 
-window.AfroramaSupabase = { getSupabase, isDemoMode };
+// Listing columns the public site may read. contact_email and the
+// notification flags are private (column grants in supabase/security-hardening.sql);
+// a new public column must be added here AND granted there.
+const PUBLIC_LISTING_COLUMNS =
+  'id,title,organisation,type,sector,location,country,deadline,posted,salary,description,requirements,apply_url,bitly_url,utm_url,source,views,apply_clicks,paid_listing,created_at,org_domain,experience,payment_confirmed';
+
+window.AfroramaSupabase = { getSupabase, isDemoMode, PUBLIC_LISTING_COLUMNS };

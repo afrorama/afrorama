@@ -910,7 +910,7 @@
         // Not in current results — fetch directly by ID from DB
         const sb = window.AfroramaSupabase?.getSupabase();
         if (sb) {
-          const { data } = await sb.from('listings').select('*').eq('id', deepJobId).single();
+          const { data } = await sb.from('listings').select(window.AfroramaSupabase.PUBLIC_LISTING_COLUMNS).eq('id', deepJobId).single();
           if (data) { deepJob = data; allJobs.unshift(data); }
         }
       }

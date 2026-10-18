@@ -128,10 +128,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/data.js"></script>
 <script src="js/supabase.js"></script>
+<script src="js/admin-auth.js"></script>
 <script>
 (function () {
-  const ADMIN_PASSWORD = 'ETaylor@2026!';
-  const ADMIN_KEY = 'afrorama_admin_scrape_session';
   const FN_BASE = 'https://vqchwioyhyiuunpyildz.supabase.co/functions/v1';
   const ANON_KEY = 'sb_publishable_HeGZfQZEDI_IR46a2Ezp-Q_tIUdhF6_';
 
@@ -218,11 +217,11 @@
     populateSelects();
   }
 
-  if (sessionStorage.getItem(ADMIN_KEY) === '1') showMain();
+  AfroramaAdmin.isLoggedIn().then(ok => { if (ok) showMain(); });
 
-  document.getElementById('btn-login').addEventListener('click', () => {
+  document.getElementById('btn-login').addEventListener('click', async () => {
     const pass = document.getElementById('admin-pass').value;
-    if (pass === ADMIN_PASSWORD) { sessionStorage.setItem(ADMIN_KEY, '1'); showMain(); }
+    if (await AfroramaAdmin.login(pass)) { showMain(); }
     else alert('Incorrect password.');
   });
   document.getElementById('admin-pass').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btn-login').click(); });
@@ -249,7 +248,7 @@
     try {
       const res = await fetch(`${FN_BASE}/scrape-url`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` },
+        headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}`, 'x-admin-password': AfroramaAdmin.password() },
         body: JSON.stringify({ url }),
       });
       const data = await res.json();
@@ -309,7 +308,7 @@
     try {
       const res = await fetch(`${FN_BASE}/publish-admin-listing`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` },
+        headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}`, 'x-admin-password': AfroramaAdmin.password() },
         body: JSON.stringify({
           title, organisation: org,
           type:        document.getElementById('f-type').value,
