@@ -5,26 +5,185 @@
       "source": "/opportunity/:id",
       "destination": "https://vqchwioyhyiuunpyildz.supabase.co/functions/v1/opportunity/:id"
     },
-    { "source": "/ngo-jobs-kenya",       "destination": "/ngo-jobs.html" },
-    { "source": "/ngo-jobs-ghana",       "destination": "/ngo-jobs.html" },
-    { "source": "/ngo-jobs-nigeria",     "destination": "/ngo-jobs.html" },
-    { "source": "/ngo-jobs-rwanda",      "destination": "/ngo-jobs.html" },
-    { "source": "/ngo-jobs-uganda",      "destination": "/ngo-jobs.html" },
-    { "source": "/ngo-jobs-zambia",      "destination": "/ngo-jobs.html" },
-    { "source": "/ngo-jobs-tanzania",    "destination": "/ngo-jobs.html" },
-    { "source": "/ngo-jobs-ethiopia",    "destination": "/ngo-jobs.html" },
-    { "source": "/ngo-jobs-senegal",     "destination": "/ngo-jobs.html" },
-    { "source": "/ngo-jobs-morocco",     "destination": "/ngo-jobs.html" },
-    { "source": "/social-impact-jobs-health",          "destination": "/ngo-jobs.html" },
-    { "source": "/social-impact-jobs-education",       "destination": "/ngo-jobs.html" },
-    { "source": "/social-impact-jobs-finance",         "destination": "/ngo-jobs.html" },
-    { "source": "/social-impact-jobs-technology",      "destination": "/ngo-jobs.html" },
-    { "source": "/social-impact-jobs-agriculture",     "destination": "/ngo-jobs.html" },
-    { "source": "/social-impact-jobs-climate",         "destination": "/ngo-jobs.html" },
-    { "source": "/social-impact-jobs-gender",          "destination": "/ngo-jobs.html" },
-    { "source": "/social-impact-jobs-human-rights",    "destination": "/ngo-jobs.html" },
-    { "source": "/social-impact-jobs-infrastructure",  "destination": "/ngo-jobs.html" },
-    { "source": "/social-impact-jobs-governance",      "destination": "/ngo-jobs.html" },
-    { "source": "/social-impact-jobs-peacebuilding",   "destination": "/ngo-jobs.html" }
+    {
+      "source": "/ngo-jobs-kenya",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-ghana",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-nigeria",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-rwanda",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-uganda",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-zambia",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-tanzania",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-ethiopia",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-senegal",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-morocco",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-south-africa",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-drc",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-sudan",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-south-sudan",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-chad",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-mozambique",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-somalia",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-mali",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-cote-divoire",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-cameroon",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-burkina-faso",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-malawi",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-nairobi",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-kigali",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-kampala",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-addis-ababa",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-johannesburg",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-juba",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-abuja",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-accra",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-dar-es-salaam",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-maputo",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-cape-town",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/ngo-jobs-abidjan",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/social-impact-jobs-health",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/social-impact-jobs-education",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/social-impact-jobs-finance",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/social-impact-jobs-technology",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/social-impact-jobs-agriculture",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/social-impact-jobs-climate",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/social-impact-jobs-gender",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/social-impact-jobs-human-rights",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/social-impact-jobs-infrastructure",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/social-impact-jobs-governance",
+      "destination": "/ngo-jobs"
+    },
+    {
+      "source": "/social-impact-jobs-peacebuilding",
+      "destination": "/ngo-jobs"
+    }
   ]
 }

@@ -664,7 +664,7 @@ supabase functions deploy bitly-link
 curl -X POST https://YOUR_PROJECT.supabase.co/functions/v1/bitly-link \
   -H "Authorization: Bearer YOUR_ANON_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"long_url":"https://afrorama.org/opportunities.html?id=seed-1&utm_source=afrorama&utm_medium=jobboard&utm_campaign=UNDP"}'</div>
+  -d '{"long_url":"https://www.afrorama.org/opportunities?id=seed-1&utm_source=afrorama&utm_medium=jobboard&utm_campaign=UNDP"}'</div>
 
           <hr style="border:none;border-top:1.5px solid var(--gray-mid);margin:20px 0;">
 
@@ -698,7 +698,7 @@ curl -X POST https://YOUR_PROJECT.supabase.co/functions/v1/bitly-link \
 (function () {
   const STORE_KEY      = 'afrorama_admin_opps';
   const TRACK_KEY      = 'afrorama_opp_tracking';
-  const SITE_URL       = 'https://afrorama.org';
+  const SITE_URL       = 'https://www.afrorama.org';
 
   const { SECTORS, AFRICAN_COUNTRIES, SEED_JOBS } = window.AfroramaData;
 
