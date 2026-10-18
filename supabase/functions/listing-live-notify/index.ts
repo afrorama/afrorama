@@ -120,7 +120,6 @@ function emailHTML(opts: {
     .eyebrow { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: #888; margin: 0 0 6px; }
     h1 { font-size: 1.35rem; font-weight: 800; color: #1a1a1a; line-height: 1.25; margin: 0 0 20px; }
     .badge { display: inline-flex; align-items: center; gap: 6px; background: #ECFBEC; border: 1.5px solid #5EC95E; border-radius: 100px; padding: 4px 12px; font-size: .78rem; font-weight: 700; color: #1A7A1A; margin-bottom: 20px; }
-    .dot { width: 7px; height: 7px; border-radius: 50%; background: #5EC95E; }
     p { font-size: .93rem; color: #333; line-height: 1.65; margin: 0 0 16px; }
     .listing-box { background: #F6F5F2; border-radius: 10px; padding: 16px 18px; margin: 20px 0; text-align: center; }
     .listing-label { font-size: .78rem; font-weight: 600; color: #888; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 8px; }
@@ -145,7 +144,6 @@ function emailHTML(opts: {
     <h1>Your listing is live.</h1>
 
     <span class="badge">
-      <span class="dot"></span>
       Active on afrorama
     </span>
 
@@ -161,24 +159,24 @@ function emailHTML(opts: {
     <div class="what-next-label">What happens next</div>
 
     <div class="item">
-      <span class="check">✓</span>
+      <span class="check" style="color:#5EC95E;padding-right:10px;">✓</span>
       <span>Your listing is searchable on <a href="${SITE_URL}" style="color:#1a1a1a;font-weight:700;text-underline-offset:2px;"><strong class="brand">afrorama</strong></a> right now</span>
     </div>
     <div class="item">
-      <span class="check">✓</span>
+      <span class="check" style="color:#5EC95E;padding-right:10px;">✓</span>
       <span>It will be featured in the next weekly newsletter to our 25k subscriber list</span>
     </div>
     <div class="item">
-      <span class="check">✓</span>
+      <span class="check" style="color:#5EC95E;padding-right:10px;">✓</span>
       <span>It will be spotlighted on our LinkedIn to 38k followers</span>
     </div>
     <div class="item">
-      <span class="check">✓</span>
+      <span class="check" style="color:#5EC95E;padding-right:10px;">✓</span>
       <span>When your listing closes, we'll email you a performance summary — views, apply clicks, and how you compared</span>
     </div>
 
     <div class="cta-wrap">
-      <a href="${listingUrl}" class="cta">View your listing →</a>
+      <a href="${listingUrl}" class="cta" style="color:#1a1a1a !important;text-decoration:none;"><span style="color:#1a1a1a;">View your listing →</span></a>
     </div>
 
     <hr>
