@@ -8,12 +8,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title id="meta-title">NGO &amp; Social Impact Jobs in Africa | Afrorama</title>
   <meta name="description" id="meta-desc" content="Browse NGO jobs and social impact careers across Africa on Afrorama — Africa's dedicated platform for development, humanitarian and social enterprise roles.">
-  <link rel="canonical" href="https://afrorama.org/opportunities" id="meta-canonical">
+  <link rel="canonical" href="https://www.afrorama.org/opportunities" id="meta-canonical">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Afrorama">
   <meta property="og:title" id="og-title" content="NGO Jobs in Africa | Afrorama">
   <meta property="og:description" id="og-desc" content="Browse NGO and social impact jobs across Africa.">
-  <meta property="og:image" content="https://afrorama.org/assets/hero.jpg">
+  <meta property="og:image" content="https://www.afrorama.org/assets/hero.jpg">
   <meta name="robots" content="index, follow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -180,6 +180,10 @@
           <div class="sidebar-panel-body" id="sidebar-countries"></div>
         </div>
         <div class="sidebar-panel">
+          <div class="sidebar-panel-head"><h4>By City</h4></div>
+          <div class="sidebar-panel-body" id="sidebar-cities"></div>
+        </div>
+        <div class="sidebar-panel">
           <div class="sidebar-panel-head"><h4>By Sector</h4></div>
           <div class="sidebar-panel-body" id="sidebar-sectors"></div>
         </div>
@@ -281,6 +285,35 @@
     ethiopia:  { name: 'Ethiopia',  iso: 'ET', region: 'East Africa',    desc: 'Ethiopia hosts major international NGOs, UN agencies, and the African Union, making Addis Ababa a significant social impact hub.' },
     senegal:   { name: 'Senegal',   iso: 'SN', region: 'West Africa',    desc: 'Senegal serves as a regional anchor for francophone West Africa, with a growing number of humanitarian and development roles based in Dakar.' },
     morocco:   { name: 'Morocco',   iso: 'MA', region: 'North Africa',   desc: 'Morocco\'s strategic location bridging Africa and Europe makes it a growing base for organisations working across the continent.' },
+    'south-africa': { name: 'South Africa', iso: 'ZA', region: 'Southern Africa', desc: 'South Africa has one of the continent\'s deepest civil society sectors, with foundations, research institutes and NGOs based in Johannesburg, Cape Town and Pretoria.' },
+    drc:       { name: 'DR Congo',  iso: 'CD', region: 'Central Africa', desc: 'The Democratic Republic of the Congo hosts one of Africa\'s largest humanitarian and development operations, from Kinshasa to Goma and the eastern provinces.' },
+    sudan:     { name: 'Sudan',     iso: 'SD', region: 'East Africa',    desc: 'Sudan\'s humanitarian response draws UN agencies and international NGOs working on protection, health, food security and displacement.' },
+    'south-sudan': { name: 'South Sudan', iso: 'SS', region: 'East Africa', desc: 'South Sudan is a major humanitarian context, with Juba hosting UN agencies and NGOs working across health, nutrition, WASH and peacebuilding.' },
+    chad:      { name: 'Chad',      iso: 'TD', region: 'Central Africa', desc: 'Chad\'s refugee and humanitarian response brings roles in protection, health, nutrition and logistics with UN agencies and international NGOs.' },
+    mozambique: { name: 'Mozambique', iso: 'MZ', region: 'Southern Africa', desc: 'Mozambique offers development and humanitarian roles in climate resilience, health and governance, with many organisations based in Maputo.' },
+    somalia:   { name: 'Somalia',   iso: 'SO', region: 'East Africa',    desc: 'Somalia\'s humanitarian and stabilisation work spans food security, health, protection and governance, often coordinated from Mogadishu and Nairobi.' },
+    mali:      { name: 'Mali',      iso: 'ML', region: 'West Africa',    desc: 'Mali hosts humanitarian and development organisations working on food security, education and resilience across the Sahel.' },
+    'cote-divoire': { name: 'Côte d\'Ivoire', iso: 'CI', region: 'West Africa', desc: 'Côte d\'Ivoire is a francophone West African hub, with Abidjan home to the African Development Bank and a growing social impact sector.' },
+    cameroon:  { name: 'Cameroon',  iso: 'CM', region: 'Central Africa', desc: 'Cameroon offers roles in humanitarian response, health, education and governance, with organisations based in Yaoundé and Douala.' },
+    'burkina-faso': { name: 'Burkina Faso', iso: 'BF', region: 'West Africa', desc: 'Burkina Faso\'s humanitarian and development response covers food security, education, health and protection across the Sahel.' },
+    malawi:    { name: 'Malawi',    iso: 'MW', region: 'Southern Africa', desc: 'Malawi has an active development sector in health, agriculture, education and climate resilience, centred on Lilongwe and Blantyre.' },
+  };
+
+  // City pages share the /ngo-jobs-<slug> URL pattern; jobs are filtered by
+  // country + location text. Only cities with plenty of live roles are listed.
+  const CITIES = {
+    nairobi:         { name: 'Nairobi',       iso: 'KE', country: 'Kenya',        desc: 'Nairobi is Africa\'s busiest hub for NGOs, UN agencies and social enterprises, hosting regional offices for hundreds of international organisations.' },
+    kigali:          { name: 'Kigali',        iso: 'RW', country: 'Rwanda',       desc: 'Kigali is a fast-growing base for development organisations, foundations and impact-driven startups in East Africa.' },
+    kampala:         { name: 'Kampala',       iso: 'UG', country: 'Uganda',       desc: 'Kampala hosts a large community of NGOs and UN agencies working on refugees, health, agriculture and education.' },
+    'addis-ababa':   { name: 'Addis Ababa',   iso: 'ET', country: 'Ethiopia',     desc: 'Addis Ababa is home to the African Union and UNECA, making it one of the continent\'s key diplomatic and development hubs.' },
+    johannesburg:    { name: 'Johannesburg',  iso: 'ZA', country: 'South Africa', desc: 'Johannesburg is a centre for foundations, research institutes and pan-African organisations working on economic inclusion and governance.' },
+    juba:            { name: 'Juba',          iso: 'SS', country: 'South Sudan',  desc: 'Juba is the base for South Sudan\'s humanitarian response, with UN agencies and NGOs hiring across programme, logistics and support roles.' },
+    abuja:           { name: 'Abuja',         iso: 'NG', country: 'Nigeria',      desc: 'Abuja hosts Nigeria\'s federal institutions, UN agencies and international NGOs working on health, governance and humanitarian response.' },
+    accra:           { name: 'Accra',         iso: 'GH', country: 'Ghana',        desc: 'Accra is a leading West African hub for development organisations, foundations and social enterprises.' },
+    'dar-es-salaam': { name: 'Dar es Salaam', iso: 'TZ', country: 'Tanzania',     desc: 'Dar es Salaam is Tanzania\'s commercial capital and a base for organisations working on health, conservation and economic development.' },
+    maputo:          { name: 'Maputo',        iso: 'MZ', country: 'Mozambique',   desc: 'Maputo hosts Mozambique\'s development partners and NGOs working on climate resilience, health and governance.' },
+    'cape-town':     { name: 'Cape Town',     iso: 'ZA', country: 'South Africa', desc: 'Cape Town is home to NGOs, research groups and social enterprises working on education, climate, health and innovation.' },
+    abidjan:         { name: 'Abidjan',       iso: 'CI', country: 'Côte d\'Ivoire', desc: 'Abidjan hosts the African Development Bank and a growing number of international organisations in francophone West Africa.' },
   };
 
   const SECTORS = {
@@ -325,7 +358,7 @@
   if (countryMatch) {
     filterType   = 'country';
     filterSlug   = countryMatch[1];
-    filterConfig = COUNTRIES[filterSlug] || null;
+    filterConfig = COUNTRIES[filterSlug] || CITIES[filterSlug] || null;
   } else if (sectorMatch) {
     filterType   = 'sector';
     filterSlug   = sectorMatch[1];
@@ -336,17 +369,18 @@
   function setMeta() {
     let title, desc, canonical;
     if (filterType === 'country' && filterConfig) {
-      title     = `NGO Jobs in ${filterConfig.name} | Social Impact Careers | Afrorama`;
+      const place = filterConfig.country ? `${filterConfig.name}, ${filterConfig.country}` : filterConfig.name;
+      title     = `NGO Jobs in ${place} | Social Impact Careers | Afrorama`;
       desc      = `Find NGO jobs and social impact careers in ${filterConfig.name}. Browse the latest openings in international development, humanitarian aid, and social enterprise.`;
-      canonical = `https://afrorama.org/ngo-jobs-${filterSlug}`;
+      canonical = `https://www.afrorama.org/ngo-jobs-${filterSlug}`;
     } else if (filterType === 'sector' && filterConfig) {
       title     = `Social Impact Jobs in ${filterConfig.name} | Africa | Afrorama`;
       desc      = `Browse ${filterConfig.name} jobs across Africa's social impact sector. Find NGO, INGO, and social enterprise roles on Afrorama.`;
-      canonical = `https://afrorama.org/social-impact-jobs-${filterSlug}`;
+      canonical = `https://www.afrorama.org/social-impact-jobs-${filterSlug}`;
     } else {
       title     = 'NGO Jobs in Africa | Social Impact Careers | Afrorama';
       desc      = 'Browse NGO jobs and social impact careers across Africa on Afrorama — the continent\'s dedicated platform for development, humanitarian and social enterprise roles.';
-      canonical = 'https://afrorama.org/opportunities';
+      canonical = 'https://www.afrorama.org/opportunities';
     }
     document.getElementById('meta-title').textContent     = title;
     document.getElementById('meta-desc').setAttribute('content', desc);
@@ -396,6 +430,11 @@
     const cEl = document.getElementById('sidebar-countries');
     const sEl = document.getElementById('sidebar-sectors');
     cEl.innerHTML = Object.entries(COUNTRIES).map(([slug, cfg]) => {
+      const active = filterType === 'country' && slug === filterSlug ? ' active' : '';
+      return `<a href="/ngo-jobs-${slug}" class="sidebar-link${active}">${esc(cfg.name)}</a>`;
+    }).join('');
+    const ctEl = document.getElementById('sidebar-cities');
+    if (ctEl) ctEl.innerHTML = Object.entries(CITIES).map(([slug, cfg]) => {
       const active = filterType === 'country' && slug === filterSlug ? ' active' : '';
       return `<a href="/ngo-jobs-${slug}" class="sidebar-link${active}">${esc(cfg.name)}</a>`;
     }).join('');
@@ -526,6 +565,7 @@
 
     if (filterType === 'country' && filterConfig) {
       query = query.eq('country', filterConfig.iso);
+      if (filterConfig.country) query = query.ilike('location', `%${filterConfig.name}%`);
     } else if (filterType === 'sector' && filterConfig) {
       query = query.eq('sector', filterConfig.name);
     }
