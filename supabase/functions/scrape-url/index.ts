@@ -11,10 +11,12 @@
  * Deploy: supabase functions deploy scrape-url
  */
 
+import { isAdmin } from '../_shared/admin.ts';
+
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey, x-admin-password',
 };
 
 const SECTORS = [
@@ -38,6 +40,7 @@ function stripHtml(html: string): string {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: CORS });
   if (req.method !== 'POST') return Response.json({ error: 'POST only' }, { status: 405, headers: CORS });
+  if (!isAdmin(req)) return Response.json({ error: 'Unauthorized' }, { status: 401, headers: CORS });
 
   try {
     const { url } = await req.json();

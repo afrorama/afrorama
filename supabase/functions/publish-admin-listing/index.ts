@@ -5,7 +5,7 @@
  * scrape-url + manual edit pass) and publishes it directly to the live
  * `listings` table via the service role — bypassing the anon-insert
  * restriction safely, since this path is only reachable from the
- * password-gated admin page, not the public site.
+ * password-gated admin page (checked server-side via _shared/admin.ts).
  *
  * Also feeds Salary Intelligence: if the salary text parses to a real
  * number, a matching salary_submissions row is inserted too, same as the
@@ -16,6 +16,7 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { parseSalaryToUSD } from '../_shared/currency.ts';
+import { isAdmin } from '../_shared/admin.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -25,7 +26,7 @@ const supabase = createClient(
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey, x-admin-password',
 };
 
 const DISCLAIMER = '\n\n─────────────────────────────────────\nThis summary is automatically generated for quick reference. For the complete and authoritative job description, please view the original posting.';
@@ -62,6 +63,7 @@ async function formatDescription(title: string, org: string, description: string
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: CORS });
   if (req.method !== 'POST') return Response.json({ error: 'POST only' }, { status: 405, headers: CORS });
+  if (!isAdmin(req)) return Response.json({ error: 'Unauthorized' }, { status: 401, headers: CORS });
 
   try {
     const body = await req.json();

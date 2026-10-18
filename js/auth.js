@@ -110,9 +110,11 @@
       const raw = localStorage.getItem('afrorama_demo_profile');
       return raw ? { profile: JSON.parse(raw), error: null } : { profile: null, error: null };
     }
+    // Full profiles are private: only the signed-in user's own row is readable,
+    // via get_my_profile(). Other users' rows expose just id, full_name, is_moderator.
     const sb = getSupabase();
-    const { data, error } = await sb.from('profiles').select('*').eq('id', userId).single();
-    return { profile: data, error };
+    const { data, error } = await sb.rpc('get_my_profile');
+    return { profile: data?.id === userId ? data : null, error };
   }
 
   async function upsertProfile(userId, fields) {
@@ -123,8 +125,9 @@
       return { profile: updated, error: null };
     }
     const sb = getSupabase();
-    const { data, error } = await sb.from('profiles').upsert({ id: userId, ...fields }).select().single();
-    return { profile: data, error };
+    const { error } = await sb.from('profiles').upsert({ id: userId, ...fields });
+    if (error) return { profile: null, error };
+    return getProfile(userId);
   }
 
   async function saveCVScore(userId, score, filename) {

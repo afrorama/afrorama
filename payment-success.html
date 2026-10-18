@@ -191,8 +191,7 @@
     // Personalise heading with first name
     const firstName = (user.full_name || '').trim().split(/\s+/)[0];
     if (firstName) heading.textContent = `Welcome, ${firstName}!`;
-    // Optimistic flag — webhook handles the real DB update
-    await upsertProfile(user.id, { is_member: true, member_since: new Date().toISOString() });
+    // Membership is set by stripe-webhook once Stripe confirms payment
   })();
 })();
 </script>

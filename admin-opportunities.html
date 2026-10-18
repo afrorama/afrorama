@@ -693,10 +693,9 @@ curl -X POST https://YOUR_PROJECT.supabase.co/functions/v1/bitly-link \
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/data.js"></script>
 <script src="js/supabase.js"></script>
+<script src="js/admin-auth.js"></script>
 <script>
 (function () {
-  const ADMIN_PASSWORD = 'ETaylor@2026!';
-  const ADMIN_KEY      = 'afrorama_admin_opp_session';
   const STORE_KEY      = 'afrorama_admin_opps';
   const TRACK_KEY      = 'afrorama_opp_tracking';
   const SITE_URL       = 'https://afrorama.org';
@@ -730,16 +729,16 @@ curl -X POST https://YOUR_PROJECT.supabase.co/functions/v1/bitly-link \
   function getTrack(id) { return tracking[id] || { views:0, clicks:0 }; }
 
   // ── Auth ────────────────────────────────────────────────────────
-  if (sessionStorage.getItem(ADMIN_KEY) === '1') showAdmin();
+  AfroramaAdmin.isLoggedIn().then(ok => { if (ok) showAdmin(); });
 
-  document.getElementById('btn-login').addEventListener('click', () => {
+  document.getElementById('btn-login').addEventListener('click', async () => {
     const pass = document.getElementById('admin-pass').value;
     const err  = document.getElementById('pass-error');
-    if (pass === ADMIN_PASSWORD) { sessionStorage.setItem(ADMIN_KEY,'1'); showAdmin(); }
+    if (await AfroramaAdmin.login(pass)) { showAdmin(); }
     else { err.textContent = 'Incorrect password.'; err.style.display='block'; }
   });
   document.getElementById('admin-pass').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('btn-login').click(); });
-  document.getElementById('btn-logout')?.addEventListener('click', () => { sessionStorage.removeItem(ADMIN_KEY); location.reload(); });
+  document.getElementById('btn-logout')?.addEventListener('click', () => { AfroramaAdmin.logout(); location.reload(); });
 
   async function showAdmin() {
     document.getElementById('gate').style.display    = 'none';
@@ -754,7 +753,7 @@ curl -X POST https://YOUR_PROJECT.supabase.co/functions/v1/bitly-link \
     const Supa = window.AfroramaSupabase;
     if (!Supa || Supa.isDemoMode()) return;
     const sb = Supa.getSupabase();
-    const { data, error } = await sb.from('listings').select('*').order('created_at', { ascending: false });
+    const { data, error } = await sb.from('listings').select(Supa.PUBLIC_LISTING_COLUMNS).order('created_at', { ascending: false });
     if (error) { console.error('Admin Supabase load error:', error.message); return; }
     if (data?.length) {
       allOpps = data;
@@ -1202,7 +1201,7 @@ curl -X POST https://YOUR_PROJECT.supabase.co/functions/v1/bitly-link \
     // If Supabase is live, fetch full unfiltered set for export
     const Supa = window.AfroramaSupabase;
     if (Supa && !Supa.isDemoMode()) {
-      const { data } = await Supa.getSupabase().from('listings').select('*').order('created_at', { ascending: false });
+      const { data } = await Supa.getSupabase().from('listings').select(Supa.PUBLIC_LISTING_COLUMNS).order('created_at', { ascending: false });
       if (data?.length) rows = data;
     }
     const now = new Date();
