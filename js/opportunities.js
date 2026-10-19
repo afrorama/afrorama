@@ -322,13 +322,48 @@
     oppMap.setView([0, 20], 3);
   }
 
+  /** "🌍 Remote · N" button on the map — toggles the Remote only filter */
+  let remoteControlEl = null;
+  function updateRemoteControl(count) {
+    if (!oppMap) return;
+    if (!remoteControlEl) {
+      const RemoteControl = L.Control.extend({
+        options: { position: 'topright' },
+        onAdd() {
+          const btn = L.DomUtil.create('button', 'lmap-remote-btn');
+          btn.type = 'button';
+          L.DomEvent.disableClickPropagation(btn);
+          btn.addEventListener('click', () => {
+            state.remoteOnly = !state.remoteOnly;
+            const cb = document.getElementById('filter-remote-only');
+            if (cb) cb.checked = state.remoteOnly;
+            applyFilters();
+            document.getElementById('jobs-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+          return btn;
+        },
+      });
+      remoteControlEl = new RemoteControl().addTo(oppMap).getContainer();
+    }
+    remoteControlEl.style.display = count ? '' : 'none';
+    remoteControlEl.classList.toggle('active', state.remoteOnly);
+    remoteControlEl.innerHTML = `🌍 Remote · ${count}`;
+    remoteControlEl.title = state.remoteOnly ? 'Show all locations' : 'Show remote roles only';
+  }
+
   /** Rebuild map markers to match the CURRENTLY filtered job set */
   function updateMapMarkers(filteredJobs) {
     if (!oppMap || !mapMarkerLayer) return;
     mapMarkerLayer.clearLayers();
 
+    // Remote roles aren't pinned to a country (they're stored under the
+    // employer's hiring country, e.g. US) — they get a "Remote" map button instead
+    const isRemoteJob = j => /^\W*remote\b/i.test((j.location || '').trim());
+    const remoteCount = filteredJobs.filter(isRemoteJob).length;
+    updateRemoteControl(remoteCount);
+
     const countByCountry = {};
-    filteredJobs.forEach(j => { countByCountry[j.country] = (countByCountry[j.country] || 0) + 1; });
+    filteredJobs.filter(j => !isRemoteJob(j)).forEach(j => { countByCountry[j.country] = (countByCountry[j.country] || 0) + 1; });
 
     const markerLatLngs = [];
 

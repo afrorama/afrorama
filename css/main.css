@@ -484,3 +484,12 @@ a  { color: inherit; text-decoration: none; }
   .footer-grid { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; text-align: center; }
 }
+
+/* Map: "🌍 Remote · N" button (remote roles aren't pinned to a country) */
+.lmap-remote-btn {
+  background: var(--white); color: var(--dark); border: 2.5px solid var(--dark);
+  border-radius: 100px; padding: 6px 14px; font: 800 .8rem 'Inter', sans-serif;
+  box-shadow: 3px 3px 0 var(--dark); cursor: pointer; transition: transform .12s, box-shadow .12s;
+}
+.lmap-remote-btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--dark); }
+.lmap-remote-btn.active { background: var(--yellow); }
