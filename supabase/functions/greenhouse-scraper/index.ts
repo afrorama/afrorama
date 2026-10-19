@@ -19,6 +19,23 @@ const supabase = createClient(
 
 const DISCLAIMER = '\n\n─────────────────────────────────────\nThis summary is automatically generated for quick reference. For the complete and authoritative job description, please view the original posting.';
 
+// Checked 2026-10-19: these orgs' Greenhouse boards return 404 (they have
+// moved to another careers system), so they're removed to free batch slots.
+// Re-add each via the scraper for its current system (workday-, jazzhr-, …):
+//   350.org, 3ie, CARE, Catholic Relief Services, Center for Global
+//   Development, Clinton Health Access Initiative, Conservation International,
+//   Convergence Blended Finance, Emergent, FHI 360, FP2030, Ford Foundation,
+//   Gates Foundation, Global Citizen Year, Global Development Incubator, ICRW,
+//   IDinsight, Innovations for Poverty Action, International Planned
+//   Parenthood Federation, International Rescue Committee, J-PAL, Living
+//   Goods, Mastercard Foundation, Mercy Corps, Norfund, Nutrition
+//   International, Open Philanthropy, Oxfam America, Palladium, Partners in
+//   Health, Pathfinder International, Population Reference Bureau, Remitly,
+//   Rockefeller Foundation, Room to Read, Root Capital, Save the Children,
+//   Skoll Foundation, Stanford Social Innovation Review, TechnoServe,
+//   Terraformation, The Nature Conservancy, The Room, United Purpose, Village
+//   Enterprise, VillageReach, WWF, Wildlife Conservation Society, World Food
+//   Programme USA, World Vision
 const ORGS: { token: string; name: string; country: string }[] = [
   { token: 'humanrightswatch',                          name: 'Human Rights Watch',                       country: 'KE' },
   { token: 'wikimedia',                                 name: 'Wikimedia Foundation',                     country: 'KE' },
@@ -41,66 +58,16 @@ const ORGS: { token: string; name: string; country: string }[] = [
   { token: 'oneacrefundmalawi',                         name: 'One Acre Fund Malawi',                     country: 'MW' },
   { token: 'oneacrefunduganda',                         name: 'One Acre Fund Uganda',                     country: 'UG' },
   { token: 'deliveryassociates',                        name: 'Delivery Associates',                      country: 'KE' },
-  { token: 'mastercardfoundation',                      name: 'Mastercard Foundation',                    country: 'GH' },
-  { token: '350org',                                    name: '350.org',                                  country: 'KE' },
-  { token: 'globalcitizenyear',                         name: 'Global Citizen Year',                      country: 'SN' },
   { token: '60decibelsinc',                             name: '60 Decibels',                              country: 'KE' },
-  { token: 'theroom',                                   name: 'The Room',                                 country: 'ZA' },
   { token: 'financialtimes33',                          name: 'Financial Times',                          country: 'KE' },
   // New additions
-  { token: 'roomtoread',                                name: 'Room to Read',                             country: 'KE' },
-  { token: 'pih',                                       name: 'Partners in Health',                       country: 'RW' },
-  { token: 'poverty-action',                            name: 'Innovations for Poverty Action',           country: 'KE' },
-  { token: 'clintonhealthaccess',                       name: 'Clinton Health Access Initiative',         country: 'KE' },
-  { token: 'villagereach',                              name: 'VillageReach',                             country: 'MZ' },
-  { token: 'cgdev',                                     name: 'Center for Global Development',            country: 'KE' },
-  { token: 'palladium',                                 name: 'Palladium',                                country: 'KE' },
   { token: 'pact',                                      name: 'Pact',                                     country: 'KE' },
-  { token: 'wcs',                                       name: 'Wildlife Conservation Society',            country: 'KE' },
-  { token: 'pathfinderinternational',                   name: 'Pathfinder International',                 country: 'ET' },
-  { token: 'livinggoods',                               name: 'Living Goods',                             country: 'KE' },
-  { token: 'idinsight',                                 name: 'IDinsight',                                country: 'KE' },
-  { token: 'remitly',                                   name: 'Remitly',                                  country: 'KE' },
-  { token: 'terraformation',                            name: 'Terraformation',                           country: 'KE' },
-  { token: 'ssir',                                      name: 'Stanford Social Innovation Review',        country: 'KE' },
-  { token: 'pri',                                       name: 'Population Reference Bureau',              country: 'KE' },
   { token: 'teachforall',                               name: 'Teach For All',                            country: 'KE' },
-  { token: 'jpal',                                      name: 'J-PAL',                                    country: 'KE' },
-  { token: '3ie',                                       name: '3ie',                                      country: 'KE' },
   { token: 'givewell',                                  name: 'GiveWell',                                 country: 'KE' },
-  { token: 'openphilanthropy',                          name: 'Open Philanthropy',                        country: 'KE' },
-  { token: 'convergence',                               name: 'Convergence Blended Finance',              country: 'KE' },
-  { token: 'globaldev',                                 name: 'Global Development Incubator',             country: 'KE' },
-  { token: 'crs',                                       name: 'Catholic Relief Services',                 country: 'KE' },
-  { token: 'fhi360',                                    name: 'FHI 360',                                  country: 'KE' },
-  { token: 'unitedpurpose',                             name: 'United Purpose',                           country: 'GH' },
-  { token: 'nutritionintl',                             name: 'Nutrition International',                  country: 'KE' },
-  { token: 'ippf',                                      name: 'International Planned Parenthood Federation', country: 'KE' },
-  { token: 'wfpusa',                                    name: 'World Food Programme USA',                 country: 'KE' },
-  { token: 'thenatureconservancy',                      name: 'The Nature Conservancy',                   country: 'KE' },
-  { token: 'conservationinternational',                 name: 'Conservation International',               country: 'KE' },
-  { token: 'worldwildlifefund',                         name: 'WWF',                                      country: 'KE' },
-  { token: 'irc',                                       name: 'International Rescue Committee',           country: 'KE' },
-  { token: 'mercycorps',                                name: 'Mercy Corps',                              country: 'KE' },
-  { token: 'savethechildren',                           name: 'Save the Children',                        country: 'KE' },
-  { token: 'oxfamamerica',                              name: 'Oxfam America',                            country: 'KE' },
-  { token: 'care',                                      name: 'CARE',                                     country: 'KE' },
-  { token: 'worldvision',                               name: 'World Vision',                             country: 'KE' },
   // Impact investors & DFIs
   { token: 'omidyarnetwork',                            name: 'Omidyar Network',                          country: 'KE' },
   { token: 'luminate',                                  name: 'Luminate',                                 country: 'KE' },
-  { token: 'skoll',                                     name: 'Skoll Foundation',                         country: 'KE' },
-  { token: 'rockefellerfoundation',                     name: 'Rockefeller Foundation',                   country: 'KE' },
-  { token: 'fordfoundation',                            name: 'Ford Foundation',                          country: 'KE' },
-  { token: 'gatesfoundation',                           name: 'Gates Foundation',                         country: 'KE' },
   // Open Society Foundations moved to Workday — see workday-scraper
-  { token: 'norfund',                                   name: 'Norfund',                                  country: 'KE' },
-  { token: 'villageenterprise',                         name: 'Village Enterprise',                       country: 'KE' },
-  { token: 'rootcapital',                               name: 'Root Capital',                             country: 'KE' },
-  { token: 'icrw',                                      name: 'ICRW',                                     country: 'KE' },
-  { token: 'technoserve',                               name: 'TechnoServe',                              country: 'KE' },
-  { token: 'familyplanning2030',                        name: 'FP2030',                                   country: 'KE' },
-  { token: 'emergent',                                  name: 'Emergent',                                 country: 'KE' },
 ];
 
 const AFRICA_ISO = new Set([
@@ -304,7 +271,8 @@ BULLETS:
 SALARY: [salary or none]`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await withDeadline(25_000, (signal) => fetch('https://api.anthropic.com/v1/messages', {
+      signal,
       method: 'POST',
       headers: {
         'Content-Type':      'application/json',
@@ -316,7 +284,7 @@ SALARY: [salary or none]`;
         max_tokens: 400,
         messages:   [{ role: 'user', content: prompt }],
       }),
-    });
+    }));
     if (!res.ok) return { description: fallbackDesc(description, org), salary: 'See listing' };
 
     const data        = await res.json() as { content: { text: string }[] };
@@ -334,7 +302,31 @@ SALARY: [salary or none]`;
   }
 }
 
-Deno.serve(async (req) => {
+/** Run fn, aborting it and rejecting if it hasn't settled within ms. */
+function withDeadline<T>(ms: number, fn: (signal: AbortSignal) => Promise<T>): Promise<T> {
+  const ctrl = new AbortController();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => { ctrl.abort(); reject(new Error(`timed out after ${ms / 1000}s`)); }, ms);
+  });
+  return Promise.race([fn(ctrl.signal), deadline]).finally(() => clearTimeout(timer));
+}
+
+// Edge runtime global: keeps background work alive after the response is sent
+declare const EdgeRuntime: { waitUntil(p: Promise<unknown>): void } | undefined;
+
+Deno.serve((req) => {
+  // Reply at once and scrape in the background, so the cron's HTTP call never
+  // times out (see supabase/greenhouse-schedule.sql for the history). ?wait=1 runs inline for testing.
+  const work = scrape(req);
+  if (typeof EdgeRuntime !== 'undefined' && !new URL(req.url).searchParams.has('wait')) {
+    EdgeRuntime.waitUntil(work.catch(err => console.error('[greenhouse-scraper] failed:', err)));
+    return Response.json({ started: true }, { status: 202 });
+  }
+  return work.then(result => Response.json(result));
+});
+
+async function scrape(req: Request): Promise<{ imported: number; skipped: number; outOfTime: boolean }> {
   console.log('[greenhouse-scraper] Starting...');
 
   // Batch support — 4 orgs per batch to stay within the 150s timeout
@@ -342,27 +334,37 @@ Deno.serve(async (req) => {
   const batchParam = new URL(req.url).searchParams.get('batch');
   const batch      = Math.max(0, parseInt(batchParam || '0', 10));
   const start      = (batch * batchSize) % ORGS.length;
-  const orgs       = [...ORGS, ...ORGS].slice(start, start + batchSize);
+  // ?token=<board> runs a single org (for testing one board)
+  const only       = new URL(req.url).searchParams.get('token');
+  const orgs       = only ? ORGS.filter(o => o.token === only) : [...ORGS, ...ORGS].slice(start, start + batchSize);
   console.log(`[greenhouse-scraper] Batch ${batch}: orgs ${start + 1}–${start + orgs.length} of ${ORGS.length}`);
 
-  let totalImported = 0, totalSkipped = 0;
+  let totalImported = 0, totalSkipped = 0, outOfTime = false;
+  // Stop well before Supabase's 150s limit — anything left is new next run
+  const budgetEnds = Date.now() + 110_000;
 
   for (const org of orgs) {
-    await new Promise(r => setTimeout(r, 100));
-
+    if (Date.now() > budgetEnds) { outOfTime = true; break; }
     try {
       // Greenhouse public board API — returns all jobs with location
       const url = `https://boards-api.greenhouse.io/v1/boards/${org.token}/jobs?content=true`;
-      const res = await fetch(url, {
-        headers: { 'Accept': 'application/json', 'User-Agent': 'Afrorama/1.0' },
-      });
-
-      if (!res.ok) {
-        console.warn(`[greenhouse-scraper] ${org.name}: HTTP ${res.status}`);
+      // Hard deadline on the download so one slow board can't hold up the batch.
+      // (No sleep timers in this file: setTimeout-based pauses occasionally
+      // never resumed in the edge runtime and stalled whole runs.)
+      let json: any;
+      try {
+        json = await withDeadline(20_000, async (signal) => {
+          const res = await fetch(url, {
+            signal,
+            headers: { 'Accept': 'application/json', 'User-Agent': 'Afrorama/1.0' },
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return await res.json();
+        });
+      } catch (err) {
+        console.warn(`[greenhouse-scraper] ${org.name}: ${(err as Error).message}`);
         continue;
       }
-
-      const json  = await res.json() as any;
       const jobs: any[] = json?.jobs || [];
       console.log(`[greenhouse-scraper] ${org.name}: ${jobs.length} jobs`);
 
@@ -392,6 +394,7 @@ Deno.serve(async (req) => {
 
       for (const { job, jobId, dbId, locRaw, location } of candidates) {
         if (existingSet.has(dbId)) { totalSkipped++; continue; }
+        if (Date.now() > budgetEnds) { outOfTime = true; break; }
 
         const title  = job.title || 'Untitled';
         const dept   = job.departments?.[0]?.name || '';
@@ -444,13 +447,12 @@ Deno.serve(async (req) => {
           experienceText: null, sector, country: location.iso,
         });
 
-        await new Promise(r => setTimeout(r, 50));
       }
     } catch (err) {
       console.warn(`[greenhouse-scraper] ${org.name} failed:`, (err as Error).message);
     }
   }
 
-  console.log(`[greenhouse-scraper] Done. Imported: ${totalImported}, Skipped: ${totalSkipped}`);
-  return Response.json({ imported: totalImported, skipped: totalSkipped });
-});
+  console.log(`[greenhouse-scraper] Done. Imported: ${totalImported}, Skipped: ${totalSkipped}${outOfTime ? ' (time budget reached — rest next run)' : ''}`);
+  return { imported: totalImported, skipped: totalSkipped, outOfTime };
+}
