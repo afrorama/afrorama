@@ -1,5 +1,6 @@
 -- ============================================================
--- AFRORAMA — daily schedules for jazzhr-, workday- and adp-scraper
+-- AFRORAMA — daily schedules for the jazzhr, workday, adp,
+-- successfactors and wp-careers scrapers
 -- Run once in the Supabase SQL Editor. Reuses the secret key that
 -- your existing cron jobs already use, so no key needs pasting.
 -- Times are UTC, spread out from the busy 06:00–10:00 slots.
@@ -17,7 +18,9 @@ BEGIN
   FOR job IN SELECT * FROM (VALUES
     ('jazzhr-daily',  '20 4 * * *', 'jazzhr-scraper'),
     ('workday-daily', '25 4 * * *', 'workday-scraper'),
-    ('adp-daily',     '30 4 * * *', 'adp-scraper')
+    ('adp-daily',     '30 4 * * *', 'adp-scraper'),
+    ('successfactors-daily', '35 4 * * *', 'successfactors-scraper'),
+    ('wp-careers-daily',     '40 4 * * *', 'wp-careers-scraper')
   ) AS t(name, schedule, fn) LOOP
     PERFORM cron.schedule(job.name, job.schedule, format(
       $f$SELECT net.http_post(
@@ -31,4 +34,4 @@ BEGIN
 END $$;
 
 -- Check:
--- SELECT jobname, schedule FROM cron.job WHERE jobname IN ('jazzhr-daily','workday-daily','adp-daily');
+-- SELECT jobname, schedule FROM cron.job WHERE jobname IN ('jazzhr-daily','workday-daily','adp-daily','successfactors-daily','wp-careers-daily');

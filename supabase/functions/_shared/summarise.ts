@@ -11,7 +11,7 @@ export function stripHtml(html: string): string {
     .replace(/<\/?(li|p|br|h[1-6]|div|tr)[^>]*>/gi, '\n')
     .replace(/<[^>]+>/g, '')
     .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&#39;|&#8217;|&rsquo;/g, "'").replace(/&quot;|&#8220;|&#8221;/g, '"').replace(/&#8212;/g, '—')
+    .replace(/&#39;|&apos;|&#8217;|&rsquo;/g, "'").replace(/&quot;|&#8220;|&#8221;/g, '"').replace(/&#8212;/g, '—').replace(/&#8211;|&ndash;/g, '–')
     .replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 }
 
@@ -30,7 +30,10 @@ export function findPayLine(bodyText: string): string | null {
   const line = (bodyText || '').split('\n').find(l =>
     /salary|compensation|\bpay\b|stipend|remuneration/i.test(l) &&
     /(?:[$€£]|\b(?:USD|EUR|GBP|KES|ZAR|NGN|GHS|UGX|TZS|RWF|INR)\s?)\d[\d,.]*/i.test(l));
-  return line ? line.trim() : null;
+  if (!line) return null;
+  // Keep just the sentence that carries the figure
+  const sentence = line.split(/(?<=[.;])\s+/).find(x => /\d/.test(x) && /[$€£]|\b[A-Z]{3}\s?\d/.test(x)) || line;
+  return sentence.trim().replace(/^In compliance with [^,]+,\s*/i, '').replace(/^\w/, c => c.toUpperCase()).slice(0, 160);
 }
 
 /**
