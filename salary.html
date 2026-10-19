@@ -373,9 +373,8 @@
                 </select>
               </div>
               <div class="form-group">
-                <label class="form-label" for="filter-period">Period</label>
+                <label class="form-label" for="filter-period">Year</label>
                 <select class="form-select" id="filter-period">
-                  <option value="recent" selected>Last 2 years</option>
                   <option value="">All years</option>
                 </select>
               </div>
@@ -407,7 +406,7 @@
             </select>
           </div>
           <div class="results-panel" id="salary-results" aria-live="polite"></div>
-          <p style="margin-top:14px;font-size:.78rem;color:var(--gray-dark);">Methodology: figures come from real job postings with disclosed compensation (collected via Afrorama's job monitoring since 2024) and direct community submissions. Listings without a stated salary are excluded rather than estimated. Each salary is counted once, even if the job stays open for weeks. Results show the last 2 years by default; choose "All years" under Period to see older data. All amounts are converted to annual USD for comparison.</p>
+          <p style="margin-top:14px;font-size:.78rem;color:var(--gray-dark);">Methodology: figures come from real job postings with disclosed compensation (collected via Afrorama's job monitoring since 2024) and direct community submissions. Listings without a stated salary are excluded rather than estimated. Each salary is counted once, even if the job stays open for weeks. Use the Year filter to see salaries from a single year. All amounts are converted to annual USD for comparison.</p>
         </div>
       </div>
     </div>
@@ -589,6 +588,13 @@
   }
 
   // ── Hero stats — fully dynamic from the actual dataset ───────
+  function populateYearFilter() {
+    const sel = document.getElementById('filter-period');
+    if (!sel) return;
+    const years = [...new Set(allData.map(recordYear).filter(Boolean))].sort((a, b) => b - a);
+    sel.innerHTML = '<option value="">All years</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+  }
+
   function computeHeroStats() {
     const all = allData;
     const entriesEl = document.getElementById('stat-entries');
@@ -630,6 +636,7 @@
     // readable and the numbers entice non-signed-in visitors to create an account
     await loadSubmissions();
     computeHeroStats();
+    populateYearFilter();
 
     if (!user) {
       // Not signed in: gate the database, show sign-in prompt on contribute card
@@ -729,7 +736,6 @@
 
   function renderResults() {
     const { query, sector, country, exp, period } = getFilters();
-    const minYear = period === 'recent' ? new Date().getFullYear() - 1 : 0;
     const sort = document.getElementById('salary-sort')?.value || 'salary-desc';
 
     // Filter
@@ -739,7 +745,7 @@
       const matchS = !sector  || r.sector === sector;
       const matchC = !country || r.country === country;
       const matchE = !exp     || r.years_exp === exp;
-      const matchP = !minYear || (recordYear(r) || 0) >= minYear;
+      const matchP = !period || recordYear(r) === Number(period);
       return matchQ && matchS && matchC && matchE && matchP;
     });
 
@@ -865,7 +871,7 @@
   });
   document.getElementById('btn-clear-filters')?.addEventListener('click', () => {
     ['filter-sector','filter-country','filter-exp'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-    const periodEl = document.getElementById('filter-period'); if (periodEl) periodEl.value = 'recent';
+    const periodEl = document.getElementById('filter-period'); if (periodEl) periodEl.value = '';
     document.getElementById('salary-search').value = '';
     renderResults();
   });
