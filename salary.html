@@ -58,6 +58,7 @@
     .hero-stat-row { display: flex; gap: 28px; margin-top: 20px; flex-wrap: wrap; }
     .hero-stat { color: rgba(255,255,255,.8); }
     .hero-stat-num { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 2.4rem; color: var(--yellow); line-height: 1; letter-spacing: -.02em; }
+    .hero-stat-updated { margin-top: 14px; font-size: .78rem; color: rgba(255,255,255,.55); }
     .hero-stat-label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.55); }
 
     /* ── Contribute card ── */
@@ -231,10 +232,11 @@
         <p style="margin-top:10px;"><em style="color:rgba(255,255,255,.6);font-style:italic;">Share your salary. Access everyone else's. Help each other get paid fairly.</em></p>
         <p style="margin-top:10px;font-size:.82rem;color:rgba(255,255,255,.55);">Data collected from 2024 onward through Afrorama's monitoring of real job postings with disclosed compensation, plus entries shared directly by the community. Figures are converted to annual USD for comparison.</p>
         <div class="hero-stat-row">
-          <div class="hero-stat"><div class="hero-stat-num" id="stat-entries">—</div><div class="hero-stat-label">Salary entries</div></div>
+          <div class="hero-stat"><div class="hero-stat-num" id="stat-entries">—</div><div class="hero-stat-label">Verified salaries</div></div>
           <div class="hero-stat"><div class="hero-stat-num" id="stat-years">—</div><div class="hero-stat-label">Years of data</div></div>
           <div class="hero-stat"><div class="hero-stat-num" id="stat-orgs">—</div><div class="hero-stat-label">Organisations</div></div>
         </div>
+        <p class="hero-stat-updated" id="stat-updated"></p>
       </div>
 
       <!-- Right: contribute card -->
@@ -370,6 +372,13 @@
                   <option value="15+">15+ years</option>
                 </select>
               </div>
+              <div class="form-group">
+                <label class="form-label" for="filter-period">Period</label>
+                <select class="form-select" id="filter-period">
+                  <option value="recent" selected>Last 2 years</option>
+                  <option value="">All years</option>
+                </select>
+              </div>
               <button class="btn btn-outline btn-sm" id="btn-clear-filters" style="width:100%;justify-content:center;">Clear filters</button>
             </div>
           </div>
@@ -398,7 +407,7 @@
             </select>
           </div>
           <div class="results-panel" id="salary-results" aria-live="polite"></div>
-          <p style="margin-top:14px;font-size:.78rem;color:var(--gray-dark);">Methodology: figures come from real job postings with disclosed compensation (collected via Afrorama's job monitoring since 2024) and direct community submissions. Listings without a stated salary are excluded rather than estimated. All amounts are converted to annual USD for comparison.</p>
+          <p style="margin-top:14px;font-size:.78rem;color:var(--gray-dark);">Methodology: figures come from real job postings with disclosed compensation (collected via Afrorama's job monitoring since 2024) and direct community submissions. Listings without a stated salary are excluded rather than estimated. Each salary is counted once, even if the job stays open for weeks. Results show the last 2 years by default; choose "All years" under Period to see older data. All amounts are converted to annual USD for comparison.</p>
         </div>
       </div>
     </div>
@@ -598,9 +607,18 @@
     const orgs     = new Set(all.map(r => r.company)).size;
     const yearsSpan = maxYear - minYear + 1;
 
-    if (entriesEl) entriesEl.textContent = all.length + '+';
+    if (entriesEl) entriesEl.textContent = all.length.toLocaleString();
     if (yearsEl)   yearsEl.textContent   = yearsSpan;
     if (orgsEl)    orgsEl.textContent    = orgs + '+';
+
+    // "Data from 2024–2026 · updated 19 Oct 2026"
+    const updatedEl = document.getElementById('stat-updated');
+    const latest = all.map(r => r.created_at).filter(Boolean).sort().pop();
+    if (updatedEl) {
+      const range = minYear === maxYear ? `${minYear}` : `${minYear}–${maxYear}`;
+      const when = latest ? new Date(latest).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      updatedEl.textContent = `Data from ${range}${when ? ` · updated ${when}` : ''}`;
+    }
   }
 
   // ── Init ───────────────────────────────────────────────────────
@@ -705,11 +723,13 @@
       sector:  document.getElementById('filter-sector')?.value || '',
       country: document.getElementById('filter-country')?.value || '',
       exp:     document.getElementById('filter-exp')?.value || '',
+      period:  document.getElementById('filter-period')?.value || '',
     };
   }
 
   function renderResults() {
-    const { query, sector, country, exp } = getFilters();
+    const { query, sector, country, exp, period } = getFilters();
+    const minYear = period === 'recent' ? new Date().getFullYear() - 1 : 0;
     const sort = document.getElementById('salary-sort')?.value || 'salary-desc';
 
     // Filter
@@ -719,7 +739,8 @@
       const matchS = !sector  || r.sector === sector;
       const matchC = !country || r.country === country;
       const matchE = !exp     || r.years_exp === exp;
-      return matchQ && matchS && matchC && matchE;
+      const matchP = !minYear || (recordYear(r) || 0) >= minYear;
+      return matchQ && matchS && matchC && matchE && matchP;
     });
 
     // Group by company + position (aggregate)
@@ -766,6 +787,10 @@
       const someUnpaid = g.records.some(r => r.unpaid || r.salary === 0);
       const paidRecords = g.records.filter(r => !r.unpaid && r.salary > 0);
       const yrs = g.records.map(r => r.years_exp).filter((v,i,a) => a.indexOf(v) === i).join(', ');
+      const dataYears = g.records.map(recordYear).filter(Boolean);
+      const yearLabel = !dataYears.length ? ''
+        : Math.min(...dataYears) === Math.max(...dataYears) ? `${dataYears[0]}`
+        : `${Math.min(...dataYears)}–${Math.max(...dataYears)}`;
 
       // Paid salary display
       let salaryHTML = '';
@@ -816,6 +841,7 @@
             ${salaryHTML}
             <div class="salary-meta">
               <span class="salary-meta-item">📊 ${count} data point${count !== 1 ? 's' : ''}</span>
+              ${yearLabel ? `<span class="salary-meta-item">🗓 ${yearLabel}</span>` : ''}
               ${yrs ? `<span class="salary-meta-item">💼 ${esc(yrs)} exp</span>` : ''}
               ${!allUnpaid ? `<span class="salary-meta-item">📈 Range: $${Math.min(...paidRecords.map(r=>r.salary)).toLocaleString()} – $${Math.max(...paidRecords.map(r=>r.salary)).toLocaleString()}</span>` : ''}
             </div>
@@ -824,16 +850,22 @@
     }).join('');
   }
 
+  // Year a salary applies to: its stated year, else the year it was recorded
+  function recordYear(r) {
+    return r.year || (r.created_at ? Number(String(r.created_at).slice(0, 4)) : null);
+  }
+
   function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
 
   // Live search + filter listeners
   let t;
-  ['salary-search','filter-sector','filter-country','filter-exp','salary-sort'].forEach(id => {
+  ['salary-search','filter-sector','filter-country','filter-exp','filter-period','salary-sort'].forEach(id => {
     document.getElementById(id)?.addEventListener('input', () => { clearTimeout(t); t = setTimeout(renderResults, 300); });
     document.getElementById(id)?.addEventListener('change', renderResults);
   });
   document.getElementById('btn-clear-filters')?.addEventListener('click', () => {
     ['filter-sector','filter-country','filter-exp'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    const periodEl = document.getElementById('filter-period'); if (periodEl) periodEl.value = 'recent';
     document.getElementById('salary-search').value = '';
     renderResults();
   });
