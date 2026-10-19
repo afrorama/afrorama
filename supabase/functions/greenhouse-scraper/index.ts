@@ -93,7 +93,7 @@ const ORGS: { token: string; name: string; country: string }[] = [
   { token: 'rockefellerfoundation',                     name: 'Rockefeller Foundation',                   country: 'KE' },
   { token: 'fordfoundation',                            name: 'Ford Foundation',                          country: 'KE' },
   { token: 'gatesfoundation',                           name: 'Gates Foundation',                         country: 'KE' },
-  { token: 'opensocietyfoundations',                    name: 'Open Society Foundations',                 country: 'KE' },
+  // Open Society Foundations moved to Workday — see workday-scraper
   { token: 'norfund',                                   name: 'Norfund',                                  country: 'KE' },
   { token: 'villageenterprise',                         name: 'Village Enterprise',                       country: 'KE' },
   { token: 'rootcapital',                               name: 'Root Capital',                             country: 'KE' },
