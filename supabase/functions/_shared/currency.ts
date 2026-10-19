@@ -221,6 +221,8 @@ interface SalarySubmissionInput {
  * nothing for vague/unparseable salary text — callers don't need to
  * branch on this themselves.
  */
+// Safe to call on every scraper run: a database trigger (salary_skip_duplicates,
+// supabase/data-integrity.sql) skips records identical to one already stored.
 export async function trySubmitSalary(
   // deno-lint-ignore no-explicit-any
   supabase: any,
