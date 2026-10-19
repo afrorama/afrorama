@@ -19,8 +19,13 @@ const RECRUITEE_ORGS: { subdomain: string; name: string; country: string }[] = [
 ];
 
 // Pinpoint HQ orgs — subdomain.pinpointhq.com
-const PINPOINT_ORGS: { subdomain: string; name: string; country: string }[] = [
-  { subdomain: 'medic', name: 'Medic', country: 'KE' },
+// country:       fallback ISO for African-located roles with no clearer country
+// remoteCountry: ISO stored for fully remote roles (the org's hiring base), or
+//                null to skip remote roles. Remote roles are imported as "Remote".
+// sector:        overrides the department-based sector guess
+const PINPOINT_ORGS: { subdomain: string; name: string; country: string; remoteCountry: string | null; sector?: string }[] = [
+  { subdomain: 'medic', name: 'Medic', country: 'KE', remoteCountry: 'KE' },
+  { subdomain: 'impactassets', name: 'ImpactAssets', country: 'US', remoteCountry: 'US', sector: 'Finance & Economics' },
 ];
 
 const AFRICA_ISO = new Set([
@@ -193,23 +198,49 @@ Deno.serve(async () => {
       if (jobs[0]) console.log(`[recruitee-scraper] Pinpoint first item keys:`, Object.keys(jobs[0]).join(', '));
 
       for (const job of jobs) {
-        const locRaw  = job.location?.name || job.location || job.city || '';
-        const country = job.location?.country || job.country || '';
-        const iso     = isAfrican('', country, locRaw, org.country);
-        if (!iso) continue;
+        const locRaw   = String(job.location?.name || job.location?.city || '').trim();
+        const isRemote = job.workplace_type === 'remote' || /remote/i.test(locRaw);
+        const africanIso = isAfrican('', '', `${locRaw} ${job.title || ''}`, org.country);
+        let iso: string, location: string;
+        if (africanIso) { iso = africanIso; location = locRaw || iso; }
+        else if (isRemote && org.remoteCountry) { iso = org.remoteCountry; location = 'Remote'; }
+        else continue; // not Africa-based and not remote — skip
 
-        const jobId  = String(job.id || job.uuid || '');
+        const jobId  = String(job.id || '');
         if (!jobId) continue;
 
-        const title    = job.title || 'Untitled';
-        const applyUrl = job.apply_url || `https://${org.subdomain}.pinpointhq.com/jobs/${jobId}`;
-        const bodyText = stripHtml(job.description || job.body || '');
-        const { description, salary } = await formatWithClaude(title, org.name, bodyText);
+        const deadline = job.deadline_at ? String(job.deadline_at).slice(0, 10) : null;
+        if (deadline && deadline < new Date().toISOString().slice(0, 10)) continue;
+
+        const title    = String(job.title || 'Untitled').trim();
+        const applyUrl = job.url || `https://${org.subdomain}.pinpointhq.com/en/jobs/${jobId}`;
+        // Pinpoint splits the posting into sections; salary is often only in benefits
+        const bodyText = stripHtml([
+          job.description,
+          job.key_responsibilities && `${job.key_responsibilities_header || 'Key responsibilities'}\n${job.key_responsibilities}`,
+          job.skills_knowledge_expertise && `${job.skills_knowledge_expertise_header || 'Requirements'}\n${job.skills_knowledge_expertise}`,
+          job.benefits && `${job.benefits_header || 'Benefits'}\n${job.benefits}`,
+        ].filter(Boolean).join('\n'));
+        // The summariser only reads the first ~2,000 chars and pay usually sits at
+        // the end (benefits), so carry the pay line into that window
+        const payLine = bodyText.split('\n').find(l =>
+          /salary|compensation|\bpay\b|stipend|remuneration/i.test(l) &&
+          /(?:[$€£]|\b(?:USD|EUR|GBP|KES|ZAR|NGN|GHS|UGX|TZS|RWF)\s?)\d[\d,.]*/i.test(l));
+        const summaryText = payLine && !bodyText.slice(0, 1700).includes(payLine)
+          ? `${bodyText.slice(0, 1700)}\n\nCompensation: ${payLine.trim()}`
+          : bodyText;
+        const { description, salary: summarySalary } = await formatWithClaude(title, org.name, summaryText);
+        const salary = job.compensation_visible && job.compensation_minimum
+          ? `${job.compensation_currency || ''} ${job.compensation_minimum}${job.compensation_maximum ? `–${job.compensation_maximum}` : ''}${job.compensation_frequency ? ` / ${job.compensation_frequency}` : ''}`.trim()
+          : payLine ? payLine.trim() : summarySalary; // employer's own wording — the summariser can mangle currencies
+        const dept   = typeof job.department === 'string' ? job.department : (job.department?.name || '');
+        const sector = org.sector || mapSector(`${dept} ${title}`);
+        const t      = `${title} ${job.employment_type_text || ''}`.toLowerCase();
+        const type   = /intern|trainee/.test(t) ? 'internship' : /fellow/.test(t) ? 'capacity' : /consultan|contractor/.test(t) ? 'consultancy' : 'jobs';
 
         const result = await supabase.from('listings').upsert({
-          id: `pp-${org.subdomain}-${jobId}`, title, organisation: org.name, type: 'jobs',
-          sector: mapSector(job.department || ''), location: locRaw || iso,
-          country: iso, deadline: null,
+          id: `pp-${org.subdomain}-${jobId}`, title, organisation: org.name, type,
+          sector, location, country: iso, deadline,
           posted: job.published_at?.slice(0, 10) || new Date().toISOString().split('T')[0],
           salary, description, apply_url: applyUrl,
           experience: null, org_domain: `${org.subdomain}.pinpointhq.com`,
@@ -219,10 +250,13 @@ Deno.serve(async () => {
         if (result?.error) { console.error(`[recruitee-scraper] Upsert error: ${result.error.message}`); totalSkipped++; }
         else totalImported++;
 
-        await trySubmitSalary(supabase, {
-          company: org.name, position: title, salaryText: salary,
-          experienceText: null, sector: mapSector(job.department || ''), country: iso,
-        });
+        // Salary Intelligence is Africa pay data — skip remote roles hired from elsewhere
+        if (africanIso) {
+          await trySubmitSalary(supabase, {
+            company: org.name, position: title, salaryText: salary,
+            experienceText: null, sector, country: iso,
+          });
+        }
 
         await new Promise(r => setTimeout(r, 150));
       }
