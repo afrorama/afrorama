@@ -114,8 +114,9 @@ export function mapSector(text: string, fallback = 'Governance & Public Policy')
 
 export function mapType(title: string, employmentType = ''): string {
   const t = `${title} ${employmentType}`.toLowerCase();
-  if (/intern|trainee/.test(t)) return 'internship';
   if (/fellow/.test(t)) return 'capacity';
+  // whole words only: "intern" must not match "International"
+  if (/stagiaire|\binterns?\b|internship|trainee|alternance|\bapprenti(e|s)?\b|apprentice/.test(t)) return 'internship';
   if (/consultan|contractor/.test(t)) return 'consultancy';
   return 'jobs';
 }
