@@ -51,13 +51,13 @@ export async function summariseJob(title: string, org: string, bodyText: string)
   const text = payLine && !bodyText.slice(0, 2700).includes(payLine)
     ? `${bodyText.slice(0, 2700)}\n\nCompensation: ${payLine}` : bodyText.slice(0, 3000);
 
-  const prompt = `You are writing a job summary for Afrorama, Africa's social impact job board. Format the job description below in British English.
+  const prompt = `You are writing a job summary for Afrorama, Africa's social impact job board. Write in the language of the job description below: in French if it is in French, otherwise in British English.
 
 Task 1 — Write exactly 5 bullet points:
 - Bullet 1 must be drawn directly from the opening or overview — capture what the role is actually about
-- Bullets 2–5 must each begin with a strong imperative verb (e.g. Lead, Manage, Develop, Coordinate, Deliver, Foster, Build, Drive)
+- Bullets 2–5 must each begin with a strong imperative verb (e.g. Lead, Manage, Develop, Coordinate, Deliver, Foster, Build, Drive; in French: Piloter, Gérer, Développer, Coordonner)
 - Concise and action-oriented — no fluff, no passive voice
-- British English spelling (organise, programme, analyse, prioritise)
+- In English, British spelling (organise, programme, analyse, prioritise)
 
 Task 2 — Extract salary or compensation exactly as written, keeping the original currency and figures:
 - Explicit figures ("USD 45,000–55,000/yr"), grades or bands (P3, Band C), or qualitative terms ("Competitive", "Commensurate with experience")
