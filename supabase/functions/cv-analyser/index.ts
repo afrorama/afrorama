@@ -51,14 +51,14 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
-    const { data: profile } = await supabaseAdmin
+    const { data: account } = await supabaseAdmin
       .from('profiles')
       .select('cv_score_history, cv_extra_boosts')
       .eq('id', user.id)
       .single();
 
-    const historyLen  = Array.isArray(profile?.cv_score_history) ? profile.cv_score_history.length : 0;
-    const extraBoosts = profile?.cv_extra_boosts ?? 0;
+    const historyLen  = Array.isArray(account?.cv_score_history) ? account.cv_score_history.length : 0;
+    const extraBoosts = account?.cv_extra_boosts ?? 0;
 
     // First analysis is free; after that require a paid boost
     if (historyLen >= 1 && extraBoosts <= 0) {
@@ -66,11 +66,6 @@ Deno.serve(async (req) => {
         { error: 'free_used', message: 'You have used your free CV analysis. Purchase a boost to analyse again.' },
         { status: 402, headers: CORS },
       );
-    }
-
-    // Consume one paid boost if this is not the first analysis
-    if (historyLen >= 1 && extraBoosts > 0) {
-      await supabaseAdmin.rpc('decrement_cv_boosts', { profile_id: user.id });
     }
 
     // ── Proceed with analysis ────────────────────────────────────────
@@ -165,6 +160,14 @@ BOOST_[criterion]: [tip]`;
     const data = await res.json() as { content: { text: string }[] };
     const raw  = data.content?.[0]?.text?.trim() || '';
     console.log('Claude raw response:', raw);
+    if (!/^LANGUAGE:\s*\d/im.test(raw)) {
+      return Response.json({ error: 'Analysis failed — please try again.' }, { status: 500, headers: CORS });
+    }
+
+    // Consume one paid boost only once the analysis has succeeded
+    if (historyLen >= 1) {
+      await supabaseAdmin.rpc('decrement_cv_boosts', { profile_id: user.id });
+    }
 
     // Parse scores
     const extractNum = (key: string, max: number): number => {
